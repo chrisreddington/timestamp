@@ -226,7 +226,7 @@ export function createFormController(
         elements.completionMessageInput.value = config.completionMessage;
       }
 
-      this.updateStartButtonLabel(mode);
+      this.updateStartButtonLabel(safeMode);
     },
 
     setConfig(config: Partial<CountdownConfig>, state: LandingPageFormState): void {
