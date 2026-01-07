@@ -201,9 +201,12 @@ export function createFormController(
     // State management methods
     initializeForm(config: Partial<CountdownConfig> | undefined, state: LandingPageFormState): void {
       // Mode - ensure valid mode type for radio selection
-      const mode = state.mode;
-      elements.modeRadios[mode].checked = true;
-      this.toggleMode(mode, state);
+      const requestedMode = state.mode;
+      const safeMode: CountdownMode = MODE_ORDER.includes(requestedMode as CountdownMode)
+        ? (requestedMode as CountdownMode)
+        : MODE_ORDER[0];
+      elements.modeRadios[safeMode].checked = true;
+      this.toggleMode(safeMode, state);
 
       // Date input
       const wallClockNewYear = createNextOccurrence(0, 1);
