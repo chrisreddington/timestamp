@@ -15,6 +15,7 @@ describe('shadow-calculator', () => {
   const originalNavigator = global.navigator;
   let geoSuccess: ((pos: MockGeoSuccess) => void) | null = null;
   let geoError: (() => void) | null = null;
+  const controllers: Array<ReturnType<typeof createShadowCalculator>> = [];
 
   beforeEach(() => {
     geoSuccess = null;
@@ -33,6 +34,9 @@ describe('shadow-calculator', () => {
   });
 
   afterEach(() => {
+    for (const controller of controllers.splice(0)) {
+      controller.destroy();
+    }
     // @ts-expect-error restore
     global.navigator = originalNavigator;
     document.body.innerHTML = '';
@@ -40,6 +44,7 @@ describe('shadow-calculator', () => {
 
   function render() {
     const controller = createShadowCalculator();
+    controllers.push(controller);
     document.body.appendChild(controller.getElement());
     const section = document.querySelector('[data-testid="landing-shadow-section"]') as HTMLElement;
     const status = section.querySelector('[data-testid="shadow-location-status"]') as HTMLElement;

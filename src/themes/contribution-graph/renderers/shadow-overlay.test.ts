@@ -17,6 +17,7 @@ describe('shadow-overlay', () => {
   let geoSuccess: ((pos: MockGeoSuccess) => void) | null = null;
   let geoError: (() => void) | null = null;
   let parent: HTMLElement;
+  const controllers: Array<ReturnType<typeof createShadowOverlay>> = [];
 
   beforeEach(() => {
     geoSuccess = null;
@@ -37,6 +38,9 @@ describe('shadow-overlay', () => {
   });
 
   afterEach(() => {
+    for (const controller of controllers.splice(0)) {
+      controller.destroy();
+    }
     // @ts-expect-error restore
     global.navigator = originalNavigator;
     parent.remove();
@@ -45,6 +49,7 @@ describe('shadow-overlay', () => {
 
   function render() {
     const controller = createShadowOverlay(parent);
+    controllers.push(controller);
     const overlay = parent.querySelector('[data-testid="cg-shadow-overlay"]') as HTMLElement;
     const status = overlay.querySelector('.cg-shadow-status') as HTMLElement;
     const shadowField = overlay.querySelector('[data-field="shadow"]') as HTMLElement;
