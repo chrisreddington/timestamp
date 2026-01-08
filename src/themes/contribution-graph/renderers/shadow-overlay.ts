@@ -1,4 +1,5 @@
 import { calculateShadowInfo } from '@core/solar/shadow';
+import { cancelAll, createResourceTracker, safeSetInterval } from '@themes/shared/resources';
 
 interface GeoCoords {
   latitude: number;
@@ -18,6 +19,7 @@ const SHADOW_LENGTH_SCALE_FACTOR = 40; // pixels per meter
 const MAX_SHADOW_PX = 220; // max shadow bar width in pixels
 
 export function createShadowOverlay(parent: HTMLElement): ShadowOverlayController {
+  const resources = createResourceTracker();
   const overlay = document.createElement('div');
   overlay.className = 'cg-shadow-overlay';
   overlay.setAttribute('data-testid', 'cg-shadow-overlay');
@@ -228,17 +230,13 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
   // Do NOT auto-request location on mount; let user explicitly click "Use my location"
   // This provides better UX and respects user privacy by not requesting geolocation until asked
 
-  // Refresh calculations periodically (every 30 seconds) to keep solar data current
-  // as time passes. This ensures users see accurate sun position and shadow length.
-  let refreshIntervalId: number | null = window.setInterval(() => {
+  // Refresh calculations periodically (every 30 seconds) using tracked interval
+  safeSetInterval(() => {
     if (coords) update();
-  }, 30_000);
+  }, 30_000, resources);
 
   function destroy(): void {
-    if (refreshIntervalId !== null) {
-      window.clearInterval(refreshIntervalId);
-      refreshIntervalId = null;
-    }
+    cancelAll(resources);
     overlay.remove();
     listeners.forEach(({ target, type, handler }) => target.removeEventListener(type, handler));
     listeners.length = 0;

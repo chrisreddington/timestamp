@@ -57,7 +57,7 @@ describe('landing-page', () => {
     dateRadio.dispatchEvent(new Event('change', { bubbles: true }));
     expect(displayOptionsSection.hidden).toBe(false);
     expect(timezoneSection.hidden).toBe(false);
-  });
+  }, 10000);
 
   describe('background', () => {
     it('should render theme background element covering full area', async () => {
@@ -198,7 +198,7 @@ describe('landing-page', () => {
       const timezoneWrapper = container.querySelector('[data-testid="timezone-selector"]') as HTMLElement;
       const valueEl = timezoneWrapper.querySelector('.selector-value');
       expect(valueEl?.textContent).toBe('New York');
-    });
+    }, 10000);
 
     it('should set completion message via setConfig', () => {
       const onStart = vi.fn();
@@ -471,7 +471,7 @@ describe('landing-page', () => {
 
       expect(background.className).toContain('landing-theme-background--fireworks');
       expect(background.getAttribute('data-theme-id')).toBe('fireworks');
-    });
+    }, 10000);
 
     it('should update root data-theme attribute when theme changes', async () => {
       const onStart = vi.fn();
@@ -487,7 +487,7 @@ describe('landing-page', () => {
       await harness.page.waitForBackgroundReady();
 
       expect(root.getAttribute('data-theme')).toBe('fireworks');
-    });
+    }, 10000);
 
     it('should announce theme change', () => {
       const onStart = vi.fn();

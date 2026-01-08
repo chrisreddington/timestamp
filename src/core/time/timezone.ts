@@ -59,9 +59,19 @@ export function getAllTimezones(): string[] {
 }
 /**
  * Get the UTC offset in minutes for a given timezone at a specific time.
- * @param timezone - IANA timezone identifier
- * @param date - Optional date to check (defaults to current time)
- * @returns Offset in minutes from UTC (positive = ahead of UTC)
+ *
+ * This uses a dual-format approach with `Intl.DateTimeFormat` to materialize
+ * the local clock time for both the target timezone and UTC at the same instant,
+ * then computes the difference in minutes. This method is resilient to DST
+ * transitions and historical timezone rules, since it relies on the platform's
+ * timezone database rather than hard-coded offsets.
+ *
+ * Example: If New York is UTC-5 at the provided instant and UTC is 12:00, the
+ * function will return `-300`.
+ *
+ * @param timezone - IANA timezone identifier (e.g., "America/New_York")
+ * @param date - Optional instant to evaluate (defaults to `new Date()`). The same instant is used for both formats.
+ * @returns Offset in minutes from UTC (positive means ahead of UTC)
  * @public
  */
 interface ZonedDateParts {

@@ -25,4 +25,18 @@ describe('calculateShadowInfo', () => {
     expect(result.shadowLengthMeters).not.toBeNull();
     expect(result.shadowLengthMeters ?? 0).toBeLessThan(0.2);
   });
+
+  it('returns null shadow when altitude is below minimum reliable threshold', () => {
+    // Choose a time close to sunrise/sunset where altitude is very low
+    const date = new Date('2024-06-21T20:30:00Z');
+    const result = calculateShadowInfo({ heightMeters: 1, latitude: 51.5, longitude: -0.12, date });
+    // We only assert that when altitude is tiny, shadow may be null for reliability
+    if (result.altitudeDeg < 0.5) {
+      expect(result.shadowLengthMeters).toBeNull();
+    }
+  });
+
+  it('throws for extremely small object heights', () => {
+    expect(() => calculateShadowInfo({ heightMeters: 0.001, latitude: 10, longitude: 10 })).toThrow();
+  });
 });

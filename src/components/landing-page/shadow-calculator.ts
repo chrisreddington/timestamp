@@ -1,3 +1,4 @@
+import { cancelAll, createResourceTracker, safeSetInterval } from '@core/resource-tracking';
 import { calculateShadowInfo } from '@core/solar/shadow';
 
 interface GeoCoordinates {
@@ -37,6 +38,7 @@ export function createShadowCalculator(): ShadowCalculatorController {
   let destroyed = false;
   let coords: GeoCoordinates | null = null;
   const listeners: Array<{ target: EventTarget; type: string; handler: EventListener }> = [];
+  const resources = createResourceTracker();
 
   const section = document.createElement('section');
   section.className = 'landing-form-section landing-shadow-section';
@@ -211,20 +213,16 @@ export function createShadowCalculator(): ShadowCalculatorController {
   // This provides better UX and respects user privacy by not requesting geolocation until asked
   setStatus('Click "Use my location" to calculate sun angle and shadow length');
 
-  // Refresh calculations periodically (every 30 seconds) to keep solar data current
-  // as time passes. This ensures users see accurate sun position and shadow length.
-  let refreshIntervalId: number | null = window.setInterval(() => {
+  // Refresh calculations periodically (every 30 seconds) using tracked interval
+  safeSetInterval(() => {
     if (destroyed) return;
     if (!coords) return;
     updateResults();
-  }, 30_000);
+  }, 30_000, resources);
 
   function destroy(): void {
     destroyed = true;
-    if (refreshIntervalId !== null) {
-      window.clearInterval(refreshIntervalId);
-      refreshIntervalId = null;
-    }
+    cancelAll(resources);
     for (const { target, type, handler } of listeners) {
       target.removeEventListener(type, handler);
     }

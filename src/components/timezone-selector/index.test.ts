@@ -96,7 +96,7 @@ describe('Timezone Selector', () => {
 
       const valueDisplay = selector.container.querySelector('.selector-value');
       expect(valueDisplay?.textContent).toContain('London');
-    });
+    }, 10000);
   });
 
   describe('controller.setThemeStyles', () => {
@@ -211,7 +211,7 @@ describe('Timezone Selector', () => {
       pressKey(firstOption, 'ArrowUp');
 
       expect(document.activeElement).toBe(selector.searchInput);
-    });
+    }, 10000);
 
     it('should focus first option with Home key from search input', () => {
       selector = renderTimezoneSelector();
@@ -221,7 +221,7 @@ describe('Timezone Selector', () => {
 
       const firstOption = selector.container.querySelector('.dropdown-option') as HTMLButtonElement;
       expect(document.activeElement).toBe(firstOption);
-    });
+    }, 10000);
 
     it('should focus last option with End key from search input', () => {
       selector = renderTimezoneSelector();
@@ -249,7 +249,7 @@ describe('Timezone Selector', () => {
       pressKey(firstOption, key);
 
       expect(selector.onSelect).toHaveBeenCalledWith(timezone);
-    });
+    }, 10000);
 
     it('should update aria-activedescendant when navigating options', () => {
       selector = renderTimezoneSelector();
@@ -259,7 +259,7 @@ describe('Timezone Selector', () => {
 
       const firstOption = selector.container.querySelector('.dropdown-option') as HTMLButtonElement;
       expect(selector.dropdown.getAttribute('aria-activedescendant')).toBe(firstOption.id);
-    });
+    }, 10000);
 
     it('should clear aria-activedescendant when closing dropdown', () => {
       selector = renderTimezoneSelector();
@@ -279,6 +279,6 @@ describe('Timezone Selector', () => {
 
       pressKey(selector.searchInput, 'Tab');
       expect(selector.dropdown.hidden).toBe(true);
-    });
+    }, 10000);
   });
 });

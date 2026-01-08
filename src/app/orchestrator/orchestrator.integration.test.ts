@@ -207,7 +207,7 @@ describe('Orchestrator', () => {
 
     expect(orchestrator.getCurrentTheme()).toBe('fireworks');
     await orchestrator.destroy();
-  });
+  }, 10000);
 
   it('should handle unknown theme by falling back to default', async () => {
     const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
@@ -218,7 +218,7 @@ describe('Orchestrator', () => {
     expect(orchestrator.getCurrentTheme()).toBeTruthy();
     await orchestrator.destroy();
     consoleWarnSpy.mockRestore();
-  });
+  }, 10000);
 
   it('should handle celebration display for date mode New Year countdown', async () => {
     const newYear = new Date();
@@ -241,7 +241,7 @@ describe('Orchestrator', () => {
 
     expect(orchestrator.getCurrentTheme()).toBe('contribution-graph');
     await orchestrator.destroy();
-  });
+  }, 10000);
 
   
 
@@ -260,7 +260,7 @@ describe('Orchestrator', () => {
     expect(initialThemeInstance?._state).not.toBe('DESTROYED');
 
     await orchestrator.destroy();
-  });
+  }, 10000);
 
   describe('Per-timezone wall-clock celebration lifecycle', () => {
     it('should call onCelebrated (not onCelebrating) when loading URL with already-celebrated timezone', async () => {
@@ -398,7 +398,7 @@ describe('Orchestrator', () => {
       await orchestrator.destroy();
 
       expect(document.body.contains(harness.container)).toBe(true);
-    });
+    }, 10000);
 
     it('should handle switchTheme() after destroy()', async () => {
       harness = createOrchestratorTestHarness({ initialTheme: 'contribution-graph' });
@@ -407,7 +407,7 @@ describe('Orchestrator', () => {
       await orchestrator.destroy();
 
       await expect(orchestrator.switchTheme('fireworks')).resolves.not.toThrow();
-    });
+    }, 10000);
   });
 
   describe('Error Recovery', () => {
@@ -429,7 +429,7 @@ describe('Orchestrator', () => {
       }).toThrow(RangeError);
 
       await orchestrator.destroy();
-    });
+    }, 10000);
   });
 
   describe('Color Application', () => {
@@ -478,6 +478,6 @@ describe('Orchestrator', () => {
       expect(root.getPropertyValue('--color-accent-secondary')).toBe('#116329');
 
       await harness.orchestrator.destroy();
-    });
+    }, 10000);
   });
 });

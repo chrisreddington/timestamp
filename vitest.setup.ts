@@ -10,11 +10,8 @@ import { injectTemplates } from '@/test-utils/templates';
 
 (globalThis as unknown as { __PROFILING__: boolean }).__PROFILING__ = true;
 
-// Inject HTML templates for JSDOM environment (once, in head to survive cleanupDOM)
-// Templates must be available for cloneTemplate() utility to work in tests
-// NOTE: Templates remain in document.head but cleanup DOM to prevent accumulation
+// Inject HTML templates once into head; keep across tests
 let templateContainerCreated = false;
-
 beforeEach(() => {
   if (!templateContainerCreated) {
     injectTemplates();
@@ -22,15 +19,21 @@ beforeEach(() => {
   }
 });
 
-// Clean up document body and timers between tests but preserve templates in head
+// Clean up body and timers after each test (preserve head templates)
 afterEach(() => {
-  // Clear body but keep head templates
   document.body.innerHTML = '';
-  
-  // Clear any pending timers if fake timers are active
+  // Ensure timer mode is reset for following tests
+  vi.useRealTimers();
   if (vi.isFakeTimers()) {
     vi.clearAllTimers();
   }
+  // Reset storage between tests
+  try {
+    localStorage.clear();
+    sessionStorage.clear();
+  } catch {}
+  // Reset mocks/spies between tests
+  vi.clearAllMocks();
 });
 
 // Suppress jsdom 'Not implemented: navigation' warnings that leak to stderr
