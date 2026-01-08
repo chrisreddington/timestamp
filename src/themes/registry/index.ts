@@ -4,7 +4,7 @@
  * Canonical entry point for all theme registry functionality.
  * Import from `@themes/registry` for all theme-related utilities.
  *
- * To create a new theme, run: `npm run create-theme my-theme`
+ * To create a new theme, run: `npm run theme create my-theme`
  */
 
 // Core: Registry data, types, and constants
@@ -13,7 +13,7 @@ export {
   THEME_REGISTRY,
   type ThemeId,
   type ThemeMetadata,
-  type ThemeRegistryEntry,
+  type ThemeRegistryEntry
 } from './registry-core';
 
 // Metadata: Synchronous, lightweight accessors
@@ -25,7 +25,7 @@ export {
   getThemeMetadata,
   getThemePublishedDate,
   getThemeTags,
-  isNewTheme,
+  isNewTheme
 } from './registry-metadata';
 
 // Validation: Type guards and validation utilities
@@ -33,8 +33,9 @@ export {
   getThemeIds,
   getValidThemes,
   isValidThemeId,
-  validateThemeId,
+  validateThemeId
 } from './registry-validation';
 
 // Loaders: Async theme loading utilities
-export { getLandingPageRendererFactory,loadThemeSafe } from './registry-loaders';
+export { getLandingPageRendererFactory, loadThemeSafe } from './registry-loaders';
+

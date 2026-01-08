@@ -112,7 +112,7 @@ src/
 ### Build a Theme in 5 Minutes
 
 ```bash
-npm run create-theme my-theme
+npm run theme create my-theme
 npm run generate:previews -- --theme=my-theme
 npm run dev
 ```

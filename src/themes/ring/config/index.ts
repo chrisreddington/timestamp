@@ -1,26 +1,5 @@
 /**
- * Generate the theme configuration file (config/index.ts).
- *
- * Contains theme-specific constants, colors, animation timings, and ThemeConfig.
- * The ThemeConfig is the source of truth for theme metadata - the registry
- * imports from here to avoid duplication.
- *
- * Imports ThemeConfig from \@themes/shared/types for consistency.
- *
- * @param themeName - Kebab-case theme name
- * @param author - GitHub username of author (normalized, without \@) or null
- * @returns Generated TypeScript source code
- */
-import { toPascalCase, toSnakeCase } from '../utils/string-utils';
-
-export function generateConfigTs(themeName: string, author: string | null): string {
-  const pascal = toPascalCase(themeName);
-  const snakeUpper = toSnakeCase(themeName).toUpperCase();
-  const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-  const authorValue = author ? `'${author}'` : 'null';
-
-  return `/**
- * ${pascal} Theme Configuration
+ * Ring Theme Configuration
  *
  * Centralized settings for visuals, animations, and ThemeConfig.
  *
@@ -35,18 +14,18 @@ import type { ThemeConfig } from '@themes/shared/types';
 // =============================================================================
 
 /**
- * Theme configuration for ${pascal}.
+ * Theme configuration for Ring.
  *
  * @remarks
  * This is the source of truth for theme metadata. The registry imports
  * from this file to avoid duplication of id, name, description, etc.
  */
-export const ${snakeUpper}_CONFIG: ThemeConfig = {
-  id: '${themeName}',
-  name: '${pascal}',
+export const RING_CONFIG: ThemeConfig = {
+  id: 'ring',
+  name: 'Ring',
   description: 'A countdown theme with a pulsing ring animation',
-  publishedDate: '${today}',
-  author: ${authorValue},
+  publishedDate: '2026-01-08',
+  author: 'chrisreddington',
   tags: ['countdown', 'animation', 'pulsing'],
   /**
    * External npm packages used by this theme. Generates README Dependencies section.
@@ -56,7 +35,7 @@ export const ${snakeUpper}_CONFIG: ThemeConfig = {
    *
    * @example
    * dependencies: [
-   *   \\{ name: 'package-name', url: 'https://github.com/owner/package' \\}
+   *   \{ name: 'package-name', url: 'https://github.com/owner/package' \}
    * ]
    */
   dependencies: [],
@@ -89,5 +68,3 @@ export const ${snakeUpper}_CONFIG: ThemeConfig = {
     },
   },
 };
-`;
-}

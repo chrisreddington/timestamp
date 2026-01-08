@@ -321,7 +321,7 @@ The app uses a **modular, pluggable architecture** with clear separation of conc
 
 **Theme Architecture**:
 - Core app and themes have clear separation of concerns
-- New themes are created via `npm run create-theme <name>` (auto-registers)
+- New themes are created via `npm run theme create <name>` (auto-registers)
 - Each theme is self-contained in its own folder
 - Tests are co-located with theme code
 

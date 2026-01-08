@@ -6,11 +6,11 @@
  * - src/themes/<theme>/README.md: Per-theme documentation
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join, dirname } from 'path';
-import { THEME_REGISTRY } from '../../src/themes/registry/registry-core.js';
-import type { ThemeId } from '../../src/themes/registry/registry-core.js';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
+import { dirname, join } from 'path';
 import type { ThemeDependency } from '../../src/core/types/index.js';
+import type { ThemeId } from '../../src/themes/registry/registry-core.js';
+import { THEME_REGISTRY } from '../../src/themes/registry/registry-core.js';
 
 const SITE_URL = 'https://chrisreddington.com/timestamp';
 
@@ -139,7 +139,7 @@ Visual themes for the countdown timer. Each theme provides unique visual aesthet
 ## Creating New Themes
 
 \`\`\`bash
-npm run create-theme <theme-name>
+npm run theme create <theme-name>
 \`\`\`
 
 This automatically:

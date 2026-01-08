@@ -458,7 +458,7 @@ See [complex-theme-patterns.instructions.md](.github/instructions/complex-theme-
 ## Creating a New Theme
 
 ```bash
-npm run create-theme my-theme yourgithubusername
+npm run theme create my-theme yourgithubusername
 ```
 
 Creates all files AND auto-registers. Only manual step: create `preview.webp`.

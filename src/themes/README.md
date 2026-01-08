@@ -7,7 +7,7 @@ Visual themes for the countdown timer. Each theme provides unique visual aesthet
 ## Creating New Themes
 
 ```bash
-npm run create-theme <theme-name>
+npm run theme create <theme-name>
 ```
 
 This automatically:
@@ -24,8 +24,9 @@ See [THEME_DEVELOPMENT.md](../../docs/THEME_DEVELOPMENT.md) for complete guideli
 |---------|------|-------------|-----------|--------|--------|
 | <img src="contribution-graph/images/preview-dark-card-1x.webp#gh-dark-mode-only" alt="Contribution Graph preview" width="160"><img src="contribution-graph/images/preview-light-card-1x.webp#gh-light-mode-only" alt="Contribution Graph preview" width="160"> | **Contribution Graph** | GitHub contribution graph aesthetic with pixel-art digits | ✅ | [@chrisreddington](https://github.com/chrisreddington) | [🏠](https://chrisreddington.com/timestamp?mode=wall-clock&target=2027-01-01T00:00:00&theme=contribution-graph) [🌐](https://chrisreddington.com/timestamp?mode=absolute&target=2026-07-16T00:00:00Z&theme=contribution-graph&message=Launch%20Day!) [⏱️](https://chrisreddington.com/timestamp?mode=timer&duration=300&theme=contribution-graph) |
 | <img src="fireworks/images/preview-dark-card-1x.webp#gh-dark-mode-only" alt="Fireworks Celebration preview" width="160"><img src="fireworks/images/preview-light-card-1x.webp#gh-light-mode-only" alt="Fireworks Celebration preview" width="160"> | **Fireworks Celebration** | Countdown with fireworks that intensify as midnight approaches | ✅ | [@chrisreddington](https://github.com/chrisreddington) | [🏠](https://chrisreddington.com/timestamp?mode=wall-clock&target=2027-01-01T00:00:00&theme=fireworks) [🌐](https://chrisreddington.com/timestamp?mode=absolute&target=2026-07-16T00:00:00Z&theme=fireworks&message=Launch%20Day!) [⏱️](https://chrisreddington.com/timestamp?mode=timer&duration=300&theme=fireworks) |
+| <img src="ring/images/preview-dark-card-1x.webp#gh-dark-mode-only" alt="Ring preview" width="160"><img src="ring/images/preview-light-card-1x.webp#gh-light-mode-only" alt="Ring preview" width="160"> | **Ring** | A countdown theme with a pulsing ring animation | ✅ | [@chrisreddington](https://github.com/chrisreddington) | [🏠](https://chrisreddington.com/timestamp?mode=wall-clock&target=2027-01-01T00:00:00&theme=ring) [🌐](https://chrisreddington.com/timestamp?mode=absolute&target=2026-07-16T00:00:00Z&theme=ring&message=Launch%20Day!) [⏱️](https://chrisreddington.com/timestamp?mode=timer&duration=300&theme=ring) |
 
-_Total: 2 themes_ · Demo links: 🏠 Local Time · 🌐 Same Moment · ⏱️ Timer
+_Total: 3 themes_ · Demo links: 🏠 Local Time · 🌐 Same Moment · ⏱️ Timer
 
 ## Theme Requirements
 
