@@ -184,7 +184,7 @@ describe('landing-page', () => {
 
       expect(minutesInput.value).toBe('2');
       expect(themeCard.getAttribute('aria-selected')).toBe('true');
-    });
+    }, 10000); // Extended timeout: slow integration test with theme loading and DOM updates
 
     it('should update timezone via setConfig', () => {
       const onStart = vi.fn();

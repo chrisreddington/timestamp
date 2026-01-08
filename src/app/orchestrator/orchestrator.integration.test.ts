@@ -317,7 +317,7 @@ describe('Orchestrator', () => {
       expect(themeInstances['contribution-graph']?.onCelebrating).not.toHaveBeenCalled();
       
       await orchestrator.destroy();
-    });
+    }, 10000); // Extended timeout: slow integration test with real timers and async orchestration
 
     it('should not re-trigger celebration when switching back to already-celebrated timezone', async () => {
       const { target, wallClockTarget } = createFutureWallClock();

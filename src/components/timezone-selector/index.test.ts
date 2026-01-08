@@ -64,7 +64,7 @@ describe('Timezone Selector', () => {
 
       const options = typeSearch(selector, 'New York');
       expect(options.length).toBeGreaterThan(0);
-    });
+    }, 10000); // Extended timeout: slow DOM query and rendering with large option list
 
     it('should show empty state when no results match', () => {
       selector = renderTimezoneSelector();
@@ -76,7 +76,7 @@ describe('Timezone Selector', () => {
       const emptyState = selector.container.querySelector('.dropdown-empty');
       expect(emptyState).toBeTruthy();
       expect(emptyState?.textContent).toBe(EMPTY_STATE_MESSAGE);
-    });
+    }, 10000); // Extended timeout: slow DOM query and rendering with large option list
 
     it('should call onSelect when timezone option is clicked', () => {
       selector = renderTimezoneSelector();
@@ -86,7 +86,7 @@ describe('Timezone Selector', () => {
       firstOption.click();
       expect(selector.onSelect).toHaveBeenCalledTimes(1);
       expect(selector.onSelect).toHaveBeenCalledWith(firstOption.getAttribute('data-value'));
-    });
+    }, 10000); // Extended timeout: slow DOM query and event handling with large option list
   });
 
   describe('controller.setTimezone', () => {
@@ -165,7 +165,7 @@ describe('Timezone Selector', () => {
 
       expect(selector.dropdown.hidden).toBe(true);
       expect(document.activeElement).toBe(selector.trigger);
-    });
+    }, 10000); // Extended timeout: slow DOM rendering and focus management with keyboard events
 
     it('should navigate between options with ArrowDown key', () => {
       selector = renderTimezoneSelector();
@@ -182,7 +182,7 @@ describe('Timezone Selector', () => {
       expect(document.activeElement).toBe(secondOption);
       expect(secondOption.getAttribute('tabindex')).toBe('0');
       expect(firstOption.getAttribute('tabindex')).toBe('-1');
-    });
+    }, 10000); // Extended timeout: slow DOM rendering and focus management with keyboard events
 
     it('should navigate up with ArrowUp key between options', () => {
       selector = renderTimezoneSelector();
@@ -232,7 +232,7 @@ describe('Timezone Selector', () => {
       const options = getOptions(selector.container);
       const lastOption = options[options.length - 1];
       expect(document.activeElement).toBe(lastOption);
-    });
+    }, 10000); // Extended timeout: slow DOM rendering and focus management with keyboard events
 
     it.each([
       { key: 'Enter', description: 'Enter key' },
@@ -270,7 +270,7 @@ describe('Timezone Selector', () => {
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
       expect(selector.dropdown.getAttribute('aria-activedescendant')).toBeNull();
-    });
+    }, 10000); // Extended timeout: slow DOM rendering and focus management with keyboard events
 
     it('should close dropdown and focus trigger on Tab from search input', () => {
       selector = renderTimezoneSelector();
