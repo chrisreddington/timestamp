@@ -65,34 +65,62 @@ export function getAllTimezones(): string[] {
  * @returns Offset in minutes from UTC (positive = ahead of UTC)
  * @public
  */
-export function getTimezoneOffsetMinutes(timezone: string, date?: Date): number {
-  const now = date ?? new Date();
+interface ZonedDateParts {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+}
 
+function getZonedDateParts(date: Date, timeZone: string): ZonedDateParts {
   const formatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: timezone,
+    timeZone,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
-    hour12: false,
+    hourCycle: 'h23',
   });
 
-  const parts = formatter.formatToParts(now);
-  const getPart = (type: string) =>
-    parts.find((p) => p.type === type)?.value ?? '0';
+  const parts = formatter.formatToParts(date);
+  const numberPart = (type: string): number => parseInt(parts.find((p) => p.type === type)?.value ?? '0', 10);
 
-  const year = parseInt(getPart('year'), 10);
-  const month = parseInt(getPart('month'), 10) - 1;
-  const day = parseInt(getPart('day'), 10);
-  const hour = parseInt(getPart('hour'), 10);
-  const minute = parseInt(getPart('minute'), 10);
-  const second = parseInt(getPart('second'), 10);
+  return {
+    year: numberPart('year'),
+    month: numberPart('month'),
+    day: numberPart('day'),
+    hour: numberPart('hour'),
+    minute: numberPart('minute'),
+    second: numberPart('second'),
+  };
+}
 
-  const utcTime = Date.UTC(year, month, day, hour, minute, second);
-  const diffMs = utcTime - now.getTime();
-  return Math.round(diffMs / 60000);
+export function getTimezoneOffsetMinutes(timezone: string, date: Date = new Date()): number {
+  const zoned = getZonedDateParts(date, timezone);
+  const utc = getZonedDateParts(date, 'UTC');
+
+  const zonedUtcTime = Date.UTC(
+    zoned.year,
+    zoned.month - 1,
+    zoned.day,
+    zoned.hour,
+    zoned.minute,
+    zoned.second
+  );
+  const utcTime = Date.UTC(
+    utc.year,
+    utc.month - 1,
+    utc.day,
+    utc.hour,
+    utc.minute,
+    utc.second
+  );
+
+  return Math.round((zonedUtcTime - utcTime) / 60000);
 }
 
 /**

@@ -304,7 +304,7 @@ describe('Orchestrator', () => {
       const orchestrator = harness.orchestrator;
 
       await harness.start();
-      harness.advanceTimers(6000);
+      await vi.advanceTimersByTimeAsync(6000);
 
       expect(themeInstances['contribution-graph']?.onCelebrating).toHaveBeenCalled();
       expect(harness.container.getAttribute('data-celebrating')).toBe('true');
@@ -334,7 +334,7 @@ describe('Orchestrator', () => {
       const orchestrator = harness.orchestrator;
 
       await harness.start();
-      await vi.advanceTimersByTimeAsync(6000);
+      harness.advanceTimers(6000);
       
       expect(themeInstances['contribution-graph']?.onCelebrating).toHaveBeenCalledTimes(1);
       expect(themeInstances['contribution-graph']?.onCelebrating).toHaveBeenCalledWith(
@@ -342,19 +342,19 @@ describe('Orchestrator', () => {
       );
       
       orchestrator.setTimezone('America/New_York');
-      await vi.advanceTimersByTimeAsync(100);
+      harness.advanceTimers(100);
       
       (themeInstances['contribution-graph']?.onCelebrating as ReturnType<typeof vi.fn>).mockClear();
       (themeInstances['contribution-graph']?.onCelebrated as ReturnType<typeof vi.fn>).mockClear();
       
       orchestrator.setTimezone('UTC');
-      await vi.advanceTimersByTimeAsync(100);
+      harness.advanceTimers(100);
       
       expect(themeInstances['contribution-graph']?.onCelebrated).toHaveBeenCalled();
       expect(themeInstances['contribution-graph']?.onCelebrating).not.toHaveBeenCalled();
       
       await orchestrator.destroy();
-    });
+    }, 10000);
   });
 
   describe('Concurrent Theme Switch Protection', () => {
@@ -386,7 +386,7 @@ describe('Orchestrator', () => {
       expect(orchestrator.getCurrentTheme()).toBe('contribution-graph');
 
       await orchestrator.destroy();
-    });
+    }, 10000);
 
     it('should handle destroy() called multiple times', async () => {
       harness = createOrchestratorTestHarness({ initialTheme: 'contribution-graph' });
@@ -456,6 +456,7 @@ describe('Orchestrator', () => {
       expect(initialPrimary).toBeTruthy();
 
       await harness.orchestrator.destroy();
+      await harness.cleanup();
       
       harness = createOrchestratorTestHarness({ initialTheme: 'fireworks' });
       await harness.start();

@@ -14,6 +14,8 @@ const MAX_HEIGHT = 5;
 const REFERENCE_HEIGHT_METERS = 1;
 const MIN_SCALE = 0.25; // 0.25x of reference visually
 const MAX_SCALE = 3;    // 3x of reference visually
+const SHADOW_LENGTH_SCALE_FACTOR = 40; // pixels per meter
+const MAX_SHADOW_PX = 220; // max shadow bar width in pixels
 
 export function createShadowOverlay(parent: HTMLElement): ShadowOverlayController {
   const overlay = document.createElement('div');
@@ -112,7 +114,7 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
     }
 
     shadowEl.classList.remove('is-hidden');
-    const shadowPx = Math.min(shadowLength * 40, 220);
+    const shadowPx = Math.min(shadowLength * SHADOW_LENGTH_SCALE_FACTOR, MAX_SHADOW_PX);
     shadowEl.style.setProperty('--cg-shadow-length', `${shadowPx}px`);
 
     // Update size meter as a proportion of MAX_SCALE
@@ -147,12 +149,23 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
     }
 
     const now = new Date();
-    const result = calculateShadowInfo({
-      heightMeters,
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-      date: now,
-    });
+    let result;
+    try {
+      result = calculateShadowInfo({
+        heightMeters,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        date: now,
+      });
+    } catch (error) {
+      setField('shadow', 'Calculation error');
+      setField('altitude', '–');
+      setField('azimuth', '–');
+      setField('time', '–');
+      setStatus('Shadow calculation failed');
+      updateVisual(heightMeters, null);
+      return;
+    }
 
     const shadowText = result.shadowLengthMeters === null
       ? 'Sun below horizon'

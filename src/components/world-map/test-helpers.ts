@@ -57,6 +57,12 @@ export function renderWorldMap(options: RenderWorldMapOptions = {}): WorldMapHar
   const getNightOverlay = (): SVGPathElement | null => container.querySelector('[data-testid="night-overlay"]');
 
   const cleanup = (): void => {
+    // Clear celebration state before destroying to prevent state leakage
+    const markers = container.querySelectorAll('.city-marker');
+    markers.forEach((marker) => {
+      marker.classList.remove('city-celebrated');
+      marker.setAttribute('data-celebrating', 'false');
+    });
     controller.destroy();
     container.remove();
     vi.clearAllMocks();

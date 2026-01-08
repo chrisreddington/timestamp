@@ -121,12 +121,23 @@ export function createShadowCalculator(): ShadowCalculatorController {
     }
 
     const now = new Date();
-    const result = calculateShadowInfo({
-      heightMeters,
-      latitude: coords.latitude,
-      longitude: coords.longitude,
-      date: now,
-    });
+    let result;
+    try {
+      result = calculateShadowInfo({
+        heightMeters,
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        date: now,
+      });
+    } catch (error) {
+      setResults([
+        ['Shadow length', 'Calculation error'],
+        ['Sun altitude', '–'],
+        ['Sun azimuth', '–'],
+        ['Time', '–'],
+      ]);
+      return;
+    }
 
     const shadow = result.shadowLengthMeters;
     const shadowText = shadow === null ? 'Sun below horizon' : `${shadow.toFixed(2)} m`;
@@ -181,8 +192,9 @@ export function createShadowCalculator(): ShadowCalculatorController {
   addListener(locationButton, 'click', requestLocation as EventListener);
   addListener(heightInput, 'input', updateResults as EventListener);
 
-  // Kick off initial request
-  requestLocation();
+  // Do NOT auto-request location on mount; let user explicitly click "Use my location"
+  // This provides better UX and respects user privacy by not requesting geolocation until asked
+  setStatus('Click "Use my location" to calculate sun angle and shadow length');
 
   function destroy(): void {
     destroyed = true;

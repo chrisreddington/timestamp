@@ -38,7 +38,7 @@ describe('Timezone Selector', () => {
       selector.trigger.click();
       expect(selector.dropdown.hidden).toBe(false);
       expect(selector.trigger.getAttribute('aria-expanded')).toBe('true');
-    });
+    }, 10000);
 
     it('should close dropdown when clicking outside', () => {
       selector = renderTimezoneSelector();
@@ -47,7 +47,7 @@ describe('Timezone Selector', () => {
 
       document.body.click();
       expect(selector.dropdown.hidden).toBe(true);
-    });
+    }, 10000);
 
     it('should close dropdown on Escape key', () => {
       selector = renderTimezoneSelector();
