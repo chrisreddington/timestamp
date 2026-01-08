@@ -45,6 +45,7 @@ import {
     type LandingPageFormState,
     toLocalInputValue,
 } from './form-controller';
+import { createShadowCalculator, type ShadowCalculatorController } from './shadow-calculator';
 
 /**
  * Options for creating a landing page instance.
@@ -109,6 +110,7 @@ export function createLandingPage(options: LandingPageOptions): LandingPageContr
   let timezoneSelectorController: TimezoneSelectorController | null = null;
   let themeSelectorController: ThemeSelectorController | null = null;
   let colorModeToggleEl: HTMLElement | null = null;
+  let shadowCalculatorController: ShadowCalculatorController | null = null;
 
   // Extracted module controllers
   let backgroundManager: BackgroundManagerController | null = null;
@@ -311,6 +313,8 @@ export function createLandingPage(options: LandingPageOptions): LandingPageContr
     const themeSelector = buildThemeSelector();
     buildTimezoneSelector();
     worldMapToggle = buildWorldMapToggle();
+    shadowCalculatorController = createShadowCalculator();
+    const shadowCalculatorSection = shadowCalculatorController.getElement();
     const completionMessage = buildAndSetupCompletionMessage();
     
     // Reuse global accessibility status region
@@ -339,6 +343,7 @@ export function createLandingPage(options: LandingPageOptions): LandingPageContr
       timerSection,
       timezoneSection,
       worldMapToggle,
+      shadowCalculatorSection,
       completionMessage,
       startButton
     );
@@ -558,6 +563,11 @@ export function createLandingPage(options: LandingPageOptions): LandingPageContr
     if (formController) {
       formController.destroy();
       formController = null;
+    }
+
+    if (shadowCalculatorController) {
+      shadowCalculatorController.destroy();
+      shadowCalculatorController = null;
     }
 
     // Clear controller references (already destroyed by form controller)

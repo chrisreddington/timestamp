@@ -36,15 +36,18 @@ import {
   updateTimeRendererContainer,
 } from '../utils/ui/state';
 import { renderDigits } from '../utils/ui/text-rendering';
+import { createShadowOverlay, type ShadowOverlayController } from './shadow-overlay';
 
 /** Create a Contribution Graph time page renderer. */
 export function contributionGraphTimePageRenderer(_targetDate: Date): TimePageRenderer {
   const state: TimePageRendererState = createTimePageRendererState();
+  let shadowOverlay: ShadowOverlayController | null = null;
 
   return {
     mount(targetContainer: HTMLElement, context?: MountContext): void {
       setupRendererMount(state, targetContainer, context);
       startCountdownAmbient(state);
+      shadowOverlay = createShadowOverlay(targetContainer);
     },
 
     updateTime(time: TimeRemaining): void {
@@ -99,6 +102,8 @@ export function contributionGraphTimePageRenderer(_targetDate: Date): TimePageRe
     },
 
     async destroy(): Promise<void> {
+      shadowOverlay?.destroy();
+      shadowOverlay = null;
       await destroyRendererState(state);
     },
 

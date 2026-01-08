@@ -351,6 +351,122 @@
   display: none;
 }
 
+/* =============================================================
+   Shadow & Sun Angle (Material-inspired card section)
+   ============================================================= */
+.landing-shadow-section {
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 24px -12px rgb(0 0 0 / 40%);
+  transition: box-shadow 180ms ease, transform 180ms ease;
+}
+
+.landing-shadow-section:focus-within,
+.landing-shadow-section:hover {
+  box-shadow: 0 12px 32px -10px rgb(0 0 0 / 50%);
+  transform: translateY(-1px);
+}
+
+.landing-shadow-description {
+  margin: 4px 0 12px;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.landing-shadow-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 12px;
+  align-items: end;
+}
+
+.landing-shadow-label {
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+#shadow-height-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-input);
+  color: var(--color-text);
+  height: var(--control-height);
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+#shadow-height-input:hover {
+  border-color: var(--color-text-muted);
+}
+
+#shadow-height-input:focus {
+  outline: none;
+  border-color: var(--color-focus-ring);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-focus-ring) 22%, transparent);
+}
+
+.landing-shadow-location-button {
+  height: var(--control-height);
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--color-accent-primary, #39d353) 55%, transparent);
+  background: color-mix(in srgb, var(--color-accent-primary, #39d353) 18%, var(--color-surface) 82%);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: transform 120ms ease, box-shadow 180ms ease, background 160ms ease, border-color 160ms ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.landing-shadow-location-button:hover {
+  box-shadow: 0 6px 16px -8px rgb(0 0 0 / 45%);
+}
+
+.landing-shadow-location-button:active {
+  transform: translateY(1px);
+}
+
+.landing-shadow-status {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.landing-shadow-results {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 6px 12px;
+  padding-top: 6px;
+  border-top: 1px dashed var(--color-border-muted);
+}
+
+.landing-shadow-results dt {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.landing-shadow-results dd {
+  margin: 0;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+@media (max-width: 520px) {
+  .landing-shadow-row {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  .landing-shadow-location-button {
+    width: 100%;
+  }
+}
+
 /* Input label */
 .landing-label {
   display: block;

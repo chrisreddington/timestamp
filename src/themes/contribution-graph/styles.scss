@@ -323,4 +323,177 @@
   animation: var(--contribution-graph-pulse-animation, contribution-graph-pulse-dark) 1.2s ease-in-out infinite;
 }
 
+// =============================================================================
+// SHADOW OVERLAY (solar helper)
+// =============================================================================
+
+.cg-shadow-overlay {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  padding: 12px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--contribution-graph-background) 92%, #000 8%);
+  color: var(--contribution-graph-square-4);
+  box-shadow: 0 10px 30px rgb(0 0 0 / 25%);
+  width: clamp(240px, 24vw, 320px);
+  border: 1px solid color-mix(in srgb, var(--contribution-graph-digit) 30%, transparent);
+  display: grid;
+  gap: 8px;
+  z-index: 5;
+}
+
+.cg-shadow-title {
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.cg-shadow-form {
+  display: grid;
+  gap: 4px;
+}
+
+.cg-shadow-label {
+  font-size: 12px;
+  color: var(--contribution-graph-square-3);
+}
+
+.cg-shadow-input {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid color-mix(in srgb, var(--contribution-graph-digit) 40%, transparent);
+  background: color-mix(in srgb, var(--contribution-graph-background) 90%, #000 10%);
+  color: inherit;
+}
+
+.cg-shadow-input:focus {
+  outline: 2px solid var(--contribution-graph-digit);
+  outline-offset: 1px;
+}
+
+.cg-shadow-status {
+  font-size: 12px;
+  color: var(--contribution-graph-square-3);
+}
+
+.cg-shadow-results {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.cg-shadow-metric {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cg-shadow-visual {
+  position: relative;
+  height: 120px;
+  background: color-mix(in srgb, var(--contribution-graph-background) 80%, #000 20%);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.cg-shadow-ground {
+  position: absolute;
+  bottom: 18px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: color-mix(in srgb, var(--contribution-graph-digit) 50%, transparent);
+}
+
+.cg-shadow-object {
+  position: absolute;
+  bottom: 20px;
+  left: 30px;
+  width: 14px;
+  height: 60px; /* constant base; scaled via transform to show ratio only */
+  background: var(--contribution-graph-digit);
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 25%);
+  transform-origin: bottom center;
+  transform: scaleY(var(--cg-object-scale, 1));
+}
+
+.cg-shadow-shadow {
+  position: absolute;
+  bottom: 18px;
+  left: 44px;
+  height: 6px;
+  width: var(--cg-shadow-length, 100px);
+  background: color-mix(in srgb, var(--contribution-graph-square-4) 55%, transparent);
+  border-radius: 4px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 18%);
+}
+
+.cg-shadow-shadow.is-hidden {
+  opacity: 0.35;
+  width: 30px;
+}
+
+@media (max-width: 640px) {
+  .cg-shadow-overlay {
+    width: calc(100% - 24px);
+    left: 12px;
+    right: 12px;
+    top: 12px;
+  }
+}
+
+/* Size meter and scale (reference-based) */
+.cg-size-meter {
+  margin-top: 8px;
+  display: grid;
+  gap: 6px;
+}
+
+.cg-size-meter-bar {
+  height: 8px;
+  width: 0%;
+  border-radius: 999px;
+  background: linear-gradient(90deg,
+    color-mix(in srgb, var(--contribution-graph-square-3) 70%, transparent) 0%,
+    var(--contribution-graph-digit) 100%);
+  box-shadow: 0 1px 3px rgb(0 0 0 / 20%);
+  transition: width 200ms ease;
+}
+
+.cg-size-meter-label {
+  font-size: 12px;
+  color: var(--contribution-graph-square-3);
+}
+
+.cg-shadow-scale {
+  position: absolute;
+  left: 16px;
+  bottom: 18px;
+  height: 80px;
+  width: 30px;
+}
+
+.cg-scale-track {
+  position: absolute;
+  left: 14px;
+  bottom: 0;
+  top: 0;
+  width: 2px;
+  background: color-mix(in srgb, var(--contribution-graph-square-4) 35%, transparent);
+}
+
+.cg-scale-tick {
+  position: absolute;
+  left: 0;
+  transform: translateY(50%);
+  font-size: 10px;
+  color: var(--contribution-graph-square-3);
+}
+
+.cg-scale-tick[data-tick="0.5"] { bottom: calc(60px * 0.5); }
+.cg-scale-tick[data-tick="1"]   { bottom: 60px; }
+.cg-scale-tick[data-tick="2"]   { bottom: calc(60px * 2); }
+
 
