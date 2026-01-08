@@ -10,7 +10,7 @@ export interface ShadowOverlayController {
   destroy(): void;
 }
 
-const MIN_HEIGHT = 0.05;
+const MIN_HEIGHT = 0.01
 const MAX_HEIGHT = 5;
 const REFERENCE_HEIGHT_METERS = 1;
 const MIN_SCALE = 0.25; // 0.25x of reference visually
