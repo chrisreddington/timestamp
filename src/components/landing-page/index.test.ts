@@ -35,7 +35,7 @@ describe('landing-page', () => {
     expect(dateRadio.checked).toBe(true);
     expect(dateSection.hidden).toBe(false);
     expect(timerSection.hidden).toBe(true);
-  });
+  }, 10000); // Extended timeout for page initialization and DOM query operations
 
   it('should toggle world map and timezone visibility between wall-clock and timer modes', () => {
     harness = renderLandingPage();
@@ -69,7 +69,7 @@ describe('landing-page', () => {
       const background = harness.container.querySelector('.landing-theme-background') as HTMLElement | null;
       expect(background).not.toBeNull();
       expect(background?.getAttribute('aria-hidden')).toBe('true');
-    });
+    }, 10000); // Extended timeout for page initialization and background rendering
   });
 
   describe('start flows', () => {

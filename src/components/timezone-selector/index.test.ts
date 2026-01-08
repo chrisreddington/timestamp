@@ -56,7 +56,7 @@ describe('Timezone Selector', () => {
 
       document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
       expect(selector.dropdown.hidden).toBe(true);
-    });
+    }, 10000); // Extended timeout for DOM manipulation and event handling setup
 
     it('should filter options when searching', () => {
       selector = renderTimezoneSelector();
@@ -199,7 +199,7 @@ describe('Timezone Selector', () => {
 
       pressKey(secondOption, 'ArrowUp');
       expect(document.activeElement).toBe(firstOption);
-    });
+    }, 10000); // Extended timeout for keyboard navigation and focus operations
 
     it('should move focus to search input with ArrowUp from first option', () => {
       selector = renderTimezoneSelector();

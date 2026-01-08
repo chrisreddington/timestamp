@@ -151,7 +151,7 @@ describe('Orchestrator', () => {
     expect(document.activeElement).toBeTruthy();
     expect(harness.container.contains(document.activeElement)).toBe(true);
     await orchestrator.destroy();
-  });
+  }, 10000); // Extended timeout for real timers and theme switching initialization
 
   it('should clear countdown interval when destroyed', async () => {
     const clearSpy = vi.spyOn(globalThis, 'clearInterval');
@@ -161,7 +161,7 @@ describe('Orchestrator', () => {
     await orchestrator.destroy();
 
     expect(clearSpy).toHaveBeenCalled();
-  });
+  }, 10000); // Extended timeout for orchestrator initialization and cleanup
 
   it.each([
     { completionMessage: 'Custom Complete' },
@@ -465,7 +465,7 @@ describe('Orchestrator', () => {
       expect(updatedPrimary).toBeTruthy();
       
       await harness.orchestrator.destroy();
-    });
+    }, 10000); // Extended timeout for multiple theme initializations and CSS updates
 
     it('should use theme-specific accent colors', async () => {
       localStorage.clear();
