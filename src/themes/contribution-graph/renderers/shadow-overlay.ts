@@ -19,10 +19,13 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
   const overlay = document.createElement('div');
   overlay.className = 'cg-shadow-overlay';
   overlay.setAttribute('data-testid', 'cg-shadow-overlay');
+  overlay.setAttribute('role', 'region');
 
   const title = document.createElement('div');
   title.className = 'cg-shadow-title';
   title.textContent = 'Shadow & Sun';
+  title.id = 'cg-shadow-title';
+  overlay.setAttribute('aria-labelledby', title.id);
 
   const form = document.createElement('div');
   form.className = 'cg-shadow-form';
@@ -40,13 +43,17 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
   heightInput.step = '0.05';
   heightInput.value = '1.00';
   heightInput.className = 'cg-shadow-input';
+  heightInput.setAttribute('inputmode', 'decimal');
 
   const status = document.createElement('div');
   status.className = 'cg-shadow-status';
   status.textContent = 'Requesting location…';
+  status.setAttribute('role', 'status');
+  status.setAttribute('aria-live', 'polite');
 
   const results = document.createElement('div');
   results.className = 'cg-shadow-results';
+  results.setAttribute('aria-live', 'polite');
   results.innerHTML = `
     <div class="cg-shadow-metric"><span>Shadow:</span><strong data-field="shadow">–</strong></div>
     <div class="cg-shadow-metric"><span>Altitude:</span><strong data-field="altitude">–</strong></div>
@@ -117,6 +124,8 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
       bar.setAttribute('aria-valuemin', '0');
       bar.setAttribute('aria-valuemax', '100');
       bar.setAttribute('role', 'progressbar');
+      bar.setAttribute('aria-label', 'Object height scale relative to reference');
+      bar.setAttribute('aria-valuetext', `${percent.toFixed(0)} percent of maximum reference scale`);
     }
   }
 

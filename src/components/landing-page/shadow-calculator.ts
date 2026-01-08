@@ -26,10 +26,13 @@ export function createShadowCalculator(): ShadowCalculatorController {
   const section = document.createElement('section');
   section.className = 'landing-form-section landing-shadow-section';
   section.setAttribute('data-testid', 'landing-shadow-section');
+  section.setAttribute('role', 'region');
 
   const title = document.createElement('div');
   title.className = 'landing-section-title';
   title.textContent = 'Shadow & Sun Angle';
+  title.id = 'landing-shadow-title';
+  section.setAttribute('aria-labelledby', 'landing-shadow-title');
 
   const description = document.createElement('p');
   description.className = 'landing-shadow-description';
@@ -50,21 +53,26 @@ export function createShadowCalculator(): ShadowCalculatorController {
   heightInput.value = String(DEFAULT_HEIGHT_METERS);
   heightInput.id = 'shadow-height-input';
   heightInput.setAttribute('data-testid', 'shadow-height-input');
+  heightInput.setAttribute('inputmode', 'decimal');
 
   const locationButton = document.createElement('button');
   locationButton.type = 'button';
   locationButton.className = 'landing-shadow-location-button';
   locationButton.textContent = 'Use my location';
   locationButton.setAttribute('data-testid', 'shadow-location-button');
+  locationButton.setAttribute('aria-label', 'Use my location to calculate sun angle and shadow');
 
   const locationStatus = document.createElement('div');
   locationStatus.className = 'landing-shadow-status';
   locationStatus.setAttribute('data-testid', 'shadow-location-status');
   locationStatus.textContent = 'Waiting for location…';
+  locationStatus.setAttribute('role', 'status');
+  locationStatus.setAttribute('aria-live', 'polite');
 
   const resultsList = document.createElement('dl');
   resultsList.className = 'landing-shadow-results';
   resultsList.setAttribute('data-testid', 'shadow-results');
+  resultsList.setAttribute('aria-live', 'polite');
 
   formRow.append(heightLabel, heightInput, locationButton);
 

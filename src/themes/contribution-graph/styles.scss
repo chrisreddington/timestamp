@@ -462,6 +462,12 @@
   transition: width 200ms ease;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .cg-size-meter-bar {
+    transition: none;
+  }
+}
+
 .cg-size-meter-label {
   font-size: 12px;
   color: var(--contribution-graph-square-3);
