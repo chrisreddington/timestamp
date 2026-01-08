@@ -5,8 +5,23 @@ interface GeoCoordinates {
   longitude: number;
 }
 
+/**
+ * Controller for the landing page shadow calculator widget.
+ *
+ * Exposes the root element for integration into the landing page layout
+ * and a destroy method to clean up event listeners and internal references
+ * when the widget is no longer needed.
+ */
 export interface ShadowCalculatorController {
+  /**
+   * Get the root HTMLElement for the shadow calculator widget.
+   * Callers are responsible for inserting this element into the DOM.
+   */
   getElement(): HTMLElement;
+  /**
+   * Dispose of the widget and release any associated resources such as
+   * event listeners or internal references.
+   */
   destroy(): void;
 }
 
@@ -196,8 +211,20 @@ export function createShadowCalculator(): ShadowCalculatorController {
   // This provides better UX and respects user privacy by not requesting geolocation until asked
   setStatus('Click "Use my location" to calculate sun angle and shadow length');
 
+  // Refresh calculations periodically (every 30 seconds) to keep solar data current
+  // as time passes. This ensures users see accurate sun position and shadow length.
+  let refreshIntervalId: number | null = window.setInterval(() => {
+    if (destroyed) return;
+    if (!coords) return;
+    updateResults();
+  }, 30_000);
+
   function destroy(): void {
     destroyed = true;
+    if (refreshIntervalId !== null) {
+      window.clearInterval(refreshIntervalId);
+      refreshIntervalId = null;
+    }
     for (const { target, type, handler } of listeners) {
       target.removeEventListener(type, handler);
     }

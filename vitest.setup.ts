@@ -6,7 +6,7 @@
  */
 
 import { vi, beforeEach, afterEach } from 'vitest';
-import { injectTemplates, removeTemplates } from '@/test-utils/templates';
+import { injectTemplates } from '@/test-utils/templates';
 
 (globalThis as unknown as { __PROFILING__: boolean }).__PROFILING__ = true;
 

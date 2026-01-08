@@ -56,6 +56,9 @@ Timestamp is a Progressive Web App (PWA), which means you can install it from yo
 ### 🗺️ World Map
 Wall-clock mode shows a day/night map with real-time solar position. You can see which cities are celebrating and which are waiting.
 
+### ☀️ Shadow & Sun Angle
+Calculate the sun's altitude, azimuth, and estimated shadow length from an object height using your location and current time. Available from the landing page calculator or while viewing the Contribution Graph theme.
+
 ### ♿ Accessibility
 - Full keyboard navigation
 - Screen reader announcements for countdown updates (via orchestrator's `AccessibilityManager`)

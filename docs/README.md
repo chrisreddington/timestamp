@@ -48,12 +48,6 @@ docs/
 - **[GitHub Repository →](https://github.com/chrisreddington/timestamp)**
 - **[Report an Issue →](https://github.com/chrisreddington/timestamp/issues/new)**
 
-## 🌤️ Feature Note: Shadow & Sun
-
-- Compute sun altitude/azimuth and estimate shadow length from an object height using your location and current time.
-- Use it from the landing page (calculator section) or while viewing the Contribution Graph theme (overlay card).
-- The visual uses a privacy-friendly 1.00 m reference scale (shows ratio, not literal height).
-
 ## 📖 Reading Order for New Contributors
 
 1. **[README.md](../README.md)** - Project overview and quick start

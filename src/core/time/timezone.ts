@@ -57,7 +57,6 @@ export function getAllTimezones(): string[] {
 
   return timezones.sort();
 }
-
 /**
  * Get the UTC offset in minutes for a given timezone at a specific time.
  * @param timezone - IANA timezone identifier

@@ -47,9 +47,15 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
   heightInput.className = 'cg-shadow-input';
   heightInput.setAttribute('inputmode', 'decimal');
 
+  const locationButton = document.createElement('button');
+  locationButton.type = 'button';
+  locationButton.className = 'cg-shadow-button';
+  locationButton.textContent = 'Use my location';
+  locationButton.setAttribute('aria-label', 'Share your location to calculate sun angle and shadow length');
+
   const status = document.createElement('div');
   status.className = 'cg-shadow-status';
-  status.textContent = 'Requesting location…';
+  status.textContent = 'Click "Use my location" to calculate sun angle and shadow length';
   status.setAttribute('role', 'status');
   status.setAttribute('aria-live', 'polite');
 
@@ -84,7 +90,7 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
     <div class="cg-size-meter-label">ref = ${REFERENCE_HEIGHT_METERS.toFixed(2)} m</div>
   `;
 
-  form.append(heightLabel, heightInput);
+  form.append(heightLabel, heightInput, locationButton);
   overlay.append(title, form, status, results, visual, sizeMeter);
   parent.appendChild(overlay);
 
@@ -216,10 +222,23 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
     listeners.push({ target, type, handler });
   }
 
+  addListener(locationButton, 'click', requestLocation as EventListener);
   addListener(heightInput, 'input', update as EventListener);
-  requestLocation();
+
+  // Do NOT auto-request location on mount; let user explicitly click "Use my location"
+  // This provides better UX and respects user privacy by not requesting geolocation until asked
+
+  // Refresh calculations periodically (every 30 seconds) to keep solar data current
+  // as time passes. This ensures users see accurate sun position and shadow length.
+  let refreshIntervalId: number | null = window.setInterval(() => {
+    if (coords) update();
+  }, 30_000);
 
   function destroy(): void {
+    if (refreshIntervalId !== null) {
+      window.clearInterval(refreshIntervalId);
+      refreshIntervalId = null;
+    }
     overlay.remove();
     listeners.forEach(({ target, type, handler }) => target.removeEventListener(type, handler));
     listeners.length = 0;

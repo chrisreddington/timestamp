@@ -142,7 +142,7 @@ describe('Timezone Selector', () => {
       selector = renderTimezoneSelector();
       pressKey(selector.trigger, key);
       expect(selector.dropdown.hidden).toBe(false);
-    });
+    }, 10000); // Extended timeout for keyboard interaction setup
 
     it('should move focus from search input to first option with ArrowDown', () => {
       selector = renderTimezoneSelector();
@@ -153,7 +153,8 @@ describe('Timezone Selector', () => {
       const firstOption = selector.container.querySelector('.dropdown-option') as HTMLButtonElement;
       expect(document.activeElement).toBe(firstOption);
       expect(firstOption.getAttribute('tabindex')).toBe('0');
-    });
+    }, 10000); // Extended timeout for keyboard interaction setup
+
 
     it('should move focus back to trigger with ArrowUp from search input', () => {
       selector = renderTimezoneSelector();

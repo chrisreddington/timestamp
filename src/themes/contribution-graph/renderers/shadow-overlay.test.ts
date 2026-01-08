@@ -49,15 +49,19 @@ describe('shadow-overlay', () => {
     const status = overlay.querySelector('.cg-shadow-status') as HTMLElement;
     const shadowField = overlay.querySelector('[data-field="shadow"]') as HTMLElement;
     const altitudeField = overlay.querySelector('[data-field="altitude"]') as HTMLElement;
-    return { controller, overlay, status, shadowField, altitudeField };
+    const locationButton = overlay.querySelector('.cg-shadow-button') as HTMLElement;
+    return { controller, overlay, status, shadowField, altitudeField, locationButton };
   }
 
   test('renders overlay and updates on geolocation success', () => {
     mockCalculateShadowInfo.mockReturnValue({ altitudeDeg: 50, azimuthDeg: 120, shadowLengthMeters: 3 });
-    const { overlay, status, shadowField, altitudeField } = render();
+    const { overlay, status, shadowField, altitudeField, locationButton } = render();
 
     expect(overlay).toBeTruthy();
-    expect(status.textContent).toContain('Requesting location');
+    expect(status.textContent).toContain('Click "Use my location"');
+
+    // Click button to trigger geolocation request
+    locationButton.click();
 
     geoSuccess?.({ coords: { latitude: 5, longitude: 15 } });
 
@@ -67,7 +71,10 @@ describe('shadow-overlay', () => {
   });
 
   test('handles geolocation error', () => {
-    const { status, shadowField } = render();
+    const { status, shadowField, locationButton } = render();
+
+    // Click button to trigger geolocation request
+    locationButton.click();
 
     geoError?.();
 
@@ -79,7 +86,10 @@ describe('shadow-overlay', () => {
     mockCalculateShadowInfo.mockImplementation(() => {
       throw new Error('boom');
     });
-    const { status, shadowField } = render();
+    const { status, shadowField, locationButton } = render();
+
+    // Click button to trigger geolocation request
+    locationButton.click();
 
     geoSuccess?.({ coords: { latitude: 1, longitude: 2 } });
 

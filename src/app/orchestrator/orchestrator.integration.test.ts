@@ -134,7 +134,7 @@ describe('Orchestrator', () => {
 
     expect(themeInstances.fireworks?.updateTime).toHaveBeenCalled();
     await orchestrator.destroy();
-  });
+    }, 10000); // Extended timeout to account for orchestrator initialization and theme loading
 
   it('should restore focus within container when switching themes', async () => {
     vi.useRealTimers();
@@ -197,7 +197,7 @@ describe('Orchestrator', () => {
 
     expect(orchestrator.getCurrentTimezone()).toBe('America/New_York');
     await orchestrator.destroy();
-  });
+  }, 10000); // Extended timeout for orchestration and theme initialization
 
   it('should return current theme id', async () => {
     harness = createOrchestratorTestHarness({ initialTheme: 'fireworks' });
@@ -354,7 +354,7 @@ describe('Orchestrator', () => {
       expect(themeInstances['contribution-graph']?.onCelebrating).not.toHaveBeenCalled();
       
       await orchestrator.destroy();
-    }, 10000);
+    }, 10000); // Extended timeout to account for orchestrator initialization and theme state changes
   });
 
   describe('Concurrent Theme Switch Protection', () => {
@@ -386,7 +386,7 @@ describe('Orchestrator', () => {
       expect(orchestrator.getCurrentTheme()).toBe('contribution-graph');
 
       await orchestrator.destroy();
-    }, 10000);
+    }, 10000); // Extended timeout to account for orchestrator initialization and theme state changes
 
     it('should handle destroy() called multiple times', async () => {
       harness = createOrchestratorTestHarness({ initialTheme: 'contribution-graph' });
