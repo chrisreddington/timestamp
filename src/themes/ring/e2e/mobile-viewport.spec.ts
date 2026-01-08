@@ -1,35 +1,7 @@
 /**
- * Generate the E2E test file (e2e/mobile-viewport.spec.ts).
+ * Ring Theme Mobile Viewport Tests
  *
- * Creates Playwright E2E tests covering:
- * - Mobile viewport behavior
- * - Countdown visibility and layout
- * - Theme-specific rendering
- * - Responsive design
- *
- * This is a starting point - theme authors should add theme-specific tests
- * for unique visual features, celebration animations, etc.
- *
- * @param themeName - Kebab-case theme name
- * @returns Generated TypeScript source code
- *
- * @example
- * // Generated file structure:
- * // src/themes/my-theme/e2e/mobile-viewport.spec.ts
- *
- * @see src/themes/contribution-graph/e2e/ - Complex theme with multiple E2E tests
- * @see src/themes/fireworks/e2e/mobile-viewport.spec.ts - Simpler theme example
- */
-import { toPascalCase } from '../utils/string-utils';
-
-export function generateE2EMobileViewportSpec(themeName: string): string {
-  const pascal = toPascalCase(themeName);
-  const testUrl = `/?theme=${themeName}&mode=wall-clock&target=2099-01-01T00:00:00`;
-
-  return `/**
- * ${pascal} Theme Mobile Viewport Tests
- *
- * Tests mobile viewport behavior specific to the ${themeName} theme.
+ * Tests mobile viewport behavior specific to the ring theme.
  * These tests verify that the theme renders properly on mobile devices.
  *
  * Add more E2E tests here for theme-specific behaviors:
@@ -43,9 +15,9 @@ import { expect, test } from '@playwright/test';
 
 const MOBILE_VIEWPORT = { width: 375, height: 667 };
 const SMALL_MOBILE_VIEWPORT = { width: 320, height: 568 };
-const TEST_URL = '${testUrl}';
+const TEST_URL = '/?theme=ring&mode=wall-clock&target=2099-01-01T00:00:00';
 
-test.describe('${pascal} Theme: Mobile Viewport', () => {
+test.describe('Ring Theme: Mobile Viewport', () => {
   test('countdown display is visible on mobile', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT);
     await page.goto(TEST_URL);
@@ -99,7 +71,7 @@ test.describe('${pascal} Theme: Mobile Viewport', () => {
   });
 });
 
-test.describe('${pascal} Theme: Mobile Layout', () => {
+test.describe('Ring Theme: Mobile Layout', () => {
   test('theme fills full width on mobile', async ({ page }) => {
     await page.setViewportSize(MOBILE_VIEWPORT);
     await page.goto(TEST_URL);
@@ -160,5 +132,3 @@ test.describe('${pascal} Theme: Mobile Layout', () => {
     }
   });
 });
-`;
-}

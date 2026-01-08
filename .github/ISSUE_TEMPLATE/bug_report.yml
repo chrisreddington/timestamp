@@ -65,6 +65,7 @@ body:
       options:
         - Contribution Graph
         - Fireworks Celebration
+        - Ring
         - Not applicable / Not sure
     validations:
       required: true
