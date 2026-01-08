@@ -33,15 +33,15 @@ import {
  * Displays command syntax, arguments, and examples.
  */
 function printUsage(): void {
-  console.error('Usage: npm run create-theme <theme-name> [author]');
+  console.error('Usage: npm run theme create <theme-name> [author]');
   console.error('');
   console.error('Arguments:');
   console.error('  theme-name  Kebab-case theme name (e.g., "my-theme")');
   console.error('  author      Optional GitHub username (without @ prefix)');
   console.error('');
   console.error('Examples:');
-  console.error('  npm run create-theme neon-glow');
-  console.error('  npm run create-theme neon-glow chrisreddington');
+  console.error('  npm run theme create neon-glow');
+  console.error('  npm run theme create neon-glow chrisreddington');
 }
 
 /**

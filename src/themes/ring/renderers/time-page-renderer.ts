@@ -1,28 +1,9 @@
 /**
- * Generate the time page renderer file (renderers/time-page-renderer.ts).
- *
- * Creates a clean TimePageRenderer factory that delegates to helpers:
- * - Helpers extracted to utils/time-page/ for testability
- * - Factory only contains the TimePageRenderer interface implementation
- * - State object pattern for explicit, testable state management
- * - Animation state getter from orchestrator (never cache animation state)
- * - ResourceTracker from \@themes/shared for proper cleanup handling
- *
- * @param themeName - Kebab-case theme name
- * @returns Generated TypeScript source code
- */
-import { toCamelCase, toPascalCase } from '../utils/string-utils';
-
-export function generateTimePageRendererTs(themeName: string): string {
-  const pascal = toPascalCase(themeName);
-  const camel = toCamelCase(themeName);
-
-  return `/**
- * ${pascal} Time Page Renderer
+ * Ring Time Page Renderer
  *
  * Pulsing ring animation that intensifies as countdown approaches zero.
  *
- * Intensity levels: CALM (\\>60s) → BUILDING (30-60s) → INTENSE (10-30s) → FINALE (\\<10s)
+ * Intensity levels: CALM (\>60s) → BUILDING (30-60s) → INTENSE (10-30s) → FINALE (\<10s)
  * Celebration: Traveling light effect around ring circumference
  *
  * Key patterns: State object, resource tracking, 30fps throttling, pause/resume hooks
@@ -61,20 +42,20 @@ const DEFAULT_COMPLETION_MESSAGE = '🎉 Happy New Year!';
 // =============================================================================
 
 /**
- * Create a ${pascal} time page renderer.
+ * Create a Ring time page renderer.
  *
  * Features a pulsing ring animation that intensifies as countdown approaches zero:
- * - CALM (\\>60s): Slow, gentle pulse
+ * - CALM (\>60s): Slow, gentle pulse
  * - BUILDING (30-60s): Faster pulse, increased glow
  * - INTENSE (10-30s): Rapid pulse, dramatic glow
- * - FINALE (\\<10s): Maximum intensity
+ * - FINALE (\<10s): Maximum intensity
  *
  * On celebration, a light travels around the ring creating a dynamic effect.
  *
  * @param _targetDate - The countdown target date (unused, time comes from updateTime)
- * @returns TimePageRenderer instance for ${themeName} theme
+ * @returns TimePageRenderer instance for ring theme
  */
-export function ${camel}TimePageRenderer(_targetDate: Date): TimePageRenderer {
+export function ringTimePageRenderer(_targetDate: Date): TimePageRenderer {
   const state: RendererState = {
     container: null,
     elements: null,
@@ -154,6 +135,4 @@ export function ${camel}TimePageRenderer(_targetDate: Date): TimePageRenderer {
       return state.resourceTracker;
     },
   };
-}
-`;
 }

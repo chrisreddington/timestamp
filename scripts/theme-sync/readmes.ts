@@ -139,7 +139,7 @@ Visual themes for the countdown timer. Each theme provides unique visual aesthet
 ## Creating New Themes
 
 \`\`\`bash
-npm run create-theme <theme-name>
+npm run theme create <theme-name>
 \`\`\`
 
 This automatically:

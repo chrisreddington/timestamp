@@ -39,7 +39,7 @@ The orchestrator manages timing and state, provides accessibility foundations (r
 ### Step 1: Generate the Scaffold
 
 ```bash
-npm run create-theme my-awesome-theme yourgithubusername
+npm run theme create my-awesome-theme yourgithubusername
 ```
 
 This single command creates everything you need:
@@ -448,7 +448,7 @@ Before contributing your theme, verify:
 
 | Command | Purpose |
 |---------|---------|
-| `npm run create-theme <name> <author>` | Generate new theme |
+| `npm run theme create <name> <author>` | Generate new theme |
 | `npm run dev` | Start dev server |
 | `npm run generate:previews -- --theme=<name>` | Generate preview image |
 | `npm run test -- <theme-name>` | Run theme's unit tests |

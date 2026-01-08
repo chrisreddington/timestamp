@@ -4,7 +4,7 @@
  * Canonical entry point for all theme registry functionality.
  * Import from `@themes/registry` for all theme-related utilities.
  *
- * To create a new theme, run: `npm run create-theme my-theme`
+ * To create a new theme, run: `npm run theme create my-theme`
  */
 
 // Core: Registry data, types, and constants
