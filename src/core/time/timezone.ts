@@ -3,6 +3,26 @@
  * Uses native Intl APIs for timezone-aware date operations.
  */
 
+// =============================================================================
+// TIMEZONE OFFSET CACHE
+// =============================================================================
+
+/** Cache key for timezone offset (timezone-date string). */
+type OffsetCacheKey = string;
+
+/** Cache for timezone offset calculations (prevents repeated Intl.DateTimeFormat calls). */
+const timezoneOffsetCache = new Map<OffsetCacheKey, number>();
+
+/**
+ * Generate cache key for timezone offset lookup.
+ * Truncates to minute precision to maximize cache hits.
+ */
+function getOffsetCacheKey(timezone: string, date: Date): OffsetCacheKey {
+  // Truncate to minute precision (seconds/ms don't affect offset)
+  const minutes = Math.floor(date.getTime() / 60000);
+  return `${timezone}:${minutes}`;
+}
+
 /**
  * Get the user's current timezone from the browser.
  * @returns IANA timezone identifier
@@ -60,6 +80,7 @@ export function getAllTimezones(): string[] {
 
 /**
  * Get the UTC offset in minutes for a given timezone at a specific time.
+ * PERFORMANCE: Results are cached to avoid repeated Intl.DateTimeFormat calls.
  * @param timezone - IANA timezone identifier
  * @param date - Optional date to check (defaults to current time)
  * @returns Offset in minutes from UTC (positive = ahead of UTC)
@@ -67,6 +88,13 @@ export function getAllTimezones(): string[] {
  */
 export function getTimezoneOffsetMinutes(timezone: string, date?: Date): number {
   const now = date ?? new Date();
+  
+  // Check cache first
+  const cacheKey = getOffsetCacheKey(timezone, now);
+  const cached = timezoneOffsetCache.get(cacheKey);
+  if (cached !== undefined) {
+    return cached;
+  }
 
   const formatter = new Intl.DateTimeFormat('en-US', {
     timeZone: timezone,
@@ -92,7 +120,18 @@ export function getTimezoneOffsetMinutes(timezone: string, date?: Date): number 
 
   const utcTime = Date.UTC(year, month, day, hour, minute, second);
   const diffMs = utcTime - now.getTime();
-  return Math.round(diffMs / 60000);
+  const offsetMinutes = Math.round(diffMs / 60000);
+  
+  // Cache the result
+  timezoneOffsetCache.set(cacheKey, offsetMinutes);
+  
+  // Limit cache size (LRU-style cleanup)
+  if (timezoneOffsetCache.size > 100) {
+    const firstKey = timezoneOffsetCache.keys().next().value;
+    if (firstKey) timezoneOffsetCache.delete(firstKey);
+  }
+  
+  return offsetMinutes;
 }
 
 /**

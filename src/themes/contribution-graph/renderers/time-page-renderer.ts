@@ -8,33 +8,35 @@
  */
 
 import type { CelebrationOptions } from '@core/types';
+import { cancelAll, createResourceTracker } from '@themes/shared/resources';
 import type {
-  AnimationStateContext,
-  AnimationStateGetter,
-  MountContext,
-  ResourceTracker,
-  TimePageRenderer,
-  TimeRemaining,
+    AnimationStateContext,
+    AnimationStateGetter,
+    MountContext,
+    ResourceTracker,
+    TimePageRenderer,
+    TimeRemaining,
 } from '@themes/shared/types';
 
 import { getActivityPhase } from '../config';
 import {
-  type AmbientState,
-  createAmbientState,
-  manageAmbientActivity,
-  setPhase,
-  startAmbient,
-  stopAmbient,
-  updateAmbientAnimations,
+    type AmbientState,
+    createAmbientState,
+    invalidateAmbientCache,
+    manageAmbientActivity,
+    setPhase,
+    startAmbient,
+    stopAmbient,
+    updateAmbientAnimations,
 } from '../utils/canvas/ambient';
 import { clearCelebrationMessage, renderCelebrationMessage } from '../utils/canvas/celebration';
 import { clearDigits, updateDigits } from '../utils/canvas/digits';
 import { type CanvasRenderer, createCanvasRenderer } from '../utils/canvas/renderer';
 import {
-  type CanvasGridState,
-  createCanvasGridState,
-  markFullRepaint,
-  resetSquares,
+    type CanvasGridState,
+    createCanvasGridState,
+    markFullRepaint,
+    resetSquares,
 } from '../utils/canvas/state';
 import { buildWall, clearWall, unbuildWall } from '../utils/canvas/wall-build';
 import { formatCountdown } from '../utils/grid';
@@ -74,17 +76,6 @@ interface CanvasTimePageState {
   resourceTracker: ResourceTracker;
   resizeObserver: ResizeObserver | null;
   colorModeListener: ((e: MediaQueryListEvent) => void) | null;
-}
-
-/** Create empty resource tracker. */
-function createResourceTracker(): ResourceTracker {
-  return {
-    timeouts: [],
-    intervals: [],
-    rafs: [],
-    observers: [],
-    listeners: [],
-  };
 }
 
 function createState(): CanvasTimePageState {
@@ -243,6 +234,10 @@ function setupCanvas(state: CanvasTimePageState, container: HTMLElement): void {
       state.grid = createCanvasGridState(width, height);
       state.renderer.resize(state.grid);
       
+      // CRITICAL: Invalidate ambient cache BEFORE rendering digits
+      // Old cache has indices for different grid dimensions
+      invalidateAmbientCache(state.ambient);
+      
       // Restore celebration message if present
       if (wasInCelebration && previousMessage) {
         state.messageIndices = renderCelebrationMessage(state.grid, previousMessage);
@@ -256,11 +251,12 @@ function setupCanvas(state: CanvasTimePageState, container: HTMLElement): void {
           state.lastTime.seconds,
           state.grid.cols
         );
+        // updateDigits sets digitBounds which ambient will use
         updateDigits(state.grid, lines);
         
         // Restore ambient state if it was running
+        // This happens AFTER digits are rendered so bounding box is set
         if (wasAmbientRunning) {
-          // Re-initialize ambient with current phase
           startAmbient(state.ambient);
         }
       }
@@ -377,13 +373,40 @@ export function createCanvasTimePageRenderer(_targetDate: Date): TimePageRendere
     onCounting(): void {
       if (!state.grid) return;
 
+      // Abort any ongoing celebration animations (wall build/unbuild)
+      if (state.celebrationAbortController) {
+        state.celebrationAbortController.abort();
+        state.celebrationAbortController = null;
+      }
+
       // Reset to counting state
       resetSquares(state.grid);
       state.completionMessage = '';
+      state.messageIndices.clear();
+      
+      // Clear any wall remnants immediately
+      clearWall(state.grid);
+      clearCelebrationMessage(state.grid);
+      clearDigits(state.grid);
+      
+      // Re-render current time if we have it
+      if (state.lastTime) {
+        const lines = formatCountdown(
+          state.lastTime.days,
+          state.lastTime.hours,
+          state.lastTime.minutes,
+          state.lastTime.seconds,
+          state.grid.cols
+        );
+        updateDigits(state.grid, lines);
+      }
       
       // Restart ambient
       startAmbient(state.ambient);
       setPhase(state.ambient, 'calm');
+      
+      // Force full repaint to ensure clean state
+      markFullRepaint(state.grid);
     },
 
     onCelebrating(options?: CelebrationOptions): void {
@@ -416,15 +439,22 @@ export function createCanvasTimePageRenderer(_targetDate: Date): TimePageRendere
               clearDigits(state.grid);
             }
             
-            // Render message (sets digitBounds to exclude ambient from message area)
+            // Render message (but DON'T set digitBounds yet - we want ambient everywhere during unbuild)
             state.messageIndices = renderCelebrationMessage(state.grid!, message);
+            // Temporarily clear digitBounds so ambient can fill ALL non-wall/non-message squares during unbuild
+            const tempDigitBounds = state.grid!.digitBounds;
+            state.grid!.digitBounds = null;
             
-            // Start ambient BEFORE unbuild - it will fill revealed space progressively
-            // (respects digitBounds automatically, so won't interfere with message)
+            // Start ambient - it will fill ANY square that isn't wall or message during unbuild
             startAmbient(state.ambient);
             
-            // Unbuild wall (reveals message progressively, ambient fills other space)
+            // Unbuild wall (reveals message and ambient progressively)
             await unbuildWall(state.grid!, state.celebrationAbortController!.signal);
+            
+            // Restore digitBounds after unbuild to prevent ambient from entering message area
+            if (state.grid) {
+              state.grid.digitBounds = tempDigitBounds;
+            }
           } catch (err) {
             // Aborted - cleanup
             if (state.grid) {
@@ -491,23 +521,8 @@ export function createCanvasTimePageRenderer(_targetDate: Date): TimePageRendere
       state.grid = null;
       state.container = null;
 
-      // Clear resource tracker
-      for (const id of state.resourceTracker.timeouts) {
-        clearTimeout(id);
-      }
-      for (const id of state.resourceTracker.intervals) {
-        clearInterval(id);
-      }
-      for (const id of state.resourceTracker.rafs) {
-        cancelAnimationFrame(id);
-      }
-      for (const observer of state.resourceTracker.observers) {
-        observer.disconnect();
-      }
-      for (const listener of state.resourceTracker.listeners) {
-        listener.remove();
-      }
-      state.resourceTracker = createResourceTracker();
+      // Use shared cleanup utility for proper resource cleanup
+      cancelAll(state.resourceTracker);
     },
 
     updateContainer(newContainer: HTMLElement): void {

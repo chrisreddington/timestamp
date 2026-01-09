@@ -3,7 +3,7 @@
  */
 
 import { beforeEach, describe, expect, it } from 'vitest';
-import { GRID_CONFIG, MAX_NODES } from '../../config';
+import { GRID_CONFIG } from '../../config';
 import {
     calculateGridDimensions,
     clearDirty,
@@ -26,10 +26,18 @@ describe('calculateGridDimensions', () => {
     expect(result.gap).toBeGreaterThanOrEqual(0);
   });
 
-  it('should cap total nodes at MAX_NODES for large viewports', () => {
+  it('should scale square size proportionally for large viewports', () => {
+    // At 4000px width, squares should scale up from base 16px
     const result = calculateGridDimensions(4000, 3000);
 
-    expect(result.cols * result.rows).toBeLessThanOrEqual(MAX_NODES);
+    // Squares scale based on viewport width (base 16px at 1920px)
+    // 4000 / 1920 ≈ 2.08x, so squares should be larger than 16px
+    expect(result.squareSize).toBeGreaterThan(GRID_CONFIG.maxSquareSize);
+    expect(result.squareSize).toBeLessThanOrEqual(32); // Max clamped at 32px
+    
+    // Gap should still be proportional to square size
+    expect(result.gap).toBeGreaterThan(0);
+    expect(result.gap / result.squareSize).toBeCloseTo(GRID_CONFIG.gapRatio, 1);
   });
 
   it('should respect minimum square size for small viewports', () => {

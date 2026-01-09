@@ -55,6 +55,9 @@
 // Base positioning (fixed, inset, flex, centering) comes from [data-theme] in app-shell.css
 [data-theme="contribution-graph"] {
   background: var(--contribution-graph-background);
+  // IMPORTANT: Hide overflow so grid squares extending past viewport edge are clipped
+  // This creates the illusion of an infinite grid without causing scrollbars
+  overflow: hidden;
 }
 
 // =============================================================================

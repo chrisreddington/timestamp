@@ -40,6 +40,10 @@ export interface AmbientState {
   isRunning: boolean;
   /** Next scheduled tick time. */
   nextTickTime: number;
+  /** Cached available squares (invalidated when digit bounds change). */
+  availableSquaresCache: number[] | null;
+  /** Last digit bounds used for cache (for invalidation detection). */
+  lastDigitBoundsHash: string | null;
 }
 
 // =============================================================================
@@ -89,6 +93,8 @@ export function createAmbientState(): AmbientState {
     phase: 'calm',
     isRunning: false,
     nextTickTime: 0,
+    availableSquaresCache: null,
+    lastDigitBoundsHash: null,
   };
 }
 
@@ -110,10 +116,31 @@ function isInDigitBounds(
 }
 
 /**
+ * Generate hash of digit bounds for cache invalidation.
+ */
+function getDigitBoundsHash(bounds: CanvasGridState['digitBounds']): string {
+  if (!bounds) return 'none';
+  return `${bounds.minCol},${bounds.maxCol},${bounds.minRow},${bounds.maxRow}`;
+}
+
+/**
  * Get available squares for ambient activity.
+ * PERFORMANCE: Results are cached and only recalculated when digit bounds change.
  * Excludes: digit area, currently animating, walls, messages.
  */
 function getAvailableSquares(grid: CanvasGridState, ambient: AmbientState): number[] {
+  // Check if cache is valid (digit bounds haven't changed)
+  const currentBoundsHash = getDigitBoundsHash(grid.digitBounds);
+  
+  if (
+    ambient.availableSquaresCache !== null &&
+    ambient.lastDigitBoundsHash === currentBoundsHash
+  ) {
+    // Filter out currently animating squares from cached list
+    return ambient.availableSquaresCache.filter(i => !ambient.animations.has(i));
+  }
+
+  // Cache miss - rebuild available squares list
   const available: number[] = [];
 
   for (let i = 0; i < grid.squares.length; i++) {
@@ -125,14 +152,18 @@ function getAvailableSquares(grid: CanvasGridState, ambient: AmbientState): numb
       !square.isDigit &&
       !square.isWall &&
       !square.isMessage &&
-      !ambient.animations.has(i) &&
       !isInDigitBounds(col, row, grid.digitBounds)
     ) {
       available.push(i);
     }
   }
 
-  return available;
+  // Update cache
+  ambient.availableSquaresCache = available;
+  ambient.lastDigitBoundsHash = currentBoundsHash;
+
+  // Filter out currently animating squares
+  return available.filter(i => !ambient.animations.has(i));
 }
 
 // =============================================================================
@@ -290,6 +321,15 @@ export function startAmbient(ambient: AmbientState): void {
   ambient.nextTickTime = 0;
 }
 
+/**
+ * Invalidate ambient cache.
+ * Call when grid dimensions change (resize) to force recalculation of available squares.
+ */
+export function invalidateAmbientCache(ambient: AmbientState): void {
+  ambient.availableSquaresCache = null;
+  ambient.lastDigitBoundsHash = null;
+}
+
 /** Stop ambient activity. */
 export function stopAmbient(ambient: AmbientState, grid: CanvasGridState): void {
   ambient.isRunning = false;
@@ -309,6 +349,10 @@ export function stopAmbient(ambient: AmbientState, grid: CanvasGridState): void 
   }
 
   ambient.animations.clear();
+  
+  // Invalidate cache (digit bounds may have changed)
+  ambient.availableSquaresCache = null;
+  ambient.lastDigitBoundsHash = null;
 }
 
 /** Set activity phase. */

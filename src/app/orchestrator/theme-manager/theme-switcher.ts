@@ -12,10 +12,10 @@ import { getThemeDisplayName } from '@themes/registry';
 
 import type { CelebrationDisplay } from '../types';
 import {
-  getCountdownAccessibleName,
-  preserveFocusWithin,
-  restoreFocusWithin,
-  setupThemeContainer,
+    getCountdownAccessibleName,
+    preserveFocusWithin,
+    restoreFocusWithin,
+    setupThemeContainer,
 } from './theme-focus-preservation';
 
 /** Minimum time between theme switches (ms) to prevent rapid toggling */
@@ -136,9 +136,6 @@ export function createThemeTransitionManager(
     const ariaLabel = getCountdownAccessibleName(currentTimeSnapshot, wasComplete);
     setupThemeContainer(tempContainer, newThemeId, ariaLabel);
 
-    // Wait for first paint
-    await new Promise((resolve) => requestAnimationFrame(resolve));
-
     // Restore appropriate state
     if (wasComplete) {
       const { message, fullMessage } = getCelebrationDisplay();
@@ -157,10 +154,12 @@ export function createThemeTransitionManager(
       return;
     }
 
-    // Swap themes in main container
+    // Swap themes in main container (single RAF for smooth 60fps transition)
     await new Promise<void>((resolve) => {
       requestAnimationFrame(async () => {
         const currentTheme = getCurrentTheme();
+        
+        // Destroy old theme and swap in one frame for instant visual transition
         if (currentTheme) {
           await currentTheme.destroy();
         }
