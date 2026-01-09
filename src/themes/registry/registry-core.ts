@@ -90,6 +90,15 @@ const loadAkhilSquareShadowTheme = async (): Promise<LoadedThemeModule> => {
   };
 };
 
+const loadRingTheme = async (): Promise<LoadedThemeModule> => {
+  const module = await import('../ring');
+  return {
+    timePageRenderer: module.ringTimePageRenderer,
+    landingPageRenderer: module.ringLandingPageRenderer,
+    config: module.RING_CONFIG,
+  };
+};
+
 // Stryker restore all
 
 export const THEME_REGISTRY = {

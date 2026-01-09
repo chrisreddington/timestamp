@@ -1,11 +1,11 @@
 /**
- * AkhilSquareShadow Theme
+ * Sun/Moon Shadow Rotator Theme
  *
- * A countdown theme featuring a pulsing ring animation that demonstrates:
- * - Animation state management (distinct from orchestrator lifecycle)
- * - Proper pause/resume via onAnimationStateChange hook
- * - State object pattern for explicit, testable state
- * - Resource tracking with createResourceTracker()
+ * A countdown theme featuring celestial body animations that demonstrates:
+ * - Sun/moon orbit with dynamic shadow casting on countdown digits
+ * - Shadow calculator overlay using SunCalc for real-time sun position
+ * - Day/night cycle with smooth sky gradient transitions
+ * - Geolocation support for accurate shadow calculations
  *
  * @remarks
  * Entry point for the akhil-square-shadow theme. Exports theme configuration
@@ -13,9 +13,10 @@
  *
  * Architecture:
  * - index.ts: Clean entry point (exports only, no implementation)
- * - config/: Theme configuration and constants
- * - renderers/: TimePageRenderer and LandingPageRenderer implementations
- * - utils/ui/: DOM creation and manipulation utilities
+ * - config/: Theme configuration and animation constants
+ * - renderers/: TimePageRenderer, LandingPageRenderer, and ShadowOverlay
+ * - utils/ui/: DOM creation for sky, celestial bodies, and countdown display
+ * - utils/time-page/: Animation loop and orbital mechanics
  */
 
 import './styles.scss';

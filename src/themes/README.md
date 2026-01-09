@@ -28,7 +28,7 @@ See [THEME_DEVELOPMENT.md](../../docs/THEME_DEVELOPMENT.md) for complete guideli
 | <img src="fireworks/images/preview-dark-card-1x.webp#gh-dark-mode-only" alt="Fireworks Celebration preview" width="160"><img src="fireworks/images/preview-light-card-1x.webp#gh-light-mode-only" alt="Fireworks Celebration preview" width="160"> | **Fireworks Celebration** | Countdown with fireworks that intensify as midnight approaches | ✅ | [@chrisreddington](https://github.com/chrisreddington) | [🏠](https://chrisreddington.com/timestamp?mode=wall-clock&target=2027-01-01T00:00:00&theme=fireworks) [🌐](https://chrisreddington.com/timestamp?mode=absolute&target=2026-07-16T00:00:00Z&theme=fireworks&message=Launch%20Day!) [⏱️](https://chrisreddington.com/timestamp?mode=timer&duration=300&theme=fireworks) |
 | <img src="ring/images/preview-dark-card-1x.webp#gh-dark-mode-only" alt="Ring preview" width="160"><img src="ring/images/preview-light-card-1x.webp#gh-light-mode-only" alt="Ring preview" width="160"> | **Ring** | A countdown theme with a pulsing ring animation | ✅ | [@chrisreddington](https://github.com/chrisreddington) | [🏠](https://chrisreddington.com/timestamp?mode=wall-clock&target=2027-01-01T00:00:00&theme=ring) [🌐](https://chrisreddington.com/timestamp?mode=absolute&target=2026-07-16T00:00:00Z&theme=ring&message=Launch%20Day!) [⏱️](https://chrisreddington.com/timestamp?mode=timer&duration=300&theme=ring) |
 
-_Total: 3 themes_ · Demo links: 🏠 Local Time · 🌐 Same Moment · ⏱️ Timer
+_Total: 4 themes_ · Demo links: 🏠 Local Time · 🌐 Same Moment · ⏱️ Timer
 
 ## Theme Requirements
 
