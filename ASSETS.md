@@ -9,7 +9,7 @@ Libraries used in the production application.
 | Name | Source URL | License | Description |
 |------|------------|---------|-------------|
 | @primer/octicons | [GitHub Octicons](https://primer.style/foundations/icons) | MIT | GitHub's icon library used for UI icons |
-| suncalc | [mourner/suncalc](https://github.com/mourner/suncalc) | BSD-2-Clause | Sun position calculations for Sun/Moon Shadow theme |
+| suncalc | [mourner/suncalc](https://github.com/mourner/suncalc) | BSD-2-Clause | Sun position calculations for world map and Sun/Moon Shadow theme |
 
 ## Development Dependencies
 
