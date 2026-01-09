@@ -6,7 +6,7 @@
  * - Use geolocation or manually enter coordinates
  */
 
-import { cancelAll, createResourceTracker, safeSetInterval } from '@themes/shared/resources';
+import { cancelAll, createResourceTracker, safeSetInterval } from '@themes/shared';
 import SunCalc from 'suncalc';
 
 interface GeoCoords {
