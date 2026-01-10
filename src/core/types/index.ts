@@ -227,6 +227,13 @@ export interface MountContext {
    * The exclusion zone is recalculated on resize.
    */
   exclusionElement?: HTMLElement;
+
+  /**
+   * Optional resolved color mode (light or dark).
+   * When provided, themes should use this instead of reading from DOM attributes.
+   * This ensures color mode is set before the theme mounts, preventing flash of wrong colors.
+   */
+  colorMode?: ResolvedColorMode;
 }
 
 /**

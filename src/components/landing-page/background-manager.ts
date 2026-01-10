@@ -8,6 +8,7 @@ import {
   createPageController,
   type PageController as ReducedMotionController,
 } from '@app/orchestrator/controllers';
+import { getResolvedColorMode } from '@core/preferences/color-mode';
 import type { LandingPageRenderer, ThemeId } from '@core/types';
 import { getLandingPageRendererFactory } from '@themes/registry';
 
@@ -191,11 +192,13 @@ export function createBackgroundManager(): BackgroundManagerController {
 
         state.renderer = factory(state.container);
         if (state.renderer) {
-          // Pass MountContext with current reduced-motion state and exclusion element
+          // Pass MountContext with current reduced-motion state, exclusion element, and color mode
           const baseMountContext = reducedMotionController.getMountContext();
+          const colorMode = getResolvedColorMode();
           const mountContext = {
             ...baseMountContext,
             exclusionElement: state.exclusionElement ?? undefined,
+            colorMode,
           };
           state.renderer.mount(state.container, mountContext);
         }
