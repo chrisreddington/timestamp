@@ -309,6 +309,111 @@ colors: {
 
 📖 **Full color options:** See `ThemeColors` in [src/core/types/index.ts](../src/core/types/index.ts)
 
+---
+
+## Advanced: Canvas-Based Themes with Color Modes
+
+If you're building a canvas-based theme that needs color-aware rendering (like Contribution Graph), you need to handle color mode initialization carefully.
+
+### The Problem: Initialization Race Condition
+
+When rendering to canvas on the **landing page**, you need the current color mode (light/dark) to set the correct palette. However, reading `data-color-mode` from the DOM can create a race condition:
+
+```typescript
+// ❌ WRONG: Reading from DOM during mount can be too early
+function mount(container: HTMLElement, context?: MountContext): void {
+  setupCanvas(container);
+  // DOM attribute might not be set yet!
+  const colorMode = document.documentElement.dataset.colorMode;
+  renderer.setColorMode(colorMode || 'dark');
+}
+```
+
+### The Solution: Use MountContext.colorMode
+
+The `MountContext` provides a `colorMode` property that's guaranteed to be set before your renderer mounts:
+
+```typescript
+// ✅ CORRECT: Use colorMode from context
+function mount(container: HTMLElement, context?: MountContext): void {
+  setupCanvas(container, context?.colorMode);
+  // Color mode is already resolved and passed in
+}
+
+function setupCanvas(container: HTMLElement, initialColorMode?: 'light' | 'dark'): void {
+  const renderer = createCanvasRenderer();
+  
+  // Set color mode immediately if provided
+  if (initialColorMode) {
+    renderer.setColorMode(initialColorMode);
+  } else {
+    // Fallback for backward compatibility
+    updateColorModeFromDOM();
+  }
+  
+  container.appendChild(renderer.canvas);
+}
+```
+
+### When This Matters
+
+| Renderer Type | Needs colorMode? | Why |
+|---------------|------------------|-----|
+| **Landing page renderer** with canvas | ✅ Yes | Landing page initialization can race with color mode setup |
+| **Time page renderer** with canvas | ⚠️ Optional | Time page is initialized after color mode is set, but using `context.colorMode` is still cleaner |
+| **Simple DOM-based renderers** | ❌ No | CSS handles color modes automatically |
+
+### Example: Contribution Graph
+
+The Contribution Graph theme demonstrates this pattern:
+
+📖 **Study:** [contribution-graph/renderers/landing-page-renderer.ts](../src/themes/contribution-graph/renderers/landing-page-renderer.ts)
+
+Key points:
+- `context.colorMode` is used during `mount()`
+- The canvas renderer's palette is set immediately
+- Fallback to DOM reading is kept for compatibility
+- Color mode changes are still handled via event listeners
+
+### Best Practices for Canvas Themes
+
+1. **Always check `context?.colorMode` first** in your `mount()` method
+2. **Set color mode before rendering** to prevent flashes
+3. **Keep DOM reading as fallback** for time page renderers
+4. **Listen for color-mode-change events** to handle user toggles
+
+```typescript
+// Complete pattern
+export function myCanvasLandingPageRenderer(_container: HTMLElement): LandingPageRenderer {
+  let renderer: CanvasRenderer | null = null;
+  
+  return {
+    mount(container: HTMLElement, context?: MountContext): void {
+      renderer = createCanvasRenderer();
+      
+      // 1. Use color mode from context (landing page)
+      if (context?.colorMode) {
+        renderer.setColorMode(context.colorMode);
+      } else {
+        // 2. Fallback to DOM (time page or older orchestrators)
+        const domColorMode = document.documentElement.dataset.colorMode;
+        renderer.setColorMode(domColorMode === 'light' ? 'light' : 'dark');
+      }
+      
+      // 3. Listen for color mode changes
+      document.addEventListener('color-mode-change', handleColorModeChange);
+      
+      container.appendChild(renderer.canvas);
+    },
+    
+    destroy(): void {
+      document.removeEventListener('color-mode-change', handleColorModeChange);
+      renderer?.destroy();
+    },
+  };
+}
+```
+
 ## Accessibility: Non-Negotiable
 
 Your theme must be accessible. The orchestrator provides accessibility hooks and foundations (container ARIA attributes via `setupThemeContainer()`, screen reader announcements via `AccessibilityManager`, reduced motion detection via `reducedMotionManager`). Themes must implement:
