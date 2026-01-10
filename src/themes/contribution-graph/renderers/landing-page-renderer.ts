@@ -255,17 +255,22 @@ function setupCanvas(state: LandingPageState, container: HTMLElement): void {
   mediaQuery.addEventListener('change', state.colorModeListener);
 
   // Listen for color mode toggle changes
-  const handleColorModeChange = () => {
-    if (!state.renderer || !state.grid) return;
-    const colorMode = document.documentElement.dataset.colorMode;
-    if (colorMode === 'dark' || colorMode === 'light') {
-      state.renderer.setColorMode(colorMode);
-    } else {
-      state.renderer.setColorMode('system');
-    }
-    markFullRepaint(state.grid);
-  };
-  document.addEventListener('color-mode-change', handleColorModeChange);
+  document.addEventListener('color-mode-change', () => updateColorMode(state));
+}
+
+/**
+ * Update color mode from data attribute.
+ */
+function updateColorMode(state: LandingPageState): void {
+  if (!state.renderer || !state.grid) return;
+
+  const colorMode = document.documentElement.dataset.colorMode;
+  if (colorMode === 'dark' || colorMode === 'light') {
+    state.renderer.setColorMode(colorMode);
+  } else {
+    state.renderer.setColorMode('system');
+  }
+  markFullRepaint(state.grid);
 }
 
 // =============================================================================
@@ -298,6 +303,7 @@ export function contributionGraphLandingPageRenderer(_container: HTMLElement): L
       }
 
       setupCanvas(state, container);
+      updateColorMode(state);
       updateExclusionZone(state);
 
       // Start ambient activity (always calm phase for landing)
