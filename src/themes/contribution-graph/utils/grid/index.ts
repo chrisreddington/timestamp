@@ -72,7 +72,7 @@ export function formatCountdown(
   cols: number
 ): string[] {
   const pad = (n: number) => n.toString().padStart(2, '0');
-  const daysStr = days.toString();
+  const daysStr = pad(days);
 
   const showDays = days > 0;
   const showHours = showDays || hours > 0;
