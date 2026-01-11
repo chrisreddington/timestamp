@@ -69,8 +69,8 @@ describe('formatCountdown', () => {
     {
       title: 'single line with days when space allows',
       input: { days: 1, hours: 2, minutes: 3, seconds: 4 },
-      cols: calculateLineWidth('1:02:03:04') + padding,
-      expected: ['1:02:03:04'],
+      cols: calculateLineWidth('01:02:03:04') + padding,
+      expected: ['01:02:03:04'],
     },
     {
       title: 'single line without days when hours exist',
