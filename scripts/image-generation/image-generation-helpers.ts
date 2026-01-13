@@ -1,5 +1,5 @@
-import { vi } from 'vitest';
 import type { Browser, Page } from 'playwright';
+import { vi } from 'vitest';
 
 /**
  * Creates a mock Playwright Page object for testing.
@@ -11,6 +11,7 @@ export function createMockPage(overrides?: Partial<Page>): Page {
     evaluate: vi.fn(),
     screenshot: vi.fn(),
     addInitScript: vi.fn(),
+    addStyleTag: vi.fn(),
     emulateMedia: vi.fn(),
     locator: vi.fn().mockReturnValue({
       isVisible: vi.fn().mockResolvedValue(false),

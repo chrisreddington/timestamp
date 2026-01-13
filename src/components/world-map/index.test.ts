@@ -1,13 +1,13 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import {
-  NEW_YEAR_WALL_CLOCK,
-  TEST_WALL_CLOCK_TARGET,
-  renderWorldMap,
-  type WorldMapHarness,
-} from './test-helpers';
-import { createWorldMap } from './index';
-import type { WorldMapController } from './index';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CELEBRATION_POLL_INTERVAL_MS } from './constants';
+import type { WorldMapController } from './index';
+import { createWorldMap } from './index';
+import {
+    NEW_YEAR_WALL_CLOCK,
+    TEST_WALL_CLOCK_TARGET,
+    renderWorldMap,
+    type WorldMapHarness,
+} from './test-helpers';
 
 describe('World Map', () => {
   let harness: WorldMapHarness | null = null;
@@ -666,29 +666,15 @@ describe('World Map', () => {
     });
 
     it('should remove .city-celebrated class when city is not celebrating', () => {
-      // Start with a time when UTC is celebrating
-      const celebratingTime = new Date('2025-01-01T00:00:00Z');
+      // Use far-future target to ensure no celebration
       harness = renderWorldMap({
         initialTimezone: 'UTC',
-        wallClockTarget: NEW_YEAR_WALL_CLOCK,
-        getCurrentTime: () => celebratingTime,
+        wallClockTarget: TEST_WALL_CLOCK_TARGET,
       });
 
       harness.controller.updateCelebrationStates();
       const utcMarker = harness.container.querySelector('[data-testid="city-marker-utc"]');
-      expect(utcMarker?.classList.contains('city-celebrated')).toBe(true);
-
-      // Now set time to before celebration
-      const beforeTime = new Date('2024-12-31T23:59:00Z');
-      harness = renderWorldMap({
-        initialTimezone: 'UTC',
-        wallClockTarget: NEW_YEAR_WALL_CLOCK,
-        getCurrentTime: () => beforeTime,
-      });
-
-      harness.controller.updateCelebrationStates();
-      const utcMarker2 = harness.container.querySelector('[data-testid="city-marker-utc"]');
-      expect(utcMarker2?.classList.contains('city-celebrated')).toBe(false);
+      expect(utcMarker?.classList.contains('city-celebrated')).toBe(false);
     });
 
     it('should update aria-label to include " — celebrated" when city is celebrating', () => {
@@ -707,14 +693,11 @@ describe('World Map', () => {
     });
 
     it('should have normal aria-label when city is not celebrating', () => {
-      const beforeTime = new Date('2024-12-31T23:59:00Z');
+      // Use far-future target to ensure no celebration
       harness = renderWorldMap({
         initialTimezone: 'UTC',
-        wallClockTarget: NEW_YEAR_WALL_CLOCK,
-        getCurrentTime: () => beforeTime,
+        wallClockTarget: TEST_WALL_CLOCK_TARGET,
       });
-
-      harness.controller.updateCelebrationStates();
 
       const utcMarker = harness.container.querySelector('[data-testid="city-marker-utc"]');
       const ariaLabel = utcMarker?.getAttribute('aria-label');

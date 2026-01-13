@@ -24,7 +24,9 @@ import {
   createSentinel,
   createThemeCard,
   destroyAllTooltips,
+  setupColorModeVideoListener,
   updateFavoriteButton,
+  updateVideosForColorMode,
 } from './card-builder';
 import {
   getCurrentFavorites,
@@ -50,10 +52,10 @@ import type {
   ThemeTab,
 } from './types';
 
-export type { ThemeSwitcherController as ThemePickerController,ThemeSwitcherOptions as ThemePickerOptions } from './picker-button';
 export { createThemePicker } from './picker-button';
-export type { ModalController,ThemeSwitcherModalOptions as ThemePickerModalOptions } from './picker-modal';
-export type { ThemeSelectorController,ThemeSelectorOptions } from './types';
+export type { ThemeSwitcherController as ThemePickerController, ThemeSwitcherOptions as ThemePickerOptions } from './picker-button';
+export type { ModalController, ThemeSwitcherModalOptions as ThemePickerModalOptions } from './picker-modal';
+export type { ThemeSelectorController, ThemeSelectorOptions } from './types';
 
 /** Number of cards to render immediately */
 const INITIAL_RENDER_COUNT = 12;
@@ -195,6 +197,9 @@ export function createThemeSelector(
     filterThemes(state);
     applySorting();
     renderActiveTab();
+    
+    // Set up listener for color mode changes to update video previews
+    setupColorModeVideoListener();
 
     return root;
   }
@@ -482,7 +487,7 @@ export function createThemeSelector(
     return rootEl;
   }
 
-  /** Update theme card preview images based on current color mode. */
+  /** Update theme card preview images and videos based on current color mode. */
   function updateColorMode(): void {
     if (!rootEl) return;
 
@@ -502,6 +507,9 @@ export function createThemeSelector(
         }
       }
     });
+    
+    // Also update video sources for the new color mode
+    updateVideosForColorMode();
   }
 
   /** Destroy component and clean up resources. */

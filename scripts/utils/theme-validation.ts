@@ -180,8 +180,8 @@ export function validateAuthorFormat(author: string | null): ValidationResult {
 // =============================================================================
 
 /**
- * Validate that a theme's preview images exist in the images/ subfolder.
- * Checks for both color modes and multiple sizes (card-1x, card-2x, readme).
+ * Validate that a theme's preview assets exist in the images/ subfolder.
+ * Checks for both color modes: card images (.webp) and preview videos (.webm).
  *
  * @param themeId - Theme ID to check
  * @param themesDir - Base themes directory path (default: src/themes)
@@ -197,14 +197,16 @@ export async function validatePreviewExists(
   // Images are now in the images/ subfolder
   const imagesDir = join(themesDir, themeId, 'images');
   
-  // Required preview files (card images for selector, readme for documentation)
+  // Required preview files:
+  // - Card images for theme selector (.webp)
+  // - Preview videos for theme modal (.webm)
   const requiredFiles = [
     'preview-dark-card-1x.webp',
     'preview-dark-card-2x.webp',
     'preview-light-card-1x.webp',
     'preview-light-card-2x.webp',
-    'preview-dark.webp',
-    'preview-light.webp',
+    'preview-dark.webm',
+    'preview-light.webm',
   ];
 
   const missingFiles: string[] = [];

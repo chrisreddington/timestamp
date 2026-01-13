@@ -65,6 +65,8 @@ export interface CountdownConfig {
   theme: ThemeId;
   timezone: string;
   showWorldMap?: boolean;
+  /** When true, hide all UI chrome (buttons, controls). For video recording. */
+  hideChrome?: boolean;
 }
 
 // ============================================================================
@@ -81,6 +83,8 @@ export interface DeepLinkParams {
   tz?: string;
   configure?: string;
   showWorldMap?: string;
+  /** When 'none', hides all UI chrome (buttons, controls). For video recording. */
+  chrome?: string;
 }
 
 /** Result of parsing deep-link parameters. */
@@ -89,6 +93,8 @@ export interface ParsedDeepLink {
   config?: CountdownConfig;
   errors?: string[];
   shouldShowConfiguration?: boolean;
+  /** When true, hide all UI chrome (buttons, controls). For video recording. */
+  hideChrome?: boolean;
 }
 
 // ============================================================================

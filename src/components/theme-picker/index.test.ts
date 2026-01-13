@@ -1,7 +1,7 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { Mock } from 'vitest';
-import { createThemeSelector } from './index';
 import type { ThemeId } from '@core/types';
+import type { Mock } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createThemeSelector } from './index';
 
 // Shared mutable fixtures used by mocks
 let mockFilteredThemes: ThemeId[] = [];
@@ -155,6 +155,9 @@ vi.mock('./card-builder', () => {
   });
 
   const destroyAllTooltips = vi.fn();
+  
+  const setupColorModeVideoListener = vi.fn();
+  const updateVideosForColorMode = vi.fn();
 
   return {
     createThemeCard,
@@ -165,6 +168,8 @@ vi.mock('./card-builder', () => {
     updateFavoriteButton,
     createContributeCard,
     destroyAllTooltips,
+    setupColorModeVideoListener,
+    updateVideosForColorMode,
   };
 });
 

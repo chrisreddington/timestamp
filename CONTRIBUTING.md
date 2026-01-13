@@ -84,7 +84,7 @@ files. The script automatically registers your theme - you just need to:
   provided
 - ✅ Support `prefers-reduced-motion` for accessibility - scaffold provided
 - ✅ Clean up all resources on destroy (no memory leaks) - scaffold provided
-- ✅ Generate preview images: `npm run theme generate:previews -- --theme=your-theme`
+- ✅ Generate preview images and videos: `npm run generate:previews -- --theme=your-theme`
 
 ### Theme CLI Commands
 
@@ -95,10 +95,12 @@ The unified theme CLI provides commands for validation and synchronization:
 npm run theme create <theme-name>           # Basic scaffold
 npm run theme create <theme-name> author    # With author name
 
-# Generate preview images (requires build first)
-npm run theme generate:previews             # All themes
-npm run theme generate:previews -- --theme=<id>   # Single theme
-npm run theme generate:previews -- --force  # Force regenerate
+# Generate preview images AND videos (requires build first)
+npm run generate:previews               # All themes (images + videos)
+npm run generate:previews -- --theme=<id>   # Single theme only
+npm run generate:previews -- --force    # Force regenerate all
+npm run generate:previews -- --media=images # Images only
+npm run generate:previews -- --media=videos # Videos only
 
 # Validation commands
 npm run theme validate              # All validations (colors + config)

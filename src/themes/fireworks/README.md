@@ -5,9 +5,9 @@
 > Countdown with fireworks that intensify as midnight approaches
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./images/preview-dark.webp">
-  <source media="(prefers-color-scheme: light)" srcset="./images/preview-light.webp">
-  <img alt="Fireworks Celebration theme preview" src="./images/preview-light.webp">
+  <source media="(prefers-color-scheme: dark)" srcset="./images/preview-dark-card-2x.webp">
+  <source media="(prefers-color-scheme: light)" srcset="./images/preview-light-card-2x.webp">
+  <img alt="Fireworks Celebration theme preview" src="./images/preview-light-card-2x.webp">
 </picture>
 
 ## Metadata

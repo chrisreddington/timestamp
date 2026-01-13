@@ -5,9 +5,9 @@
 > A countdown theme with a pulsing ring animation
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./images/preview-dark.webp">
-  <source media="(prefers-color-scheme: light)" srcset="./images/preview-light.webp">
-  <img alt="Ring theme preview" src="./images/preview-light.webp">
+  <source media="(prefers-color-scheme: dark)" srcset="./images/preview-dark-card-2x.webp">
+  <source media="(prefers-color-scheme: light)" srcset="./images/preview-light-card-2x.webp">
+  <img alt="Ring theme preview" src="./images/preview-light-card-2x.webp">
 </picture>
 
 ## Metadata

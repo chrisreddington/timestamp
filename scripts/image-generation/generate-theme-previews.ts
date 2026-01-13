@@ -8,7 +8,6 @@
  * Preview images are saved to each theme's `images/` subfolder:
  * - Card 1x: 426x240 (standard displays)
  * - Card 2x: 852x480 (retina/HiDPI displays)
- * - README: 1200x675 (documentation)
  *
  * Usage:
  *   npm run generate:previews                    # Generate all (skip existing)
@@ -36,22 +35,22 @@ Options:
   --theme <id>            Generate preview for specific theme
   --theme=<id>            Generate preview for specific theme
   --force, -f             Force overwrite existing previews
-  --size <type>           Image size: card (852x480), readme (1200x675), both (default)
-  --size=<type>           Image size: card, readme, or both
+  --media <type>          Media type: images, videos, or both (default)
+  --media=<type>          Media type to generate
   --color-mode <mode>     Color mode: dark, light, or both (default)
   --help, -h              Show this help message
 
-Image Sizes:
-  card                    852x480 - Optimized for theme selector cards (2x retina)
-  readme                  1200x675 - Optimized for README documentation (2x retina)
-  both                    Generate both sizes (default)
+Media Types:
+  images                  Generate WebP preview images only
+  videos                  Generate WebM preview videos only (~4-5s, <100KB)
+  both                    Generate both images and videos (default)
 
 Examples:
   npm run generate:previews                      # Generate all (skip existing)
   npm run generate:previews -- --force           # Force regenerate all
   npm run generate:previews -- fireworks         # Generate specific theme
-  npm run generate:previews -- --size=card       # Generate card-size only
-  npm run generate:previews -- --theme=fireworks --size=readme
+  npm run generate:previews -- --media=videos    # Generate videos only
+  npm run generate:previews -- --theme=fireworks --media=videos
 `);
   process.exit(0);
 }

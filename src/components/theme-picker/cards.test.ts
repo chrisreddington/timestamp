@@ -3,10 +3,29 @@
  * Tests APG Grid Pattern implementation with gridcells and rows.
  */
 
-import { describe, it, expect, vi } from 'vitest';
-import * as registry from '@themes/registry';
-import { createThemeCard, createContributeCard, updateFavoriteButton } from './cards';
 import type { ThemeId } from '@core/types';
+import * as registry from '@themes/registry';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  createContributeCard,
+  createThemeCard,
+  destroyVideoController,
+  updateFavoriteButton,
+} from './cards';
+
+beforeEach(() => {
+  // Mock window dimensions for desktop
+  Object.defineProperty(window, 'innerWidth', {
+    writable: true,
+    configurable: true,
+    value: 1024,
+  });
+});
+
+afterEach(() => {
+  destroyVideoController();
+  vi.restoreAllMocks();
+});
 
 describe('createThemeCard (Grid Pattern)', () => {
   const mockThemeId: ThemeId = 'contribution-graph';
@@ -212,8 +231,8 @@ describe('createThemeCard (Grid Pattern)', () => {
     expect(mockFav).toHaveBeenCalled();
   });
 
-  describe('LCP optimization (isLcpCandidate)', () => {
-    it('uses <img> with lazy loading by default (non-LCP)', () => {
+  describe('Video preview and LCP optimization', () => {
+    it('uses <video> element with preload="none" by default (lazy loading)', () => {
       const card = createThemeCard(
         mockThemeId,
         0,
@@ -224,15 +243,107 @@ describe('createThemeCard (Grid Pattern)', () => {
       );
 
       const selectCell = card.querySelector('.theme-selector-card') as HTMLElement;
-      const previewImg = selectCell?.querySelector('.theme-selector-card-preview-img') as HTMLImageElement;
+      const previewVideo = selectCell?.querySelector('.theme-selector-card-preview-video') as HTMLVideoElement;
       
-      expect(previewImg).toBeTruthy();
-      expect(previewImg?.tagName).toBe('IMG');
-      expect(previewImg?.loading).toBe('lazy');
-      expect(previewImg?.getAttribute('fetchpriority')).toBeNull();
+      expect(previewVideo).toBeTruthy();
+      expect(previewVideo?.tagName).toBe('VIDEO');
+      expect(previewVideo?.getAttribute('preload')).toBe('none');
     });
 
-    it('uses <img> with fetchpriority="high" when isLcpCandidate=true', () => {
+    it('video has poster image for fallback', () => {
+      const card = createThemeCard(
+        mockThemeId,
+        0,
+        mockThemeId,
+        mockOnCardClick,
+        mockOnFavoriteToggle,
+        mockOnCardKeydown
+      );
+
+      const previewVideo = card.querySelector('.theme-selector-card-preview-video') as HTMLVideoElement;
+      
+      expect(previewVideo?.poster).toBeTruthy();
+    });
+
+    it('video has muted and playsInline attributes', () => {
+      const card = createThemeCard(
+        mockThemeId,
+        0,
+        mockThemeId,
+        mockOnCardClick,
+        mockOnFavoriteToggle,
+        mockOnCardKeydown
+      );
+
+      const previewVideo = card.querySelector('.theme-selector-card-preview-video') as HTMLVideoElement;
+      
+      expect(previewVideo?.muted).toBe(true);
+      expect(previewVideo?.playsInline).toBe(true);
+    });
+
+    it('video is aria-hidden (decorative)', () => {
+      const card = createThemeCard(
+        mockThemeId,
+        0,
+        mockThemeId,
+        mockOnCardClick,
+        mockOnFavoriteToggle,
+        mockOnCardKeydown
+      );
+
+      const previewVideo = card.querySelector('.theme-selector-card-preview-video') as HTMLVideoElement;
+      
+      expect(previewVideo?.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    it('video has width/height hints to prevent layout shift', () => {
+      const card = createThemeCard(
+        mockThemeId,
+        0,
+        mockThemeId,
+        mockOnCardClick,
+        mockOnFavoriteToggle,
+        mockOnCardKeydown,
+        false
+      );
+
+      const previewVideo = card.querySelector('.theme-selector-card-preview-video') as HTMLVideoElement;
+      expect(previewVideo?.width).toBe(426);
+      expect(previewVideo?.height).toBe(240);
+    });
+
+    it('card has accessible name with theme name and "Preview video"', () => {
+      const card = createThemeCard(
+        mockThemeId,
+        0,
+        mockThemeId,
+        mockOnCardClick,
+        mockOnFavoriteToggle,
+        mockOnCardKeydown
+      );
+
+      const selectCell = card.querySelector('.theme-selector-card') as HTMLElement;
+      const ariaLabel = selectCell?.getAttribute('aria-label');
+      
+      expect(ariaLabel).toContain('Preview video');
+    });
+
+    it('includes play icon overlay', () => {
+      const card = createThemeCard(
+        mockThemeId,
+        0,
+        mockThemeId,
+        mockOnCardClick,
+        mockOnFavoriteToggle,
+        mockOnCardKeydown
+      );
+
+      const playIcon = card.querySelector('.theme-selector-card-play-icon');
+      expect(playIcon).toBeTruthy();
+      expect(playIcon?.getAttribute('aria-hidden')).toBe('true');
+    });
+
+    it('preloads poster with high priority when isLcpCandidate=true', () => {
       const card = createThemeCard(
         mockThemeId,
         0,
@@ -243,60 +354,23 @@ describe('createThemeCard (Grid Pattern)', () => {
         true // isLcpCandidate
       );
 
-      const selectCell = card.querySelector('.theme-selector-card') as HTMLElement;
-      const previewImg = selectCell?.querySelector('.theme-selector-card-preview-img') as HTMLImageElement;
-      
-      expect(previewImg).toBeTruthy();
-      expect(previewImg?.tagName).toBe('IMG');
-      expect(previewImg?.getAttribute('fetchpriority')).toBe('high');
-      expect(previewImg?.loading).toBe('eager');
-      expect(previewImg?.src).toBeTruthy();
+      // Should have a hidden img to preload poster
+      const posterPreload = card.querySelector('img[fetchpriority="high"]') as HTMLImageElement;
+      expect(posterPreload).toBeTruthy();
     });
 
-    it('non-LCP img has width/height hints to prevent layout shift', () => {
+    it('video has data-src for lazy source loading', () => {
       const card = createThemeCard(
         mockThemeId,
         0,
         mockThemeId,
         mockOnCardClick,
         mockOnFavoriteToggle,
-        mockOnCardKeydown,
-        false // non-LCP
+        mockOnCardKeydown
       );
 
-      const previewImg = card.querySelector('.theme-selector-card-preview-img') as HTMLImageElement;
-      expect(previewImg?.width).toBe(426);
-      expect(previewImg?.height).toBe(240);
-    });
-
-    it('img element is decorative (empty alt)', () => {
-      const card = createThemeCard(
-        mockThemeId,
-        0,
-        mockThemeId,
-        mockOnCardClick,
-        mockOnFavoriteToggle,
-        mockOnCardKeydown,
-        true
-      );
-
-      const previewImg = card.querySelector('.theme-selector-card-preview-img') as HTMLImageElement;
-      expect(previewImg?.alt).toBe('');
-    });
-
-    it('img element is not draggable', () => {
-      const card = createThemeCard(
-        mockThemeId,
-        0,
-        mockThemeId,
-        mockOnCardClick,
-        mockOnFavoriteToggle,
-        mockOnCardKeydown,
-        true
-      );
-
-      const previewImg = card.querySelector('.theme-selector-card-preview-img') as HTMLImageElement;
-      expect(previewImg?.draggable).toBe(false);
+      const previewVideo = card.querySelector('.theme-selector-card-preview-video') as HTMLVideoElement;
+      expect(previewVideo?.dataset.src).toBeTruthy();
     });
   });
 });
@@ -360,10 +434,6 @@ describe('updateFavoriteButton', () => {
 });
 
 describe('buildAuthorSection edge cases', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('omits author cell when registry returns null', () => {
     vi.spyOn(registry, 'getThemeAuthor').mockReturnValue(null);
 

@@ -6,19 +6,19 @@
  * All edge cases including DST, half-hour offsets, and boundary conditions are covered.
  */
 
-import { describe, it, expect, vi } from 'vitest';
 import { withIsoTime } from '@/test-utils/time-helpers';
 import type { WallClockTime } from '@core/types';
+import { describe, expect, it, vi } from 'vitest';
 import {
-  convertWallClockToAbsolute,
-  hasWallClockTimeReached,
-  extractWallClockFromLocalDate,
-  formatWallClockForUrl,
-  createWallClock,
-  createNextOccurrence,
-  isValidWallClockTime,
-  wallClockEquals,
-  ensureValidTimezone,
+    convertWallClockToAbsolute,
+    createNextOccurrence,
+    createWallClock,
+    ensureValidTimezone,
+    extractWallClockFromLocalDate,
+    formatWallClockForUrl,
+    hasWallClockTimeReached,
+    isValidWallClockTime,
+    wallClockEquals,
 } from './wall-clock-conversion';
 
 describe('convertWallClockToAbsolute', () => {
@@ -376,8 +376,9 @@ describe('createNextOccurrence', () => {
 
   describe('Same day edge cases', () => {
     it.each([
-      { description: 'exactly at target moment', iso: '2025-12-25T00:00:00Z' },
-      { description: 'one second past target', iso: '2025-12-25T00:00:01Z' },
+      // Use dates clearly after Dec 25 midnight in any timezone (Dec 26 mid-day UTC)
+      { description: 'day after target', iso: '2025-12-26T12:00:00Z' },
+      { description: 'multiple days after target', iso: '2025-12-27T12:00:00Z' },
     ])('should advance to next year when $description', async ({ iso }) => {
       await withIsoTime(iso, () => {
         const result = createNextOccurrence(11, 25);

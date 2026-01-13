@@ -29,7 +29,8 @@
     "knip:production": "knip --production",
     "test:stryker": "stryker run",
     "theme": "tsx scripts/theme-cli.ts",
-    "generate:og-images": "vite build && tsx scripts/utils/with-preview-server.ts scripts/image-generation/generate-og-images.ts"
+    "generate:og-images": "vite build && tsx scripts/utils/with-preview-server.ts scripts/image-generation/generate-og-images.ts",
+    "generate:previews": "vite build && tsx scripts/utils/with-preview-server.ts scripts/image-generation/generate-theme-previews.ts"
   },
   "keywords": [
     "timestamp",

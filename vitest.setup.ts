@@ -61,6 +61,20 @@ class MockResizeObserver {
 }
 vi.stubGlobal('ResizeObserver', MockResizeObserver);
 
+// Mock IntersectionObserver for jsdom environment (used by video-playback-controller)
+class MockIntersectionObserverSetup implements IntersectionObserver {
+  readonly root: Element | Document | null = null;
+  readonly rootMargin: string = '';
+  readonly thresholds: ReadonlyArray<number> = [];
+  
+  constructor(_callback: IntersectionObserverCallback) {}
+  observe = vi.fn();
+  unobserve = vi.fn();
+  disconnect = vi.fn();
+  takeRecords = vi.fn().mockReturnValue([]);
+}
+vi.stubGlobal('IntersectionObserver', MockIntersectionObserverSetup);
+
 // Mock canvas getContext to suppress jsdom warnings
 HTMLCanvasElement.prototype.getContext = vi.fn().mockReturnValue({
   fillRect: vi.fn(),

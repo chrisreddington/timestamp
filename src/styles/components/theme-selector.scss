@@ -171,9 +171,15 @@
   .theme-selector-card-overlay,
   .theme-selector-favorite-btn,
   .theme-selector-card-author,
-  .theme-selector-card-checkmark {
+  .theme-selector-card-checkmark,
+  .theme-selector-card-play-icon {
     transition: none !important;
     animation: none !important;
+  }
+
+  /* Hide play icon when reduced motion is preferred (shows poster only) */
+  .theme-selector-card-play-icon {
+    display: none !important;
   }
 }
 
@@ -223,6 +229,54 @@
   pointer-events: none;
 }
 
+/* Video preview element for animated theme previews */
+.theme-selector-card-preview-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  /* GPU layer for smooth playback/transitions */
+  will-change: opacity, transform;
+  /* Ensure poster image fills the space */
+  background-color: var(--color-surface);
+}
+
+/* Play icon overlay - visible when video is paused */
+.theme-selector-card-play-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(0 0 0 / 50%);
+  border-radius: 50%;
+  /* High contrast for accessibility (>3:1 against light and dark posters) */
+  color: rgb(255 255 255 / 90%);
+  opacity: 100%;
+  transition: opacity 0.2s ease-out;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.theme-selector-card-play-icon svg {
+  width: 32px;
+  height: 32px;
+  /* Slight offset to visually center play triangle */
+  margin-left: 2px;
+}
+
+/* Hide play icon when video is playing */
+.theme-selector-card-play-icon--hidden {
+  opacity: 0%;
+}
+
 .theme-selector-card:hover {
   border-color: var(--color-border-hover);
   transform: translateY(-2px);
@@ -230,12 +284,20 @@
 
 .theme-selector-card:focus {
   outline: 2px solid #58a6ff;
-  outline-offset: 2px;
+  outline-offset: 4px;
   border-color: #58a6ff;
+  z-index: 100;
 }
 
 .theme-selector-card:focus:not(:focus-visible) {
   outline: none;
+  z-index: auto;
+}
+
+.theme-selector-card:focus-visible {
+  outline: 2px solid var(--focus-color, #58a6ff);
+  outline-offset: 4px;
+  z-index: 100;
 }
 
 .theme-selector-card--selected {

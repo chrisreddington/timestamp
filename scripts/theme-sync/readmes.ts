@@ -80,15 +80,15 @@ function generateThemePreviewPicture(themeId: string, themeName: string, basePat
   const lightImg =
     basePath !== undefined
       ? basePath === ''
-        ? `${themeId}/images/preview-light.webp`
-        : `${basePath}/images/preview-light.webp`
-      : './images/preview-light.webp';
+        ? `${themeId}/images/preview-light-card-2x.webp`
+        : `${basePath}/images/preview-light-card-2x.webp`
+      : './images/preview-light-card-2x.webp';
   const darkImg =
     basePath !== undefined
       ? basePath === ''
-        ? `${themeId}/images/preview-dark.webp`
-        : `${basePath}/images/preview-dark.webp`
-      : './images/preview-dark.webp';
+        ? `${themeId}/images/preview-dark-card-2x.webp`
+        : `${basePath}/images/preview-dark-card-2x.webp`
+      : './images/preview-dark-card-2x.webp';
 
   return `<picture>
   <source media="(prefers-color-scheme: dark)" srcset="${darkImg}">

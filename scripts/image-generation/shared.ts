@@ -3,8 +3,8 @@
  * Contains common helpers for browser setup, registry access, and URL building
  */
 
-import { register } from 'node:module';
 import { existsSync } from 'node:fs';
+import { register } from 'node:module';
 import type { Browser, Page } from 'playwright';
 import { chromium } from 'playwright';
 import type { ThemeRegistryEntry } from '../../src/themes/registry/index';
@@ -129,15 +129,21 @@ export function extractThemeData(registry: ThemeRegistry): ThemeData[] {
  * @param themeId - Theme identifier
  * @param message - Completion message to display
  * @param timerDurationSeconds - Timer duration in seconds (defaults to TIMER_DURATION_SECONDS)
+ * @param hideChrome - When true, adds chrome=none to hide all UI elements (for video recording)
  * @returns Fully constructed URL with query parameters
  */
 export function buildCountdownUrl(
   baseUrl: string,
   themeId: string,
   message: string,
-  timerDurationSeconds: number = TIMER_DURATION_SECONDS
+  timerDurationSeconds: number = TIMER_DURATION_SECONDS,
+  hideChrome = false
 ): string {
-  return `${baseUrl}/?mode=timer&duration=${timerDurationSeconds}&theme=${themeId}&message=${encodeURIComponent(message)}`;
+  let url = `${baseUrl}/?mode=timer&duration=${timerDurationSeconds}&theme=${themeId}&message=${encodeURIComponent(message)}`;
+  if (hideChrome) {
+    url += '&chrome=none';
+  }
+  return url;
 }
 
 /**
@@ -213,6 +219,11 @@ export const UI_ELEMENTS_TO_HIDE = [
   '[data-testid="offline-indicator"]',
   '[data-testid="fullscreen-button"]',
   '[data-testid="exit-fullscreen-button"]',
+  '[data-testid="mobile-menu-button"]',
+  '[data-testid="timer-play-pause"]',
+  '[data-testid="timer-reset"]',
+  '[data-testid="fullscreen-timer-controls"]',
+  '[data-testid="color-mode-toggle"]',
   // Class selectors (fallback)
   '.share-button',
   '.back-button',
@@ -222,20 +233,43 @@ export const UI_ELEMENTS_TO_HIDE = [
   '.countdown-button-container',
   '.fullscreen-button',
   '.exit-fullscreen-button',
+  '.mobile-menu-button',
+  '.hamburger-button',
+  '.timer-controls',
+  '.fullscreen-timer-controls',
+  '.color-mode-toggle',
   // PWA update prompt (may appear in dev)
   '.update-prompt-container',
+  // Additional button containers
+  '.countdown-buttons',
+  '.button-container',
+  'button',
+  // Header elements
+  'header',
+  '.header',
+  '[role="banner"]',
 ] as const;
 
 /**
  * Hides UI chrome elements that shouldn't appear in generated images.
- * Executes in the browser context to hide buttons, selectors, etc.
+ * Uses CSS injection for persistent hiding across all frames.
  * @param page - Playwright page instance
  */
 export async function hideUIElements(page: Page): Promise<void> {
+  // Inject CSS with !important to ensure elements stay hidden
+  await page.addStyleTag({
+    content: UI_ELEMENTS_TO_HIDE.map(selector => 
+      `${selector} { display: none !important; visibility: hidden !important; opacity: 0 !important; }`
+    ).join('\n'),
+  });
+  
+  // Also directly hide all matching elements (belt and suspenders approach)
   await page.evaluate((selectors: readonly string[]) => {
     selectors.forEach((selector) => {
-      const el = document.querySelector(selector);
-      if (el) (el as HTMLElement).style.display = 'none';
+      // Use querySelectorAll to hide ALL matching elements, not just the first
+      document.querySelectorAll(selector).forEach((el) => {
+        (el as HTMLElement).style.cssText = 'display: none !important; visibility: hidden !important; opacity: 0 !important;';
+      });
     });
   }, UI_ELEMENTS_TO_HIDE);
 }

@@ -248,6 +248,11 @@ export function createOrchestrator(options: OrchestratorOptions): Orchestrator {
   }
 
   async function setupUiLayerAndChrome(): Promise<void> {
+    // Skip ALL UI chrome when hideChrome is set (for video recording)
+    if (options.config?.hideChrome) {
+      return;
+    }
+
     const uiFactoryOptions = buildUiFactoryOptions(currentThemeId);
     
     const ui = createUIComponents(uiFactoryOptions);

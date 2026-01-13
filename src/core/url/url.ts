@@ -87,6 +87,9 @@ export function parseDeepLink(url?: string): ParsedDeepLink {
     return { isValid: false, errors };
   }
 
+  // Parse chrome visibility parameter (chrome=none hides all UI)
+  const hideChrome = params.chrome === 'none';
+
   const config: CountdownConfig = {
     mode,
     targetDate,
@@ -96,12 +99,14 @@ export function parseDeepLink(url?: string): ParsedDeepLink {
     theme,
     timezone,
     showWorldMap: parseBooleanParam(params.showWorldMap, true),
+    hideChrome,
   };
 
   return {
     isValid: true,
     config,
     shouldShowConfiguration: parseBooleanParam(params.configure, false),
+    hideChrome,
   };
 }
 

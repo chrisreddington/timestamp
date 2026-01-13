@@ -47,7 +47,7 @@ This single command creates everything you need:
 | What's Created | Purpose |
 |----------------|---------|
 | Theme folder structure | Organized files ready to customize |
-| Registry entry | Your theme appears in the theme selector and benefits from automatic generation of preview images / READMEs |
+| Registry entry | Your theme appears in the theme selector and benefits from automatic generation of preview images, videos, and READMEs |
 | Unit tests | Pre-configured test files |
 | E2E test | Mobile viewport test ready to run |
 
@@ -61,13 +61,35 @@ Open: `http://localhost:5173/?mode=timer&duration=30&theme=my-awesome-theme`
 
 🎉 **You now have a working theme.** The rest of this guide explains how to customize it.
 
-### Step 3: Generate Preview Image
+### Step 3: Generate Preview Images and Videos
 
 ```bash
 npm run generate:previews -- --theme=my-awesome-theme
 ```
 
-This captures a preview for the theme selector, so no need to edit the perfect screenshot to capture your work!
+This generates both preview images AND animated video previews for the theme selector. The videos show your theme counting down and celebrating, giving users a preview of the experience before selecting your theme.
+
+Output files in `src/themes/my-awesome-theme/images/`:
+- `preview-dark.webm` / `preview-light.webm` — Animated video previews (~5s, shows countdown→celebration)
+- `preview-dark-card-1x.webp` / `preview-light-card-1x.webp` — Card images (426×240)
+- `preview-dark-card-2x.webp` / `preview-light-card-2x.webp` — Retina card images (852×480)
+
+#### Optional: Video Compression with ffmpeg
+
+For complex themes with many animations (like Fireworks), videos can be 500KB+. Installing ffmpeg enables automatic compression that typically reduces file sizes by 40-60%:
+
+```bash
+# macOS (with Homebrew)
+brew install ffmpeg
+
+# Ubuntu/Debian
+sudo apt install ffmpeg
+
+# Windows (with Chocolatey)
+choco install ffmpeg
+```
+
+The generator will automatically use ffmpeg if available. Without ffmpeg, videos still work but are larger.
 
 ## Understanding Your Theme's Structure
 
@@ -426,7 +448,7 @@ Before contributing your theme, verify:
 - [ ] `renderers/landing-page-renderer.ts` implements background
 - [ ] `config/index.ts` has complete metadata
 - [ ] `styles.css` has your styles
-- [ ] `images/` folder has preview images (run `npm run generate:previews -- --theme=your-theme`)
+- [ ] `images/` folder has preview images AND videos (run `npm run generate:previews -- --theme=your-theme`)
 
 ### Functionality
 - [ ] All `data-testid` selectors present
@@ -450,7 +472,7 @@ Before contributing your theme, verify:
 |---------|---------|
 | `npm run theme create <name> <author>` | Generate new theme |
 | `npm run dev` | Start dev server |
-| `npm run generate:previews -- --theme=<name>` | Generate preview image |
+| `npm run generate:previews -- --theme=<name>` | Generate preview images and videos |
 | `npm run test -- <theme-name>` | Run theme's unit tests |
 | `npm run validate:iteration` | Full validation |
 
