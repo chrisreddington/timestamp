@@ -52,10 +52,10 @@ import type {
   ThemeTab,
 } from './types';
 
-export type { ThemeSwitcherController as ThemePickerController,ThemeSwitcherOptions as ThemePickerOptions } from './picker-button';
 export { createThemePicker } from './picker-button';
-export type { ModalController,ThemeSwitcherModalOptions as ThemePickerModalOptions } from './picker-modal';
-export type { ThemeSelectorController,ThemeSelectorOptions } from './types';
+export type { ThemeSwitcherController as ThemePickerController, ThemeSwitcherOptions as ThemePickerOptions } from './picker-button';
+export type { ModalController, ThemeSwitcherModalOptions as ThemePickerModalOptions } from './picker-modal';
+export type { ThemeSelectorController, ThemeSelectorOptions } from './types';
 
 /** Number of cards to render immediately */
 const INITIAL_RENDER_COUNT = 12;

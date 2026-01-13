@@ -3,7 +3,7 @@
  * Tests image and video URL generation for theme selector cards.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { getPreviewUrls, getVideoUrls } from './preview-map';
 
 // =============================================================================

@@ -3,13 +3,13 @@
  * Tests validation logic and argument parsing for video preview generation.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { mkdirSync, rmSync, writeFileSync } from 'fs';
 import { resolve } from 'path';
-import { mkdirSync, writeFileSync, rmSync } from 'fs';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
-  validateVideoFile,
-  parsePreviewArgs,
   buildVideoFilename,
+  parsePreviewArgs,
+  validateVideoFile,
   VIDEO_CONFIG,
 } from './theme-previews';
 

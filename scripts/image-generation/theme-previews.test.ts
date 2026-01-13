@@ -1,26 +1,25 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { Page } from 'playwright';
-import {
-  IMAGE_SIZES,
-  IMAGES_SUBFOLDER,
-  buildPreviewConfig,
-  parsePreviewArgs,
-  previewExists,
-  captureThemePreviewScreenshot,
-  generateThemePreview,
-  generateThemePreviews,
-  createPreviewPage,
-  buildPreviewFilename,
-  type PreviewConfig,
-  type PreviewOptions,
-} from './theme-previews';
-import {
-  UI_ELEMENTS_TO_HIDE,
-  hideUIElements,
-} from './shared';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createMockBrowser, createMockPage, createMockRegistry } from './image-generation-helpers';
 import * as shared from './shared';
-import * as themePreviews from './theme-previews';
-import { createMockPage, createMockBrowser, createMockRegistry } from './image-generation-helpers';
+import {
+    UI_ELEMENTS_TO_HIDE,
+    hideUIElements,
+} from './shared';
+import {
+    IMAGES_SUBFOLDER,
+    IMAGE_SIZES,
+    buildPreviewConfig,
+    buildPreviewFilename,
+    captureThemePreviewScreenshot,
+    createPreviewPage,
+    generateThemePreview,
+    generateThemePreviews,
+    parsePreviewArgs,
+    previewExists,
+    type PreviewConfig,
+    type PreviewOptions,
+} from './theme-previews';
 
 /** Capture dimensions (full resolution before resize) */
 const CAPTURE_WIDTH = 1600;

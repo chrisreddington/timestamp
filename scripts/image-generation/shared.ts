@@ -3,8 +3,8 @@
  * Contains common helpers for browser setup, registry access, and URL building
  */
 
-import { register } from 'node:module';
 import { existsSync } from 'node:fs';
+import { register } from 'node:module';
 import type { Browser, Page } from 'playwright';
 import { chromium } from 'playwright';
 import type { ThemeRegistryEntry } from '../../src/themes/registry/index';

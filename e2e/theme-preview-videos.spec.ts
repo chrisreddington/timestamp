@@ -5,7 +5,7 @@
  * on both desktop and mobile viewports.
  */
 
-import { test, expect } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 // =============================================================================
 // Test Setup

@@ -3,15 +3,15 @@
  * Tests APG Grid Pattern implementation with gridcells and rows.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import * as registry from '@themes/registry';
-import {
-  createThemeCard,
-  createContributeCard,
-  updateFavoriteButton,
-  destroyVideoController,
-} from './cards';
 import type { ThemeId } from '@core/types';
+import * as registry from '@themes/registry';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  createContributeCard,
+  createThemeCard,
+  destroyVideoController,
+  updateFavoriteButton,
+} from './cards';
 
 beforeEach(() => {
   // Mock window dimensions for desktop

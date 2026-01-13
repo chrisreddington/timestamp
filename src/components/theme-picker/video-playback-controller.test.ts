@@ -3,12 +3,11 @@
  * Tests state machine transitions, concurrent limits, and reduced motion support.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   VideoPlaybackController,
-  prefersReducedMotion,
   isMobileViewport,
-  type PlaybackState,
+  prefersReducedMotion
 } from './video-playback-controller';
 
 // =============================================================================

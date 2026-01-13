@@ -13,23 +13,23 @@
  * Video previews show countdown→celebration transition with WebM format (supported by all modern browsers).
  */
 
-import type { Browser, Page } from 'playwright';
-import { resolve } from 'path';
 import { mkdirSync, statSync, unlinkSync } from 'fs';
+import { resolve } from 'path';
+import type { Browser, Page } from 'playwright';
 import sharp from 'sharp';
 import {
-  CAPTURE_DELAY_MS,
-  createBrowser,
-  createPage,
-  buildCountdownUrl,
-  extractThemeData,
-  fileExists,
-  hideUIElements,
-  loadThemeRegistry,
-  registerWebpMockLoader,
-  resolvePortAndBaseUrl,
-  type BaseImageConfig,
-  type ThemeData,
+    buildCountdownUrl,
+    CAPTURE_DELAY_MS,
+    createBrowser,
+    createPage,
+    extractThemeData,
+    fileExists,
+    hideUIElements,
+    loadThemeRegistry,
+    registerWebpMockLoader,
+    resolvePortAndBaseUrl,
+    type BaseImageConfig,
+    type ThemeData,
 } from './shared';
 
 // =============================================================================
