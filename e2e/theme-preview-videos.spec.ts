@@ -47,9 +47,9 @@ test.describe('Theme Preview Videos - Interaction', () => {
 
   test('video is muted for autoplay compatibility', async ({ page }) => {
     const video = page.locator('.theme-selector-card video').first();
-    const muted = await video.getAttribute('muted');
-    // muted attribute can be empty string or 'true'
-    expect(muted !== null).toBe(true);
+    // muted is set as a property, not an attribute, so we evaluate it directly
+    const isMuted = await video.evaluate((v: HTMLVideoElement) => v.muted);
+    expect(isMuted).toBe(true);
   });
 
   test('video has aria-hidden for accessibility', async ({ page }) => {
@@ -93,11 +93,12 @@ test.describe('Theme Preview Videos - Accessibility', () => {
   });
 
   test('theme card has accessible name including theme name', async ({ page }) => {
-    // Find the contribution-graph card
-    const card = page.locator('[data-theme-id="contribution-graph"]');
-    await expect(card).toBeVisible();
-
-    // Should have accessible name via aria-label
+    // Find the contribution-graph row, then get the select cell which has aria-label
+    const row = page.locator('[data-theme-id="contribution-graph"]');
+    await expect(row).toBeVisible();
+    
+    // The aria-label is on the .theme-selector-card (selectCell) inside the row
+    const card = row.locator('.theme-selector-card');
     const ariaLabel = await card.getAttribute('aria-label');
     expect(ariaLabel).toContain('Contribution Graph');
   });
@@ -160,11 +161,32 @@ test.describe('Theme Preview Videos - Accessibility', () => {
 // Mobile Viewport Tests (Step 8.3)
 // =============================================================================
 
+/** Helper to open theme picker modal on mobile (via hamburger menu) */
+async function openThemePickerMobile(page: import('@playwright/test').Page) {
+  // Navigate to a page with theme picker
+  await page.goto('/?mode=timer&duration=300&theme=contribution-graph');
+
+  // On mobile, the theme-switcher is hidden behind hamburger menu
+  // Click the hamburger menu button first
+  const hamburgerButton = page.getByRole('button', { name: /menu/i });
+  await expect(hamburgerButton).toBeVisible();
+  await hamburgerButton.click();
+
+  // Wait for mobile menu overlay to be visible
+  await expect(page.locator('.mobile-menu-overlay')).toBeVisible();
+
+  // Click theme picker button in the mobile menu
+  await page.getByTestId('theme-switcher').click();
+
+  // Wait for modal to be visible
+  await expect(page.getByTestId('theme-modal')).toBeVisible();
+}
+
 test.describe('Theme Preview Videos - Mobile', () => {
   test.use({ viewport: { width: 375, height: 667 } });
 
   test.beforeEach(async ({ page }) => {
-    await openThemePicker(page);
+    await openThemePickerMobile(page);
   });
 
   test('video elements have correct dimensions', async ({ page }) => {
@@ -250,8 +272,8 @@ test.describe('Theme Preview Videos - Modal Close', () => {
     // Wait for modal to close
     await expect(page.getByRole('dialog')).not.toBeVisible();
 
-    // Reopen modal
-    const themeButton = page.getByRole('button', { name: /change theme/i });
+    // Reopen modal using the theme-switcher button
+    const themeButton = page.getByTestId('theme-switcher');
     await themeButton.click();
     await expect(page.getByRole('dialog')).toBeVisible();
 

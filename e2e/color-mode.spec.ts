@@ -3,8 +3,8 @@
  * Tests visibility, interactions, CSS variable application, and persistence.
  */
 
-import { test, expect, type Page } from '@playwright/test';
-import { buildDeepLinkUrl, waitForCountdown, waitForLandingPage } from './fixtures/test-utils';
+import { expect, test, type Page } from '@playwright/test';
+import { waitForCountdown, waitForLandingPage } from './fixtures/test-utils';
 
 const FUTURE_TARGET = new Date('2099-01-01T00:00:00').toISOString().slice(0, -1);
 
@@ -227,37 +227,37 @@ test.describe('Color Mode Toggle - Fullscreen Mode', () => {
   });
 });
 
-test.describe('Color Mode Toggle - Theme Preview Images', () => {
-  test('should switch theme preview images when color mode changes', async ({ page }) => {
+test.describe('Color Mode Toggle - Theme Preview Videos', () => {
+  test('should switch theme preview video posters when color mode changes', async ({ page }) => {
     await page.goto('/');
     await waitForLandingPage(page);
 
-    // Get the first theme card's preview image (all cards now use img elements)
-    const previewImg = page.locator('.theme-selector-card-preview-img').first();
-    await expect(previewImg).toBeVisible();
+    // Get the first theme card's preview video (cards now use video elements)
+    const previewVideo = page.locator('.theme-selector-card-preview-video').first();
+    await expect(previewVideo).toBeVisible();
 
     // Select light mode
     const lightOption = page.locator('button[data-mode="light"]');
     await lightOption.click();
     await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'light');
 
-    // Get the src in light mode
-    const lightModeUrl = await previewImg.getAttribute('src');
+    // Get the poster in light mode
+    const lightModePoster = await previewVideo.getAttribute('poster');
 
     // Switch to dark mode
     const darkOption = page.locator('button[data-mode="dark"]');
     await darkOption.click();
     await expect(page.locator('html')).toHaveAttribute('data-color-mode', 'dark');
 
-    // Wait for the image src to update
-    await expect.poll(() => previewImg.getAttribute('src')).toMatch(/preview-dark/);
+    // Wait for the poster to update
+    await expect.poll(() => previewVideo.getAttribute('poster')).toMatch(/preview-dark/);
 
-    const darkModeUrl = await previewImg.getAttribute('src');
+    const darkModePoster = await previewVideo.getAttribute('poster');
 
-    // URLs should be different (light vs dark preview)
-    expect(lightModeUrl).not.toBe(darkModeUrl);
-    expect(lightModeUrl).toContain('preview-light');
-    expect(darkModeUrl).toContain('preview-dark');
+    // Posters should be different (light vs dark preview)
+    expect(lightModePoster).not.toBe(darkModePoster);
+    expect(lightModePoster).toContain('preview-light');
+    expect(darkModePoster).toContain('preview-dark');
   });
   // Removed preview-mode duplication tests that checked initial system preference and bulk card updates.
 });

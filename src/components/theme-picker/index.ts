@@ -52,8 +52,8 @@ import type {
   ThemeTab,
 } from './types';
 
-export { createThemePicker } from './picker-button';
 export type { ThemeSwitcherController as ThemePickerController, ThemeSwitcherOptions as ThemePickerOptions } from './picker-button';
+export { createThemePicker } from './picker-button';
 export type { ModalController, ThemeSwitcherModalOptions as ThemePickerModalOptions } from './picker-modal';
 export type { ThemeSelectorController, ThemeSelectorOptions } from './types';
 
