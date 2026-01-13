@@ -44,9 +44,20 @@ function celebrationLineWidth(text: string): number {
 
 /**
  * Clean message text (uppercase, alphanumeric + common punctuation).
+ * Also decodes common HTML entities to handle cases where they might be present.
  */
 function cleanMessage(message: string): string {
-  return message
+  // First decode common HTML entities that might have leaked in
+  const decoded = message
+    .replace(/&#39;/g, "'")  // Apostrophe
+    .replace(/&apos;/g, "'") // Alternative apostrophe entity
+    .replace(/&#x27;/g, "'") // Hex apostrophe entity
+    .replace(/&quot;/g, '"') // Quote
+    .replace(/&amp;/g, '&')  // Ampersand
+    .replace(/&lt;/g, '<')   // Less than
+    .replace(/&gt;/g, '>');  // Greater than
+
+  return decoded
     .toUpperCase()
     .replace(/[^A-Z0-9 .,!?'-]/g, '')
     .trim();
