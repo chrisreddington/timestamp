@@ -105,6 +105,110 @@ export function isRendererReady(state: BaseRendererState): boolean {
 
 ---
 
+## Canvas-Based Theme Patterns
+
+### Color Mode Initialization for Canvas Renderers
+
+Canvas-based themes that need color-aware palettes must handle color mode initialization carefully to avoid race conditions.
+
+#### The Problem: Landing Page Initialization Race
+
+On the **landing page**, the color mode might not be set in the DOM when your renderer mounts:
+
+```typescript
+// ❌ WRONG: DOM attribute may not be set yet
+function mount(container: HTMLElement, context?: MountContext): void {
+  setupCanvas(state, container);
+  // This reads data-color-mode, but it might not exist yet!
+  updateColorMode(state);
+}
+```
+
+**Why this happens:**
+1. Line 531 in `landing-page/index.ts`: `initializeBackground()` mounts your renderer
+2. Your `mount()` tries to read `document.documentElement.dataset.colorMode`
+3. Line 534 in `landing-page/index.ts`: `applyInitialThemeColors()` sets the attribute ❌ **Too late!**
+
+#### The Solution: Use MountContext.colorMode
+
+The `MountContext` interface includes an optional `colorMode` field that's resolved BEFORE your renderer mounts:
+
+```typescript
+interface MountContext {
+  getAnimationState: AnimationStateGetter;
+  exclusionElement?: HTMLElement;
+  colorMode?: ResolvedColorMode;  // 'light' | 'dark'
+}
+```
+
+**Use it in your landing page renderer:**
+
+```typescript
+// ✅ CORRECT: Use colorMode from context
+function setupCanvas(state: LandingPageState, container: HTMLElement, initialColorMode?: 'dark' | 'light'): void {
+  state.renderer = createCanvasRenderer();
+  
+  const { width, height } = getViewportDimensions();
+  state.grid = createCanvasGridState(width, height);
+  state.renderer.resize(state.grid);
+
+  // Set initial color mode if provided from context
+  if (initialColorMode) {
+    state.renderer.setColorMode(initialColorMode);
+  } else {
+    // Fallback: derive from data attribute if context didn't provide it
+    updateColorMode(state);
+  }
+
+  container.appendChild(state.renderer.canvas);
+  // ... rest of setup
+}
+
+// In your mount method:
+mount(container: HTMLElement, context?: MountContext): void {
+  // Pass colorMode through to setupCanvas
+  setupCanvas(state, container, context?.colorMode);
+  // ...
+}
+```
+
+#### When This Pattern Applies
+
+| Renderer Type | Needs colorMode? | Reason |
+|---------------|------------------|--------|
+| **Landing page renderer** with canvas | ✅ **Required** | Prevents flash of wrong colors on page load |
+| **Time page renderer** with canvas | ⚠️ Optional | Time page is initialized after color mode is set, but using `context.colorMode` is cleaner |
+| **Simple DOM-based renderers** | ❌ Not needed | CSS custom properties handle color modes automatically |
+
+#### Complete Example
+
+See the Contribution Graph theme for a working implementation:
+
+📖 **Reference:** `src/themes/contribution-graph/renderers/landing-page-renderer.ts`
+
+**Key points:**
+1. Accept `initialColorMode` parameter in `setupCanvas()`
+2. Set color mode BEFORE any rendering
+3. Keep DOM reading as fallback for time page compatibility
+4. Continue listening to `color-mode-change` events for user toggles
+
+```typescript
+// Color mode listener for runtime changes
+const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+state.colorModeListener = () => {
+  if (state.renderer && state.grid) {
+    state.renderer.setColorMode('system');
+    markFullRepaint(state.grid);
+  }
+};
+mediaQuery.addEventListener('change', state.colorModeListener);
+
+// Listen for color mode toggle changes
+document.addEventListener('color-mode-change', () => updateColorMode(state));
+```
+
+---
+
 ## Performance Patterns
 
 ### Core Principle: Compositor-Only Properties

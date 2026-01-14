@@ -214,7 +214,7 @@ function stopAnimationLoop(state: LandingPageState): void {
 /**
  * Setup canvas and mount to container.
  */
-function setupCanvas(state: LandingPageState, container: HTMLElement): void {
+function setupCanvas(state: LandingPageState, container: HTMLElement, initialColorMode?: 'dark' | 'light'): void {
   // Create renderer
   state.renderer = createCanvasRenderer();
 
@@ -226,6 +226,14 @@ function setupCanvas(state: LandingPageState, container: HTMLElement): void {
 
   // Resize canvas
   state.renderer.resize(state.grid);
+
+  // Set initial color mode if provided from context
+  if (initialColorMode) {
+    state.renderer.setColorMode(initialColorMode);
+  } else {
+    // Fallback: derive from data attribute if context didn't provide it
+    updateColorMode(state);
+  }
 
   // Mount canvas
   container.appendChild(state.renderer.canvas);
@@ -302,8 +310,8 @@ export function contributionGraphLandingPageRenderer(_container: HTMLElement): L
         state.prefersReducedMotion = animState.prefersReducedMotion;
       }
 
-      setupCanvas(state, container);
-      updateColorMode(state);
+      // Setup canvas with initial color mode from context (if provided)
+      setupCanvas(state, container, context?.colorMode);
       updateExclusionZone(state);
 
       // Start ambient activity (always calm phase for landing)
