@@ -13,7 +13,7 @@
 /**
  * Theme IDs - derived from THEME_REGISTRY keys.
  */
-const THEME_IDS = ["contribution-graph","fireworks","ring"] as const;
+const THEME_IDS = ["akhil-square-shadow","contribution-graph","fireworks","ring"] as const;
 
 export type ThemeId = (typeof THEME_IDS)[number];
 
@@ -26,6 +26,10 @@ export interface ThemeFixture {
  * Theme fixtures derived from THEME_REGISTRY configs.
  */
 export const THEME_FIXTURES: ThemeFixture[] = [
+  {
+    id: "akhil-square-shadow",
+    supportsWorldMap: false
+  },
   {
     id: "contribution-graph",
     supportsWorldMap: true

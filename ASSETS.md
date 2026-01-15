@@ -9,7 +9,7 @@ Libraries used in the production application.
 | Name | Source URL | License | Description |
 |------|------------|---------|-------------|
 | @primer/octicons | [GitHub Octicons](https://primer.style/foundations/icons) | MIT | GitHub's icon library used for UI icons |
-| suncalc | [mourner/suncalc](https://github.com/mourner/suncalc) | BSD-2-Clause | Sun position and day/night calculations for world map |
+| suncalc | [mourner/suncalc](https://github.com/mourner/suncalc) | BSD-2-Clause | Sun position calculations for world map and Sun/Moon Shadow theme |
 
 ## Development Dependencies
 
@@ -29,6 +29,7 @@ Dependencies used by specific themes. See each theme's README for details.
 | Theme | Dependency | Source URL | License |
 |-------|------------|------------|---------|
 | Fireworks | fireworks-js | [crashmax-dev/fireworks-js](https://github.com/crashmax-dev/fireworks-js) | MIT |
+| Sun/Moon Shadow | suncalc | [mourner/suncalc](https://github.com/mourner/suncalc) | BSD-2-Clause |
 
 ## Data Sources
 

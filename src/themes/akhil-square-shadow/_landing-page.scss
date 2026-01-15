@@ -1,0 +1,59 @@
+/**
+ * Landing Page Background
+ *
+ * Styles for the ambient sky background on the landing page.
+ */
+
+// IMPORTANT: Use position: fixed (not relative) so background is positioned relative to viewport,
+// not the scrollable landing-page container. This ensures the sky background fills the screen.
+.landing-theme-background--akhil-square-shadow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: var(--shadow-theme-day-sky);
+  overflow: hidden;
+
+  // Transition to night sky when is-night class is applied
+  &.is-night {
+    background: var(--shadow-theme-night-sky);
+  }
+
+  // Add subtle animated gradient for landing
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      45deg,
+      rgba(255, 215, 0, 0.1) 0%,
+      transparent 50%,
+      rgba(147, 112, 219, 0.1) 100%
+    );
+    animation: landing-shimmer 8s ease-in-out infinite;
+  }
+
+  &.is-paused {
+    &::after {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes landing-shimmer {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-theme-background--akhil-square-shadow::after {
+    animation: none;
+    opacity: 0.4;
+  }
+}
