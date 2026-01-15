@@ -443,6 +443,9 @@ export function createShadowOverlay(
       setStatus('Invalid coordinates');
       coords = null;
       setField('shadow', 'Valid coordinates needed');
+      setStatus('Coordinates required - enter latitude and longitude');
+      coords = null;
+      setField('shadow', 'Valid coordinates needed');
       setField('altitude', '–');
       setField('azimuth', '–');
       setField('time', '–');

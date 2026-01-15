@@ -14,8 +14,8 @@ import type { ThemeConfig } from '@themes/shared/types';
 // ANIMATION CONSTANTS
 // =============================================================================
 
-/** Sun/Moon orbit duration in milliseconds (1 minute = 60000ms for demo). */
-export const ORBIT_DURATION_MS = 60000;
+/** Sun/Moon orbit duration in milliseconds (5 minutes = 300000ms for natural animation). */
+export const ORBIT_DURATION_MS = 300000;
 
 /** Sun arc angles (degrees from horizontal). */
 export const SUN_START_ANGLE = 180; // Left horizon

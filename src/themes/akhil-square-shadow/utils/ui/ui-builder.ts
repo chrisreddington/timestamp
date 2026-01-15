@@ -218,11 +218,11 @@ export function buildThemeDOM(container: HTMLElement): ThemeElements {
     hoursUnit,
     minutesUnit,
     secondsUnit,
-    // Pre-cache .value elements
-    daysValue: daysUnit.querySelector('.shadow-value') as HTMLElement,
-    hoursValue: hoursUnit.querySelector('.shadow-value') as HTMLElement,
-    minutesValue: minutesUnit.querySelector('.shadow-value') as HTMLElement,
-    secondsValue: secondsUnit.querySelector('.shadow-value') as HTMLElement,
+    // Pre-cache .value elements (with null checks for safety)
+    daysValue: daysUnit.querySelector('.shadow-value') ?? (document.createElement('span') as HTMLElement),
+    hoursValue: hoursUnit.querySelector('.shadow-value') ?? (document.createElement('span') as HTMLElement),
+    minutesValue: minutesUnit.querySelector('.shadow-value') ?? (document.createElement('span') as HTMLElement),
+    secondsValue: secondsUnit.querySelector('.shadow-value') ?? (document.createElement('span') as HTMLElement),
     // Initialize cached state
     lastSunX: -1,
     lastSunY: -1,
