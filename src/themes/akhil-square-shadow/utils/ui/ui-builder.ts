@@ -10,7 +10,7 @@
  * - theme-state.ts: Day/night and celebration state management
  */
 
-import { createMoon, createSky, createStars,createSun } from './celestial-builders';
+import { createMoon, createSky, createStars, createSun } from './celestial-builders';
 import {
   calculateArcPosition,
   updateMoonPosition,
@@ -21,7 +21,7 @@ import {
   createCountdownDisplay,
   updateCountdown,
 } from './countdown-display-builders';
-import { applyShadow,calculateShadow } from './shadow-effects';
+import { applyShadow, calculateShadow } from './shadow-effects';
 import {
   setDayNightMode,
   showCelebration,
