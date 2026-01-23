@@ -13,6 +13,7 @@
  */
 
 import {
+  cancelAll,
   createResourceTracker,
   DEFAULT_ANIMATION_STATE,
   safeRequestAnimationFrame,
@@ -53,6 +54,10 @@ export function akhilSquareShadowLandingPageRenderer(_container: HTMLElement): L
   // Animation state getter from controller
   let getAnimationState: AnimationStateGetter = () => DEFAULT_ANIMATION_STATE;
 
+  // Change detection state for DOM updates
+  let lastVisibleBody: 'sun' | 'moon' | null = null;
+  let lastStarOpacity: string | null = null;
+
   /** Calculate celestial body position on arc. */
   function calculatePosition(progress: number, isLeftToRight: boolean): { x: number; y: number } {
     const startAngle = isLeftToRight ? 180 : 0;
@@ -84,25 +89,34 @@ export function akhilSquareShadowLandingPageRenderer(_container: HTMLElement): L
       ? cyclePosition / halfCycle
       : (cyclePosition - halfCycle) / halfCycle;
 
-    // Update sky background
-    wrapper.classList.toggle('is-night', !isDay);
+    // Update sky background (only if state changed)
+    if ((isDay && wrapper.classList.contains('is-night')) || 
+        (!isDay && !wrapper.classList.contains('is-night'))) {
+      wrapper.classList.toggle('is-night', !isDay);
+    }
 
-    // Update sun position
+    // Change detection: Only update DOM if visible body changed
+    const visibleBody = isDay ? 'sun' : 'moon';
+    if (visibleBody !== lastVisibleBody) {
+      lastVisibleBody = visibleBody;
+      sun.style.opacity = isDay ? '1' : '0';
+      moon.style.opacity = isDay ? '0' : '1';
+      const starsOpacity = isDay ? '0' : '0.6';
+      if (starsOpacity !== lastStarOpacity) {
+        lastStarOpacity = starsOpacity;
+        stars.style.opacity = starsOpacity;
+      }
+    }
+
+    // Update position (always needed as body orbits)
     if (isDay) {
       const sunPos = calculatePosition(progress, true);
       sun.style.left = `${sunPos.x}%`;
       sun.style.top = `${sunPos.y}%`;
-      sun.style.opacity = '1';
-      moon.style.opacity = '0';
-      stars.style.opacity = '0';
     } else {
-      // Update moon position
       const moonPos = calculatePosition(progress, false);
       moon.style.left = `${moonPos.x}%`;
       moon.style.top = `${moonPos.y}%`;
-      moon.style.opacity = '1';
-      sun.style.opacity = '0';
-      stars.style.opacity = '0.6';
     }
   }
 
@@ -158,27 +172,16 @@ export function akhilSquareShadowLandingPageRenderer(_container: HTMLElement): L
   function createStars(container: HTMLElement): HTMLElement {
     const starsEl = document.createElement('div');
     starsEl.className = 'landing-stars';
-    starsEl.style.cssText = `
-      position: absolute;
-      inset: 0;
-      opacity: 0;
-      transition: opacity 1s ease-out;
-      pointer-events: none;
-    `;
 
     // Create random stars
     for (let i = 0; i < 30; i++) {
       const star = document.createElement('div');
-      star.style.cssText = `
-        position: absolute;
-        width: ${1 + Math.random() * 2}px;
-        height: ${1 + Math.random() * 2}px;
-        background: white;
-        border-radius: 50%;
-        left: ${Math.random() * 100}%;
-        top: ${Math.random() * 50}%;
-        opacity: ${0.3 + Math.random() * 0.7};
-      `;
+      star.className = 'landing-star';
+      star.style.width = `${1 + Math.random() * 2}px`;
+      star.style.height = `${1 + Math.random() * 2}px`;
+      star.style.left = `${Math.random() * 100}%`;
+      star.style.top = `${Math.random() * 50}%`;
+      star.style.opacity = String(0.3 + Math.random() * 0.7);
       starsEl.appendChild(star);
     }
 
@@ -190,16 +193,6 @@ export function akhilSquareShadowLandingPageRenderer(_container: HTMLElement): L
   function createSun(container: HTMLElement): HTMLElement {
     const sunEl = document.createElement('div');
     sunEl.className = 'landing-sun';
-    sunEl.style.cssText = `
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 30% 30%, #fff5d4 0%, #ffd700 40%, #ff8c00 100%);
-      box-shadow: 0 0 30px #ffd700, 0 0 60px rgba(255, 215, 0, 0.4);
-      transform: translate(-50%, -50%);
-      transition: opacity 0.5s ease-out;
-    `;
     container.appendChild(sunEl);
     return sunEl;
   }
@@ -208,17 +201,6 @@ export function akhilSquareShadowLandingPageRenderer(_container: HTMLElement): L
   function createMoon(container: HTMLElement): HTMLElement {
     const moonEl = document.createElement('div');
     moonEl.className = 'landing-moon';
-    moonEl.style.cssText = `
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 40% 40%, #f5f5f5 0%, #dcdcdc 50%, #a9a9a9 100%);
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
-      transform: translate(-50%, -50%);
-      opacity: 0;
-      transition: opacity 0.5s ease-out;
-    `;
     container.appendChild(moonEl);
     return moonEl;
   }
@@ -271,10 +253,7 @@ export function akhilSquareShadowLandingPageRenderer(_container: HTMLElement): L
       isAnimating = false;
 
       // Clear tracked resources
-      resourceTracker.rafs.forEach(cancelAnimationFrame);
-      resourceTracker.rafs.length = 0;
-      resourceTracker.intervals.forEach(clearInterval);
-      resourceTracker.intervals.length = 0;
+      cancelAll(resourceTracker);
 
       // Clear child elements (container is managed by parent, just clear its contents)
       if (wrapper) {
