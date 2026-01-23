@@ -77,7 +77,7 @@
     "workbox-window": "^7.4.0"
   },
   "dependencies": {
-    "@primer/octicons": "^19.21.1",
+    "@primer/octicons": "^19.21.2",
     "fireworks-js": "^2.10.8",
     "suncalc": "^1.9.0"
   }
