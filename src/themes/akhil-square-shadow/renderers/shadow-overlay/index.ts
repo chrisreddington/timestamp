@@ -55,12 +55,24 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
   }
 
   /** Handle geolocation error. */
-  function handleGeoError(): void {
+  function handleGeoError(error: GeolocationPositionError): void {
+    let message = 'Unable to determine your location.';
+    if (error.code === error.PERMISSION_DENIED) {
+      message = 'Location permission was denied. You can enter coordinates manually.';
+    } else if (error.code === error.POSITION_UNAVAILABLE) {
+      message = 'Location information is currently unavailable.';
+    } else if (error.code === error.TIMEOUT) {
+      message = 'Location request timed out. Please try again.';
+    }
+    const heightMeters = Number(modalUI.heightInput.value);
+    modalUI.update(null, null, heightMeters, message);
   }
 
   /** Request user's location via geolocation API. */
   function requestLocation(): void {
     if (!navigator.geolocation) {
+      const heightMeters = Number(modalUI.heightInput.value);
+      modalUI.update(null, null, heightMeters, 'Geolocation not supported. Please enter coordinates manually.');
       return;
     }
     navigator.geolocation.getCurrentPosition(handleGeoSuccess, handleGeoError, {
@@ -115,30 +127,21 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
   modalUI.latInput.addEventListener('input', updateCoordsFromInputs);
   modalUI.lonInput.addEventListener('input', updateCoordsFromInputs);
 
-  const locationButtonElement = modalUI.triggerButton.parentElement?.querySelector('button.shadow-overlay-button');
+  const locationButtonElement = modalUI.modal.querySelector('button.shadow-overlay-button');
   if (locationButtonElement) {
     locationButtonElement.addEventListener('click', requestLocation);
   }
 
-  modalUI.modal.addEventListener('keydown', (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      isOpen = false;
-    }
-  });
-
-  const initialBackdropListener = () => {
+  const openHandler = () => {
     isOpen = true;
   };
-
-  modalUI.triggerButton.addEventListener('click', initialBackdropListener);
-  modalUI.closeModal = () => {
+  const closeHandler = () => {
     isOpen = false;
-    if (modalUI.backdrop.classList.contains('is-open')) {
-      modalUI.backdrop.classList.remove('is-open');
-      document.body.style.overflow = '';
-      modalUI.triggerButton.focus();
-    }
   };
+
+  modalUI.triggerButton.addEventListener('click', openHandler);
+  modalUI.backdrop.addEventListener('modalopen', closeHandler);
+  modalUI.backdrop.addEventListener('modalclose', closeHandler);
 
   safeSetInterval(() => {
     if (coords && isOpen) update();
@@ -150,6 +153,12 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
     modalUI.heightInput.removeEventListener('input', update);
     modalUI.latInput.removeEventListener('input', updateCoordsFromInputs);
     modalUI.lonInput.removeEventListener('input', updateCoordsFromInputs);
+    modalUI.triggerButton.removeEventListener('click', openHandler);
+    if (locationButtonElement) {
+      locationButtonElement.removeEventListener('click', requestLocation);
+    }
+    modalUI.backdrop.removeEventListener('modalopen', closeHandler);
+    modalUI.backdrop.removeEventListener('modalclose', closeHandler);
   }
 
   return { destroy };

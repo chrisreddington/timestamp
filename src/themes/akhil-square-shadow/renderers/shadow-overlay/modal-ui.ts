@@ -9,7 +9,7 @@
 import { createFocusTrap, type FocusTrapController } from '@core/utils/accessibility/focus-trap';
 
 import type { GeoCoords, ShadowInfo } from './shadow-calculations';
-import { updateShadowClock,updateVisual } from './visualizations';
+import { updateShadowClock, updateVisual } from './visualizations';
 
 const MIN_HEIGHT = 0.01;
 const MAX_HEIGHT = 100;
@@ -271,7 +271,9 @@ export function createModalUI(parent: HTMLElement): ModalUIState {
   triggerButton.addEventListener('click', openModal);
   closeButton.addEventListener('click', closeModal);
   backdrop.addEventListener('click', (evt: MouseEvent) => evt.target === backdrop && closeModal());
-  document.addEventListener('keydown', (evt: KeyboardEvent) => evt.key === 'Escape' && isOpen && closeModal());
+
+  const keydownHandler = (evt: KeyboardEvent) => evt.key === 'Escape' && isOpen && closeModal();
+  document.addEventListener('keydown', keydownHandler);
 
   return {
     triggerButton,
@@ -321,6 +323,8 @@ export function createModalUI(parent: HTMLElement): ModalUIState {
     destroy() {
       triggerButton.removeEventListener('click', openModal);
       closeButton.removeEventListener('click', closeModal);
+      backdrop.removeEventListener('click', (evt: MouseEvent) => evt.target === backdrop && closeModal());
+      document.removeEventListener('keydown', keydownHandler);
       if (focusTrap) {
         focusTrap.deactivate();
         focusTrap = null;
