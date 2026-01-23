@@ -135,13 +135,8 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
   const openHandler = () => {
     isOpen = true;
   };
-  const closeHandler = () => {
-    isOpen = false;
-  };
 
   modalUI.triggerButton.addEventListener('click', openHandler);
-  modalUI.backdrop.addEventListener('modalopen', closeHandler);
-  modalUI.backdrop.addEventListener('modalclose', closeHandler);
 
   safeSetInterval(() => {
     if (coords && isOpen) update();
@@ -157,8 +152,6 @@ export function createShadowOverlay(parent: HTMLElement): ShadowOverlayControlle
     if (locationButtonElement) {
       locationButtonElement.removeEventListener('click', requestLocation);
     }
-    modalUI.backdrop.removeEventListener('modalopen', closeHandler);
-    modalUI.backdrop.removeEventListener('modalclose', closeHandler);
   }
 
   return { destroy };

@@ -53,7 +53,7 @@ export const AKHIL_SQUARE_SHADOW_CONFIG: ThemeConfig = {
   id: 'akhil-square-shadow',
   name: 'Sun/Moon Shadow Rotator',
   description: 'Countdown with sun/moon casting rotating shadows on digits',
-  publishedDate: '2026-01-08',
+  publishedDate: '2025-01-08',
   author: 'shahiakhilesh1304',
   tags: ['countdown', 'shadow', 'sun', 'moon', 'celestial'],
   dependencies: [

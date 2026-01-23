@@ -243,6 +243,7 @@ export function createModalUI(parent: HTMLElement): ModalUIState {
     isOpen = true;
     backdrop.classList.add('is-open');
     document.body.style.overflow = 'hidden';
+    document.addEventListener('keydown', keydownHandler);
 
     focusTrap = createFocusTrap({
       container: modal,
@@ -259,6 +260,7 @@ export function createModalUI(parent: HTMLElement): ModalUIState {
     isOpen = false;
     backdrop.classList.remove('is-open');
     document.body.style.overflow = '';
+    document.removeEventListener('keydown', keydownHandler);
 
     if (focusTrap) {
       focusTrap.deactivate();
@@ -273,7 +275,6 @@ export function createModalUI(parent: HTMLElement): ModalUIState {
   backdrop.addEventListener('click', (evt: MouseEvent) => evt.target === backdrop && closeModal());
 
   const keydownHandler = (evt: KeyboardEvent) => evt.key === 'Escape' && isOpen && closeModal();
-  document.addEventListener('keydown', keydownHandler);
 
   return {
     triggerButton,
@@ -324,7 +325,6 @@ export function createModalUI(parent: HTMLElement): ModalUIState {
       triggerButton.removeEventListener('click', openModal);
       closeButton.removeEventListener('click', closeModal);
       backdrop.removeEventListener('click', (evt: MouseEvent) => evt.target === backdrop && closeModal());
-      document.removeEventListener('keydown', keydownHandler);
       if (focusTrap) {
         focusTrap.deactivate();
         focusTrap = null;
