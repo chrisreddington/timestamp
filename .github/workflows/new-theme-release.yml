@@ -263,7 +263,6 @@ jobs:
       # Create GitHub Release for each new theme
       - name: Create releases
         if: steps.detect.outputs.has_new_themes == 'true' && steps.pr-info.outputs.has_pr == 'true'
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
         env:
           THEME_DATA: ${{ steps.metadata.outputs.theme_data }}
           PR_NUMBER: ${{ steps.pr-info.outputs.pr_number }}
@@ -272,81 +271,75 @@ jobs:
           AUTHOR: ${{ steps.pr-info.outputs.author }}
           CONTRIBUTORS: ${{ steps.pr-info.outputs.contributors }}
           TARGET_SHA: ${{ steps.target.outputs.sha }}
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const themes = JSON.parse(process.env.THEME_DATA);
-            const prNumber = process.env.PR_NUMBER;
-            const prTitle = process.env.PR_TITLE;
-            const prUrl = process.env.PR_URL;
-            const author = process.env.AUTHOR;
-            const contributors = JSON.parse(process.env.CONTRIBUTORS);
-            const targetSha = process.env.TARGET_SHA;
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Parse theme data
+          themes=$(echo "$THEME_DATA" | jq -c '.[]')
+          
+          while IFS= read -r theme; do
+            theme_id=$(echo "$theme" | jq -r '.id')
+            theme_name=$(echo "$theme" | jq -r '.name')
+            theme_desc=$(echo "$theme" | jq -r '.description')
+            wall_clock=$(echo "$theme" | jq -r '.examples.wallClock')
+            absolute=$(echo "$theme" | jq -r '.examples.absolute')
+            timer=$(echo "$theme" | jq -r '.examples.timer')
             
-            for (const theme of themes) {
-              const tagName = `theme-${theme.id}`;
-              
-              // Check if release already exists
-              try {
-                await github.rest.repos.getReleaseByTag({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  tag: tagName
-                });
-                console.log(`Release ${tagName} already exists, skipping`);
-                continue;
-              } catch (e) {
-                if (e.status !== 404) throw e;
-                // Release doesn't exist, continue to create it
-              }
-              
-              // Build attribution section
-              let attribution = `Created by @${author}`;
-              if (contributors.length > 0) {
-                attribution += '\n\nContributors: ' + contributors.map(c => '@' + c).join(', ');
-              }
-              
-              // Build release body
-              const body = [
-                `## 🎨 New Theme: ${theme.name}`,
-                '',
-                theme.description,
-                '',
-                '### 👏 Attribution',
-                '',
-                attribution,
-                '',
-                `**Pull Request:** #${prNumber}`,
-                '',
-                '---',
-                '',
-                '### 🔗 Try it out!',
-                '',
-                '| Mode | Description | Link |',
-                '|------|-------------|------|',
-                `| 🏠 **Local Time** | Countdown to midnight in your timezone | [Try it →](${theme.examples.wallClock}) |`,
-                `| 🌐 **Same Moment** | Everyone counts to the same instant | [Try it →](${theme.examples.absolute}) |`,
-                `| ⏱️ **Timer** | 5-minute countdown | [Try it →](${theme.examples.timer}) |`,
-                '',
-                '---',
-                '',
-                'Thank you for contributing to Timestamp! 🎉'
-              ].join('\n');
-
-              // Create the release
-              const release = await github.rest.repos.createRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                tag_name: tagName,
-                target_commitish: targetSha,
-                name: `🎨 New Theme: ${theme.name}`,
-                body: body,
-                draft: false,
-                prerelease: false
-              });
-              
-              console.log(`✅ Created release: ${release.data.html_url}`);
-            }
+            tag_name="theme-${theme_id}"
+            
+            # Check if release already exists
+            if gh release view "$tag_name" >/dev/null 2>&1; then
+              echo "Release $tag_name already exists, skipping"
+              continue
+            fi
+            
+            # Build attribution
+            attribution="Created by @${AUTHOR}"
+            contributors=$(echo "$CONTRIBUTORS" | jq -r '.[]' | sed 's/^/@/')
+            if [ -n "$contributors" ]; then
+              attribution="${attribution}\n\nContributors: $(echo "$contributors" | tr '\n' ',' | sed 's/,/, /g' | sed 's/, $//')"
+            fi
+            
+            # Create tag on target commit if it doesn't exist
+            if ! git rev-parse "$tag_name" >/dev/null 2>&1; then
+              echo "Creating tag $tag_name on commit $TARGET_SHA"
+              git tag "$tag_name" "$TARGET_SHA"
+              git push origin "$tag_name"
+            fi
+            
+            # Build release notes
+            cat > /tmp/release-notes.md << EOF
+          ## 🎨 New Theme: ${theme_name}
+          
+          ${theme_desc}
+          
+          ### 👏 Attribution
+          
+          $(echo -e "$attribution")
+          
+          **Pull Request:** #${PR_NUMBER}
+          
+          ---
+          
+          ### 🔗 Try it out!
+          
+          | Mode | Description | Link |
+          |------|-------------|------|
+          | 🏠 **Local Time** | Countdown to midnight in your timezone | [Try it →](${wall_clock}) |
+          | 🌐 **Same Moment** | Everyone counts to the same instant | [Try it →](${absolute}) |
+          | ⏱️ **Timer** | 5-minute countdown | [Try it →](${timer}) |
+          
+          ---
+          
+          Thank you for contributing to Timestamp! 🎉
+          EOF
+            
+            # Create the release
+            gh release create "$tag_name" \
+              --title "🎨 New Theme: ${theme_name}" \
+              --notes-file /tmp/release-notes.md
+            
+            echo "✅ Created release: https://github.com/${{ github.repository }}/releases/tag/$tag_name"
+          done <<< "$themes"
 
       # Generate job summary
       - name: Generate summary
