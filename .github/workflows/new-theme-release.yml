@@ -26,8 +26,9 @@ on:
         required: true
         type: string
 
-permissions:
-  contents: write  # Required to create releases (includes read for PR data)
+# Permissions set at job level for explicit control
+# (repo settings use restrictive defaults)
+permissions: {}
 
 # Prevent duplicate releases if multiple commits arrive quickly
 concurrency:
@@ -38,6 +39,9 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: write       # Required to create releases and tags
+      pull-requests: read   # Required to read PR data for attribution
     steps:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
