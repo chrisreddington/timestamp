@@ -1,0 +1,21 @@
+/**
+ * Sun & Moon Shadow Theme Styles
+ *
+ * A celestial countdown theme with orbiting sun/moon casting dynamic shadows.
+ *
+ * This is the main entry point that imports all focused SCSS modules.
+ * Individual modules handle specific concerns:
+ * - _variables.scss: Color palettes and theme variables
+ * - _celestial.scss: Sun, moon, stars animations
+ * - _countdown.scss: Countdown display and celebration message
+ * - _shadow-overlay.scss: Shadow calculator modal and clock
+ * - _landing-page.scss: Landing page background
+ * - _reduced-motion.scss: Accessibility animations
+ */
+
+@use 'variables';
+@use 'celestial';
+@use 'countdown';
+@use 'shadow-overlay';
+@use 'landing-page';
+@use 'reduced-motion';

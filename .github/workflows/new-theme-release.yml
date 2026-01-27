@@ -1,0 +1,355 @@
+# New Theme Release Workflow
+#
+# PURPOSE: Automatically creates a GitHub Release when a new theme is merged
+#
+# This workflow:
+# 1. Detects when a new theme is added to THEME_REGISTRY
+# 2. Finds the merged PR and its contributors
+# 3. Creates a GitHub Release with:
+#    - Theme name and description
+#    - Author and contributor attributions
+#    - Example links with dates 6 months ahead
+#
+# Triggers only on main branch when the registry file changes.
+name: New Theme Release
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - 'src/themes/registry/registry-core.ts'
+
+permissions:
+  contents: write  # Required to create releases (includes read for PR data)
+
+# Prevent duplicate releases if multiple commits arrive quickly
+concurrency:
+  group: new-theme-release
+  cancel-in-progress: false
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 2  # Need HEAD~1 for comparison
+
+      - name: Setup Node
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version-file: '.node-version'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Extract theme IDs from current and previous commit to detect new themes
+      # NOTE: We extract directly from the registry file using regex, not the CLI,
+      # because the CLI might not exist in older commits.
+      - name: Detect new themes
+        id: detect
+        run: |
+          # Extract theme IDs from THEME_REGISTRY object keys in registry-core.ts
+          # This regex matches the keys in: export const THEME_REGISTRY = { 'key': ..., key: ... }
+          extract_theme_ids() {
+            local file="src/themes/registry/registry-core.ts"
+            if [ -f "$file" ]; then
+              node -e "
+                const fs = require('fs');
+                const content = fs.readFileSync('$file', 'utf8');
+                // Match THEME_REGISTRY object and extract keys
+                const match = content.match(/THEME_REGISTRY\s*=\s*\{([^}]+)\}/s);
+                if (!match) { console.log('[]'); process.exit(0); }
+                const block = match[1];
+                // Extract keys (both quoted and unquoted)
+                const keys = [];
+                const regex = /['\""]?([a-z0-9-]+)['\""]?\s*:/g;
+                let m;
+                while ((m = regex.exec(block)) !== null) {
+                  keys.push(m[1]);
+                }
+                console.log(JSON.stringify([...new Set(keys)].sort()));
+              "
+            else
+              echo "[]"
+            fi
+          }
+          
+          # Get theme IDs from current commit
+          CURRENT_THEMES=$(extract_theme_ids)
+          echo "Current themes: $CURRENT_THEMES"
+          
+          # Checkout previous commit and get theme IDs
+          git checkout HEAD~1 --quiet
+          PREVIOUS_THEMES=$(extract_theme_ids)
+          echo "Previous themes: $PREVIOUS_THEMES"
+          
+          # Return to current commit
+          git checkout - --quiet
+          
+          # Find new themes using Node.js
+          NEW_THEMES=$(node -e "
+            const current = $CURRENT_THEMES;
+            const previous = $PREVIOUS_THEMES;
+            const newThemes = current.filter(id => !previous.includes(id));
+            console.log(JSON.stringify(newThemes));
+          ")
+          
+          echo "New themes: $NEW_THEMES"
+          echo "new_themes=$NEW_THEMES" >> $GITHUB_OUTPUT
+          
+          # Check if there are any new themes (must be > 0, not just != 0)
+          NEW_COUNT=$(echo "$NEW_THEMES" | node -e "
+            const data = require('fs').readFileSync(0, 'utf8');
+            console.log(JSON.parse(data).length);
+          ")
+          echo "new_count=$NEW_COUNT" >> $GITHUB_OUTPUT
+          
+          if [ "$NEW_COUNT" -gt 0 ]; then
+            echo "has_new_themes=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_new_themes=false" >> $GITHUB_OUTPUT
+          fi
+
+      # Get theme metadata for new themes
+      - name: Get theme metadata
+        id: metadata
+        if: steps.detect.outputs.has_new_themes == 'true'
+        run: |
+          NEW_THEMES='${{ steps.detect.outputs.new_themes }}'
+          
+          # Get full theme data using theme CLI
+          THEME_DATA=$(npm run theme list:json --silent 2>/dev/null || echo "[]")
+          
+          # Filter to only new themes and add example URLs
+          ENRICHED_DATA=$(node -e "
+            const newThemeIds = $NEW_THEMES;
+            const allThemes = $THEME_DATA;
+            const siteUrl = 'https://chrisreddington.com/timestamp';
+            
+            // Calculate date 6 months from now
+            const futureDate = new Date();
+            futureDate.setMonth(futureDate.getMonth() + 6);
+            const wallClockTarget = futureDate.toISOString().split('T')[0] + 'T00:00:00';
+            const absoluteTarget = futureDate.toISOString().split('.')[0] + 'Z';
+            
+            const newThemes = allThemes
+              .filter(t => newThemeIds.includes(t.id))
+              .map(t => ({
+                ...t,
+                examples: {
+                  wallClock: siteUrl + '?mode=wall-clock&target=' + wallClockTarget + '&theme=' + t.id,
+                  absolute: siteUrl + '?mode=absolute&target=' + absoluteTarget + '&theme=' + t.id + '&message=Launch%20Day!',
+                  timer: siteUrl + '?mode=timer&duration=300&theme=' + t.id
+                }
+              }));
+            
+            console.log(JSON.stringify(newThemes));
+          ")
+          
+          echo "theme_data=$ENRICHED_DATA" >> $GITHUB_OUTPUT
+
+      # Find the merged PR and contributors
+      - name: Get PR information
+        id: pr-info
+        if: steps.detect.outputs.has_new_themes == 'true'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            const sha = context.sha;
+            
+            // Find PRs associated with this commit
+            const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              commit_sha: sha
+            });
+            
+            if (prs.length === 0) {
+              console.log('No PR found for this commit');
+              core.setOutput('has_pr', 'false');
+              return;
+            }
+            
+            const pr = prs[0];
+            console.log(`Found PR #${pr.number}: ${pr.title}`);
+            
+            // Get PR author
+            const author = pr.user.login;
+            console.log(`PR Author: @${author}`);
+            
+            // Get contributors (reviewers, co-authors from commits)
+            const contributors = new Set();
+            
+            // Add reviewers
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            
+            for (const review of reviews) {
+              if (review.user && review.user.login !== author) {
+                contributors.add(review.user.login);
+              }
+            }
+            
+            // Get commits to find co-authors
+            const { data: commits } = await github.rest.pulls.listCommits({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+            
+            for (const commit of commits) {
+              // Check commit message for Co-authored-by
+              const message = commit.commit.message || '';
+              const coAuthorMatches = message.matchAll(/Co-authored-by:\s*([^<]+)\s*<([^>]+)>/gi);
+              for (const match of coAuthorMatches) {
+                // Try to find GitHub username from email
+                const email = match[2];
+                if (email.includes('@users.noreply.github.com')) {
+                  const username = email.split('@')[0].replace(/^\d+\+/, '');
+                  if (username !== author) {
+                    contributors.add(username);
+                  }
+                }
+              }
+              
+              // Add commit author if different from PR author
+              if (commit.author && commit.author.login && commit.author.login !== author) {
+                contributors.add(commit.author.login);
+              }
+            }
+            
+            core.setOutput('has_pr', 'true');
+            core.setOutput('pr_number', pr.number);
+            core.setOutput('pr_title', pr.title);
+            core.setOutput('pr_url', pr.html_url);
+            core.setOutput('author', author);
+            core.setOutput('contributors', JSON.stringify([...contributors]));
+            
+            console.log(`Contributors: ${[...contributors].join(', ') || 'none'}`);
+
+      # Create GitHub Release for each new theme
+      - name: Create releases
+        if: steps.detect.outputs.has_new_themes == 'true' && steps.pr-info.outputs.has_pr == 'true'
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        env:
+          THEME_DATA: ${{ steps.metadata.outputs.theme_data }}
+          PR_NUMBER: ${{ steps.pr-info.outputs.pr_number }}
+          PR_TITLE: ${{ steps.pr-info.outputs.pr_title }}
+          PR_URL: ${{ steps.pr-info.outputs.pr_url }}
+          AUTHOR: ${{ steps.pr-info.outputs.author }}
+          CONTRIBUTORS: ${{ steps.pr-info.outputs.contributors }}
+        with:
+          script: |
+            const themes = JSON.parse(process.env.THEME_DATA);
+            const prNumber = process.env.PR_NUMBER;
+            const prTitle = process.env.PR_TITLE;
+            const prUrl = process.env.PR_URL;
+            const author = process.env.AUTHOR;
+            const contributors = JSON.parse(process.env.CONTRIBUTORS);
+            
+            for (const theme of themes) {
+              const tagName = `theme-${theme.id}`;
+              
+              // Check if release already exists
+              try {
+                await github.rest.repos.getReleaseByTag({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  tag: tagName
+                });
+                console.log(`Release ${tagName} already exists, skipping`);
+                continue;
+              } catch (e) {
+                if (e.status !== 404) throw e;
+                // Release doesn't exist, continue to create it
+              }
+              
+              // Build attribution section
+              let attribution = `Created by @${author}`;
+              if (contributors.length > 0) {
+                attribution += '\n\nContributors: ' + contributors.map(c => '@' + c).join(', ');
+              }
+              
+              // Build release body
+              const body = [
+                `## 🎨 New Theme: ${theme.name}`,
+                '',
+                theme.description,
+                '',
+                '### 👏 Attribution',
+                '',
+                attribution,
+                '',
+                `**Pull Request:** #${prNumber}`,
+                '',
+                '---',
+                '',
+                '### 🔗 Try it out!',
+                '',
+                '| Mode | Description | Link |',
+                '|------|-------------|------|',
+                `| 🏠 **Local Time** | Countdown to midnight in your timezone | [Try it →](${theme.examples.wallClock}) |`,
+                `| 🌐 **Same Moment** | Everyone counts to the same instant | [Try it →](${theme.examples.absolute}) |`,
+                `| ⏱️ **Timer** | 5-minute countdown | [Try it →](${theme.examples.timer}) |`,
+                '',
+                '---',
+                '',
+                'Thank you for contributing to Timestamp! 🎉'
+              ].join('\n');
+
+              // Create the release
+              const release = await github.rest.repos.createRelease({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                tag_name: tagName,
+                target_commitish: context.sha,
+                name: `🎨 New Theme: ${theme.name}`,
+                body: body,
+                draft: false,
+                prerelease: false
+              });
+              
+              console.log(`✅ Created release: ${release.data.html_url}`);
+            }
+
+      # Generate job summary
+      - name: Generate summary
+        if: always()
+        run: |
+          NEW_COUNT="${{ steps.detect.outputs.new_count }}"
+          NEW_THEMES='${{ steps.detect.outputs.new_themes }}'
+          HAS_NEW="${{ steps.detect.outputs.has_new_themes }}"
+          
+          cat >> $GITHUB_STEP_SUMMARY << EOF
+          ## 🎨 New Theme Release
+          
+          EOF
+          
+          if [ "$HAS_NEW" != "true" ]; then
+            echo "No new themes detected in this commit." >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "This workflow only creates releases when new themes are added to \`THEME_REGISTRY\`." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "**New themes detected:** $NEW_COUNT" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            echo "$NEW_THEMES" >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "${{ steps.pr-info.outputs.has_pr }}" == "true" ]; then
+              echo "**PR:** #${{ steps.pr-info.outputs.pr_number }}" >> $GITHUB_STEP_SUMMARY
+              echo "**Author:** @${{ steps.pr-info.outputs.author }}" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "✅ GitHub Release(s) created for new theme(s)." >> $GITHUB_STEP_SUMMARY
+            else
+              echo "⚠️ No PR found for this commit. Release not created." >> $GITHUB_STEP_SUMMARY
+            fi
+          fi

@@ -1,0 +1,125 @@
+/**
+ * Landing Page Background
+ *
+ * Styles for the ambient sky background on the landing page.
+ */
+
+// IMPORTANT: Use position: fixed (not relative) so background is positioned relative to viewport,
+// not the scrollable landing-page container. This ensures the sky background fills the screen.
+.landing-theme-background--akhil-square-shadow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: var(--shadow-theme-day-sky);
+  overflow: hidden;
+
+  // Transition to night sky when is-night class is applied
+  &.is-night {
+    background: var(--shadow-theme-night-sky);
+  }
+
+  // Add subtle animated gradient for landing
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      45deg,
+      rgba(255, 215, 0, 0.1) 0%,
+      transparent 50%,
+      rgba(147, 112, 219, 0.1) 100%
+    );
+    animation: landing-shimmer 8s ease-in-out infinite;
+  }
+
+  &.is-paused {
+    &::after {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes landing-shimmer {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-theme-background--akhil-square-shadow::after {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+/**
+ * Stars - Twinkling starfield for night sky
+ *
+ * Container for randomly positioned stars that fade in during night transitions.
+ * Light mode: opacity 0 (hidden)
+ * Night mode: opacity transitions to visible
+ */
+.landing-stars {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 1s ease-out;
+  pointer-events: none;
+}
+
+/**
+ * Individual star element.
+ *
+ * Light/dark mode variant support:
+ * - Light mode: white stars on day background
+ * - Dark mode: white stars on night background (always visible)
+ *
+ * Uses random sizing and positioning to create natural starfield.
+ */
+.landing-star {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+}
+
+/**
+ * Sun - Day circle with golden glow
+ *
+ * Radial gradient creates depth with bright center and darker edges.
+ * Glow effect uses layered box-shadows.
+ * Positioned with transform: translate(-50%, -50%) for arc positioning.
+ */
+.landing-sun {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff5d4 0%, #ffd700 40%, #ff8c00 100%);
+  box-shadow: 0 0 30px #ffd700, 0 0 60px rgba(255, 215, 0, 0.4);
+  transform: translate(-50%, -50%);
+  transition: opacity 0.5s ease-out;
+}
+
+/**
+ * Moon - Night circle with subtle gray gradient
+ *
+ * Subtle radial gradient creates dimensionality.
+ * Soft glow effect with lower opacity shadow.
+ * Positioned with transform: translate(-50%, -50%) for arc positioning.
+ */
+.landing-moon {
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #f5f5f5 0%, #dcdcdc 50%, #a9a9a9 100%);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  transition: opacity 0.5s ease-out;
+}

@@ -1,0 +1,513 @@
+/**
+ * Shadow & Sun Angle Overlay
+ *
+ * Popup modal for shadow calculations with geolocation-based inputs.
+ */
+
+// Trigger Button - positioned prominently with high z-index
+.shadow-overlay-trigger {
+  position: fixed;
+  bottom: calc(var(--safe-area-bottom, 20px) + 20px);
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-radius: 10px;
+  border: 2px solid var(--shadow-theme-celebration);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--shadow-theme-celebration) 30%, rgba(0, 0, 0, 0.8)) 0%,
+    color-mix(in srgb, var(--shadow-theme-celebration) 15%, rgba(0, 0, 0, 0.9)) 100%
+  );
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  z-index: 100;
+  transition: background 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 4px 15px rgba(0, 0, 0, 0.4),
+    0 0 20px color-mix(in srgb, var(--shadow-theme-celebration) 30%, transparent);
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--shadow-theme-celebration) 45%, rgba(0, 0, 0, 0.7)) 0%,
+      color-mix(in srgb, var(--shadow-theme-celebration) 25%, rgba(0, 0, 0, 0.8)) 100%
+    );
+    transform: translateY(-3px);
+    box-shadow:
+      0 6px 20px rgba(0, 0, 0, 0.5),
+      0 0 30px color-mix(in srgb, var(--shadow-theme-celebration) 50%, transparent);
+  }
+
+  &:focus {
+    outline: 2px solid var(--shadow-theme-celebration);
+    outline-offset: 3px;
+  }
+
+  svg {
+    flex-shrink: 0;
+    filter: drop-shadow(0 0 3px var(--shadow-theme-celebration));
+  }
+}
+
+// Backdrop
+.shadow-overlay-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 200ms ease, visibility 200ms ease;
+
+  &.is-open {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+// Modal Container
+.shadow-overlay-modal {
+  width: min(680px, 95vw);
+  max-height: 85vh;
+  background: var(--shadow-theme-modal-bg);
+  border-radius: 16px;
+  border: 1px solid var(--shadow-theme-modal-border);
+  box-shadow:
+    0 20px 60px rgb(0 0 0 / 40%),
+    0 0 30px color-mix(in srgb, var(--shadow-theme-celebration) 10%, transparent);
+  color: var(--shadow-theme-text);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.95);
+  transition: transform 200ms ease;
+
+  .is-open & {
+    transform: scale(1);
+  }
+}
+
+// Modal Header
+.shadow-overlay-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--shadow-theme-modal-border);
+  background: color-mix(in srgb, var(--shadow-theme-celebration) 8%, transparent);
+}
+
+.shadow-overlay-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--shadow-theme-celebration);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--shadow-theme-celebration) 30%, transparent);
+}
+
+.shadow-overlay-close {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 150ms ease, background 150ms ease;
+
+  &:hover {
+    opacity: 1;
+    background: color-mix(in srgb, var(--shadow-theme-text) 10%, transparent);
+  }
+
+  &:focus {
+    outline: 2px solid var(--shadow-theme-celebration);
+    outline-offset: 1px;
+  }
+}
+
+// Modal Content - Two Column Layout
+.shadow-overlay-content {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding: 16px;
+  overflow-y: auto;
+  max-height: calc(85vh - 60px);
+}
+
+// Left Column: Calculator inputs
+.shadow-overlay-calculator {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+// Right Column: Clock and Graph
+.shadow-overlay-right {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  padding-left: 10px;
+}
+
+// Visual graph wrapper to contain Y-axis
+.shadow-overlay-visual-wrapper {
+  position: relative;
+  width: 100%;
+  padding-left: 50px;
+  box-sizing: border-box;
+}
+
+.shadow-overlay-form {
+  display: grid;
+  gap: 6px;
+}
+
+.shadow-overlay-label {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.shadow-overlay-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--shadow-theme-input-border);
+  background: var(--shadow-theme-input-bg);
+  color: var(--shadow-theme-text);
+  font-size: 14px;
+}
+
+.shadow-overlay-input:focus {
+  outline: 2px solid var(--shadow-theme-celebration);
+  outline-offset: 1px;
+  border-color: var(--shadow-theme-celebration);
+}
+
+.shadow-overlay-button {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--shadow-theme-celebration);
+  background: color-mix(in srgb, var(--shadow-theme-celebration) 20%, transparent);
+  color: var(--shadow-theme-button-text, var(--shadow-theme-text));
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 150ms ease;
+  margin-top: 4px;
+}
+
+.shadow-overlay-button:hover {
+  background: color-mix(in srgb, var(--shadow-theme-celebration) 35%, transparent);
+  color: var(--shadow-theme-button-text-hover, var(--shadow-theme-button-text, var(--shadow-theme-text)));
+}
+
+.shadow-overlay-button:focus {
+  outline: 2px solid var(--shadow-theme-celebration);
+  outline-offset: 1px;
+}
+
+.shadow-overlay-status {
+  font-size: 12px;
+  padding: 10px 12px;
+  background: var(--shadow-theme-input-bg);
+  border-radius: 6px;
+  border: 1px solid var(--shadow-theme-input-border);
+  color: var(--shadow-theme-text);
+}
+
+.shadow-overlay-results {
+  display: grid;
+  gap: 4px;
+  font-size: 13px;
+  width: 100%;
+}
+
+.shadow-overlay-metric {
+  display: grid;
+  grid-template-columns: 70px 1fr;
+  gap: 8px;
+  padding: 5px 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--shadow-theme-text) 10%, transparent);
+  align-items: center;
+
+  span {
+    opacity: 0.8;
+  }
+
+  strong {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.shadow-overlay-visual {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  background: var(--shadow-theme-input-bg);
+  border-radius: 8px;
+  border: 1px solid var(--shadow-theme-input-border);
+  overflow: visible;
+}
+
+.shadow-overlay-ground {
+  position: absolute;
+  bottom: 20px;
+  left: 8px;
+  right: 8px;
+  height: 2px;
+  background: var(--shadow-theme-celebration);
+  border-radius: 1px;
+  box-shadow: 0 0 6px color-mix(in srgb, var(--shadow-theme-celebration) 50%, transparent);
+}
+
+.shadow-overlay-object {
+  position: absolute;
+  bottom: 22px;
+  left: 12px;
+  width: 12px;
+  height: 50px;
+  background: linear-gradient(
+    90deg,
+    var(--shadow-theme-celebration) 0%,
+    color-mix(in srgb, var(--shadow-theme-celebration) 60%, #000) 100%
+  );
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--shadow-theme-celebration) 40%, transparent);
+  transform-origin: bottom center;
+}
+
+.shadow-overlay-shadow {
+  position: absolute;
+  bottom: 20px;
+  left: 24px;
+  height: 6px;
+  width: 80px;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--shadow-theme-text) 60%, transparent) 0%,
+    color-mix(in srgb, var(--shadow-theme-text) 20%, transparent) 100%
+  );
+  border-radius: 3px;
+  transition: width 200ms ease;
+}
+
+.shadow-overlay-shadow.is-hidden {
+  opacity: 0.3;
+  width: 20px;
+}
+
+// Y-axis (height) - positioned inside container
+.shadow-overlay-y-axis {
+  position: absolute;
+  left: -45px;
+  bottom: 20px;
+  top: 8px;
+  width: 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  font-size: 9px;
+  font-weight: 600;
+  padding-right: 5px;
+  border-right: 2px solid color-mix(in srgb, var(--shadow-theme-celebration) 60%, transparent);
+}
+
+// X-axis (shadow length) - compact and visible
+.shadow-overlay-x-axis {
+  position: absolute;
+  bottom: 3px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 600;
+  border-top: 2px solid color-mix(in srgb, var(--shadow-theme-celebration) 60%, transparent);
+  padding-top: 3px;
+}
+
+.shadow-axis-label {
+  color: var(--shadow-theme-celebration);
+  text-shadow: 0 0 3px color-mix(in srgb, var(--shadow-theme-celebration) 40%, transparent);
+}
+
+// =============================================================================
+// Shadow Clock - Analog sun position display
+// =============================================================================
+
+.shadow-clock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.shadow-clock-face {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: var(--shadow-theme-input-bg);
+  border: 3px solid var(--shadow-theme-celebration);
+  box-shadow:
+    0 0 15px color-mix(in srgb, var(--shadow-theme-celebration) 30%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--shadow-theme-celebration) 10%, transparent);
+}
+
+.shadow-clock-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--shadow-theme-celebration);
+  box-shadow: 0 0 8px var(--shadow-theme-celebration);
+  z-index: 3;
+}
+
+.shadow-clock-sun {
+  --sun-angle: 180deg;
+  --sun-radius: 42%;
+
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle, #ffdd00 30%, #ff8c00 100%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 12px #ffdd00,
+    0 0 24px rgba(255, 200, 0, 0.5);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(var(--sun-angle)) translateY(calc(-1 * var(--sun-radius))) rotate(calc(-1 * var(--sun-angle)));
+  z-index: 2;
+  transition: transform 300ms ease;
+
+  &.is-below-horizon {
+    opacity: 0.3;
+    box-shadow: none;
+    background: #666;
+  }
+}
+
+.shadow-clock-shadow-arm {
+  --shadow-angle: 0deg;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 3px;
+  height: 35%;
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--shadow-theme-text) 60%, transparent) 0%,
+    color-mix(in srgb, var(--shadow-theme-text) 20%, transparent) 100%
+  );
+  border-radius: 2px;
+  transform-origin: top center;
+  transform: translate(-50%, 0) rotate(var(--shadow-angle));
+  z-index: 1;
+  transition: transform 300ms ease;
+
+  &.is-hidden {
+    opacity: 0.2;
+  }
+}
+
+.shadow-clock-hour-marks {
+  position: absolute;
+  inset: 0;
+}
+
+.hour-mark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--shadow-theme-text);
+  opacity: 0.6;
+  transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-52px) rotate(calc(-1 * var(--angle)));
+}
+
+.shadow-clock-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--shadow-theme-celebration);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+// Coordinate inputs
+.shadow-overlay-coords {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 8px;
+  margin-top: 8px;
+  align-items: center;
+}
+
+.shadow-overlay-coord-input {
+  width: 100%;
+  font-size: 12px;
+  padding: 6px 8px;
+}
+
+// Mobile Responsive
+@media (max-width: 768px) {
+  .shadow-overlay-trigger {
+    bottom: calc(var(--safe-area-bottom, 20px) + 80px);
+    left: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .shadow-overlay-modal {
+    width: 95vw;
+    max-height: 90vh;
+  }
+
+  .shadow-overlay-content {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    max-height: calc(90vh - 60px);
+  }
+
+  .shadow-overlay-right {
+    order: -1;
+  }
+
+  .shadow-clock-face {
+    width: 120px;
+    height: 120px;
+  }
+
+  .hour-mark {
+    transform: translate(-50%, -50%) rotate(var(--angle)) translateY(-44px) rotate(calc(-1 * var(--angle)));
+  }
+
+  .shadow-overlay-visual {
+    height: 100px;
+    margin-left: 30px;
+  }
+}

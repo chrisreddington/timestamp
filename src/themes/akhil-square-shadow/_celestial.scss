@@ -1,0 +1,153 @@
+/**
+ * Celestial Bodies
+ *
+ * Styles for sun, moon, and stars with animations and visual effects.
+ */
+
+// =============================================================================
+// Sky Background
+// =============================================================================
+
+.shadow-theme-sky {
+  position: absolute;
+  inset: 0;
+  background: var(--shadow-theme-day-sky);
+  transition: background 2s ease-out;
+  z-index: 1;
+}
+
+// =============================================================================
+// Stars (Night Only)
+// =============================================================================
+
+.shadow-theme-stars {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity 1s ease-out;
+  pointer-events: none;
+
+  &.is-visible {
+    opacity: 1;
+  }
+}
+
+.star {
+  position: absolute;
+  width: var(--star-size, 2px);
+  height: var(--star-size, 2px);
+  background: #ffffff;
+  border-radius: 50%;
+  animation: twinkle 2s ease-in-out infinite;
+  animation-delay: var(--twinkle-delay, 0s);
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+// =============================================================================
+// Sun
+// =============================================================================
+
+.shadow-theme-sun {
+  position: absolute;
+  width: clamp(60px, 10vw, 100px);
+  height: clamp(60px, 10vw, 100px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #fff5d4 0%, #ffd700 40%, #ff8c00 100%);
+  box-shadow:
+    0 0 40px #ffd700,
+    0 0 80px rgba(255, 215, 0, 0.6),
+    0 0 120px rgba(255, 140, 0, 0.4);
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  transition: opacity 0.5s ease-out;
+
+  &.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+.sun-glow {
+  position: absolute;
+  inset: -20%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.3) 0%, transparent 70%);
+  animation: sun-pulse 4s ease-in-out infinite;
+}
+
+@keyframes sun-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+// =============================================================================
+// Moon
+// =============================================================================
+
+.shadow-theme-moon {
+  position: absolute;
+  width: clamp(50px, 8vw, 80px);
+  height: clamp(50px, 8vw, 80px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, #f5f5f5 0%, #dcdcdc 50%, #a9a9a9 100%);
+  box-shadow:
+    0 0 30px rgba(255, 255, 255, 0.5),
+    0 0 60px rgba(200, 200, 255, 0.3),
+    inset -8px -8px 20px rgba(0, 0, 0, 0.2);
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  transition: opacity 0.5s ease-out;
+
+  &.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+// Moon craters
+.moon-crater {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(150, 150, 150, 0.4);
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.moon-crater-1 {
+  width: 20%;
+  height: 20%;
+  top: 20%;
+  left: 25%;
+}
+
+.moon-crater-2 {
+  width: 15%;
+  height: 15%;
+  top: 50%;
+  left: 55%;
+}
+
+.moon-crater-3 {
+  width: 12%;
+  height: 12%;
+  top: 65%;
+  left: 30%;
+}

@@ -11,6 +11,9 @@
  * Commands:
  *   create <name>      Create a new theme scaffold
  *   generate:previews  Generate theme preview images
+ *   list:labels        Output theme label data as JSON (for CI)
+ *   list:ids           Output ALL theme IDs as JSON (for CI)
+ *   list:json          Output full theme metadata as JSON (for CI)
  *   validate           Run all validations (colors + config)
  *   validate:colors    Color contrast validation only
  *   validate:config    Configuration validation only
@@ -102,6 +105,8 @@ Commands:
   create <name> [author]   Create a new theme scaffold
   generate:previews        Generate theme preview images
   list:labels              Output theme label data as JSON (for CI)
+  list:ids                 Output ALL theme IDs as JSON (for CI)
+  list:json                Output full theme metadata as JSON (for CI)
   validate                 Run all validations (colors + config)
   validate:colors          Color contrast validation only
   validate:config          Configuration validation only
@@ -289,6 +294,40 @@ async function runListLabels(): Promise<CommandResult> {
   }
 }
 
+/**
+ * Output ALL theme IDs as JSON array for CI workflows.
+ * Used by release workflow to detect new themes.
+ */
+async function runListIds(): Promise<CommandResult> {
+  const { extractAllThemeIds } = await import('./theme-sync/index.js');
+
+  try {
+    const ids = extractAllThemeIds();
+    console.log(JSON.stringify(ids));
+    return { success: true, exitCode: 0 };
+  } catch (error) {
+    console.error('❌ Failed to extract theme IDs:', error);
+    return { success: false, exitCode: 1 };
+  }
+}
+
+/**
+ * Output full theme metadata as JSON for CI workflows.
+ * Used by release workflow to generate release notes.
+ */
+async function runListJson(): Promise<CommandResult> {
+  const { extractAllThemeMetadata } = await import('./theme-sync/index.js');
+
+  try {
+    const themes = extractAllThemeMetadata();
+    console.log(JSON.stringify(themes));
+    return { success: true, exitCode: 0 };
+  } catch (error) {
+    console.error('❌ Failed to extract theme metadata:', error);
+    return { success: false, exitCode: 1 };
+  }
+}
+
 async function runAllSyncs(options: CliOptions): Promise<CommandResult> {
   console.log('🔄 Running all sync operations...\n');
 
@@ -371,6 +410,12 @@ async function main(): Promise<void> {
       break;
     case 'list:labels':
       result = await runListLabels();
+      break;
+    case 'list:ids':
+      result = await runListIds();
+      break;
+    case 'list:json':
+      result = await runListJson();
       break;
     default:
       console.error(`❌ Unknown command: ${options.command}`);

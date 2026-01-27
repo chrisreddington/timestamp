@@ -1,0 +1,50 @@
+/**
+ * Reduced Motion
+ *
+ * Accessibility: Disable animations when prefers-reduced-motion is set.
+ */
+
+@media (prefers-reduced-motion: reduce) {
+  .star {
+    animation: none;
+    opacity: 0.7;
+  }
+
+  .sun-glow {
+    animation: none;
+  }
+
+  .shadow-separator {
+    animation: none;
+    opacity: 0.5;
+  }
+
+  .shadow-celebration-message {
+    animation: none;
+  }
+
+  .shadow-theme-sky {
+    transition: none;
+  }
+
+  .shadow-theme-sun,
+  .shadow-theme-moon {
+    transition: none;
+  }
+
+  .shadow-overlay-trigger {
+    transition: none;
+  }
+
+  .shadow-overlay-backdrop {
+    transition: none;
+  }
+
+  .shadow-overlay-modal {
+    transition: none;
+  }
+
+  .shadow-overlay-button {
+    transition: none;
+  }
+}

@@ -1,0 +1,85 @@
+/**
+ * Theme Variables
+ *
+ * Color palette for day/night modes and modal components.
+ */
+
+:root {
+  // Dark mode colors
+  --shadow-theme-day-sky-for-dark: linear-gradient(180deg, #1e3a5f 0%, #3d6a8e 30%, #7eb8da 70%, #f4a460 100%);
+  --shadow-theme-night-sky-for-dark: linear-gradient(180deg, #0a0a1a 0%, #1a1a3e 40%, #2d2d5a 80%, #1a1a3e 100%);
+  --shadow-theme-text-for-dark: #ffffff;
+  --shadow-theme-text-shadow-for-dark: rgba(0, 0, 0, 0.8);
+  --shadow-theme-celebration-for-dark: #ffd700;
+  --shadow-theme-modal-bg-for-dark: rgba(15, 15, 25, 0.98);
+  --shadow-theme-modal-border-for-dark: rgba(255, 215, 0, 0.3);
+  --shadow-theme-input-bg-for-dark: rgba(255, 255, 255, 0.08);
+  --shadow-theme-input-border-for-dark: rgba(255, 255, 255, 0.2);
+
+  // Light mode colors
+  --shadow-theme-day-sky-for-light: linear-gradient(180deg, #4a90c2 0%, #87ceeb 30%, #b0e0e6 70%, #ffe4b5 100%);
+  --shadow-theme-night-sky-for-light: linear-gradient(180deg, #1a1a2e 0%, #2d2d5a 40%, #4a4a7a 80%, #2d2d5a 100%);
+  --shadow-theme-text-for-light: #1a1a2e;
+  --shadow-theme-text-shadow-for-light: rgba(0, 0, 0, 0.5);
+  --shadow-theme-celebration-for-light: #ff8c00;
+  --shadow-theme-modal-bg-for-light: rgba(255, 255, 255, 0.98);
+  --shadow-theme-modal-border-for-light: rgba(255, 140, 0, 0.3);
+  --shadow-theme-input-bg-for-light: rgba(0, 0, 0, 0.05);
+  --shadow-theme-input-border-for-light: rgba(0, 0, 0, 0.15);
+  --shadow-theme-button-text-for-light: #ffffff;
+  --shadow-theme-button-text-hover-for-light: #ffffff;
+}
+
+// Active variables - switch based on color mode
+@media (prefers-color-scheme: dark) {
+  :root {
+    --shadow-theme-day-sky: var(--shadow-theme-day-sky-for-dark);
+    --shadow-theme-night-sky: var(--shadow-theme-night-sky-for-dark);
+    --shadow-theme-text: var(--shadow-theme-text-for-dark);
+    --shadow-theme-text-shadow: var(--shadow-theme-text-shadow-for-dark);
+    --shadow-theme-celebration: var(--shadow-theme-celebration-for-dark);
+    --shadow-theme-modal-bg: var(--shadow-theme-modal-bg-for-dark);
+    --shadow-theme-modal-border: var(--shadow-theme-modal-border-for-dark);
+    --shadow-theme-input-bg: var(--shadow-theme-input-bg-for-dark);
+    --shadow-theme-input-border: var(--shadow-theme-input-border-for-dark);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --shadow-theme-day-sky: var(--shadow-theme-day-sky-for-light);
+    --shadow-theme-night-sky: var(--shadow-theme-night-sky-for-light);
+    --shadow-theme-text: var(--shadow-theme-text-for-light);
+    --shadow-theme-text-shadow: var(--shadow-theme-text-shadow-for-light);
+    --shadow-theme-celebration: var(--shadow-theme-celebration-for-light);
+    --shadow-theme-modal-bg: var(--shadow-theme-modal-bg-for-light);
+    --shadow-theme-modal-border: var(--shadow-theme-modal-border-for-light);
+    --shadow-theme-input-bg: var(--shadow-theme-input-bg-for-light);
+    --shadow-theme-input-border: var(--shadow-theme-input-border-for-light);
+  }
+}
+
+// Explicit user preference overrides system
+[data-color-mode='dark'] {
+  --shadow-theme-day-sky: var(--shadow-theme-day-sky-for-dark);
+  --shadow-theme-night-sky: var(--shadow-theme-night-sky-for-dark);
+  --shadow-theme-text: var(--shadow-theme-text-for-dark);
+  --shadow-theme-text-shadow: var(--shadow-theme-text-shadow-for-dark);
+  --shadow-theme-celebration: var(--shadow-theme-celebration-for-dark);
+  --shadow-theme-modal-bg: var(--shadow-theme-modal-bg-for-dark);
+  --shadow-theme-modal-border: var(--shadow-theme-modal-border-for-dark);
+  --shadow-theme-input-bg: var(--shadow-theme-input-bg-for-dark);
+  --shadow-theme-input-border: var(--shadow-theme-input-border-for-dark);
+}
+
+[data-color-mode='light'] {
+  --shadow-theme-day-sky: var(--shadow-theme-day-sky-for-light);
+  --shadow-theme-night-sky: var(--shadow-theme-night-sky-for-light);
+  --shadow-theme-text: var(--shadow-theme-text-for-light);
+  --shadow-theme-text-shadow: var(--shadow-theme-text-shadow-for-light);
+  --shadow-theme-celebration: var(--shadow-theme-celebration-for-light);
+  --shadow-theme-modal-bg: var(--shadow-theme-modal-bg-for-light);
+  --shadow-theme-modal-border: var(--shadow-theme-modal-border-for-light);
+  --shadow-theme-input-bg: var(--shadow-theme-input-bg-for-light);
+  --shadow-theme-input-border: var(--shadow-theme-input-border-for-light);
+}
