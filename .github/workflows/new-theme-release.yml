@@ -187,6 +187,7 @@ jobs:
         env:
           TARGET_SHA: ${{ steps.target.outputs.sha }}
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const sha = process.env.TARGET_SHA;
             
@@ -276,6 +277,7 @@ jobs:
           CONTRIBUTORS: ${{ steps.pr-info.outputs.contributors }}
           TARGET_SHA: ${{ steps.target.outputs.sha }}
         with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const themes = JSON.parse(process.env.THEME_DATA);
             const prNumber = process.env.PR_NUMBER;
