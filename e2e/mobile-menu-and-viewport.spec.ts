@@ -25,7 +25,7 @@ import {
     waitForCountdown,
     waitForMobileMenuButton,
 } from './fixtures/test-utils';
-import { THEME_FIXTURES } from './fixtures/theme-fixtures';
+import { getWorldMapThemes, THEME_FIXTURES } from './fixtures/theme-fixtures';
 
 const WALL_CLOCK_QUERY = '/?mode=wall-clock&target=2099-01-01T00:00:00';
 
@@ -55,21 +55,33 @@ test.describe('Hamburger visibility by viewport', () => {
 });
 
 test.describe('Inline chrome visibility by viewport', () => {
-  for (const { id } of THEME_FIXTURES) {
-    test(`${id}: hides inline chrome on mobile`, async ({ page }) => {
+  // World map visibility tests only for themes that support it
+  for (const { id } of getWorldMapThemes()) {
+    test(`${id}: hides world map on mobile`, async ({ page }) => {
       await gotoWithViewport(page, MOBILE_VIEWPORT, `/?theme=${id}&mode=wall-clock&target=2099-01-01T00:00:00`);
       const worldMap = page.getByTestId('world-map');
-      const timezoneSelector = page.getByTestId('timezone-selector');
       await expect(worldMap).not.toBeVisible();
+    });
+
+    test(`${id}: shows world map on desktop`, async ({ page }) => {
+      await gotoWithViewport(page, DESKTOP_VIEWPORT, `/?theme=${id}&mode=wall-clock&target=2099-01-01T00:00:00`);
+      const worldMap = page.getByTestId('world-map');
+      await expect(worldMap).toBeVisible();
+    });
+  }
+
+  // Timezone selector and share button tests for all themes
+  for (const { id } of THEME_FIXTURES) {
+    test(`${id}: hides timezone selector on mobile`, async ({ page }) => {
+      await gotoWithViewport(page, MOBILE_VIEWPORT, `/?theme=${id}&mode=wall-clock&target=2099-01-01T00:00:00`);
+      const timezoneSelector = page.getByTestId('timezone-selector');
       await expect(timezoneSelector).not.toBeVisible();
     });
 
     test(`${id}: shows inline chrome on desktop`, async ({ page }) => {
       await gotoWithViewport(page, DESKTOP_VIEWPORT, `/?theme=${id}&mode=wall-clock&target=2099-01-01T00:00:00`);
-      const worldMap = page.getByTestId('world-map');
       const timezoneSelector = page.getByTestId('timezone-selector');
       const shareButton = page.getByTestId('share-button');
-      await expect(worldMap).toBeVisible();
       await expect(timezoneSelector).toBeVisible();
       await expect(shareButton).toBeVisible();
     });
