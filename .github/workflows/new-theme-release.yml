@@ -11,6 +11,7 @@
 #    - Example links with dates 6 months ahead
 #
 # Triggers only on main branch when the registry file changes.
+# Can also be manually triggered with a specific commit SHA.
 name: New Theme Release
 
 on:
@@ -18,6 +19,12 @@ on:
     branches: ["main"]
     paths:
       - 'src/themes/registry/registry-core.ts'
+  workflow_dispatch:
+    inputs:
+      commit_sha:
+        description: 'Commit SHA to create release for (compares against its parent)'
+        required: true
+        type: string
 
 permissions:
   contents: write  # Required to create releases (includes read for PR data)
@@ -35,7 +42,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          fetch-depth: 2  # Need HEAD~1 for comparison
+          fetch-depth: 0  # Full history for manual SHA checkout
+
+      # Determine which commit to analyze (manual input or current)
+      - name: Set target commit
+        id: target
+        run: |
+          if [ -n "${{ inputs.commit_sha }}" ]; then
+            echo "sha=${{ inputs.commit_sha }}" >> $GITHUB_OUTPUT
+            echo "Using manual commit SHA: ${{ inputs.commit_sha }}"
+          else
+            echo "sha=${{ github.sha }}" >> $GITHUB_OUTPUT
+            echo "Using push commit SHA: ${{ github.sha }}"
+          fi
 
       - name: Setup Node
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
@@ -52,23 +71,24 @@ jobs:
       - name: Detect new themes
         id: detect
         run: |
+          TARGET_SHA="${{ steps.target.outputs.sha }}"
+          
           # Extract theme IDs from THEME_REGISTRY object keys in registry-core.ts
-          # This regex matches the keys in: export const THEME_REGISTRY = { 'key': ..., key: ... }
+          # The keys are on lines like: 'theme-id': createRegistryEntry(...)
+          # or: themeid: createRegistryEntry(...)
           extract_theme_ids() {
             local file="src/themes/registry/registry-core.ts"
             if [ -f "$file" ]; then
+              # Extract lines that look like registry entries (key followed by createRegistryEntry)
+              # This is more reliable than trying to parse nested braces
               node -e "
                 const fs = require('fs');
                 const content = fs.readFileSync('$file', 'utf8');
-                // Match THEME_REGISTRY object and extract keys
-                const match = content.match(/THEME_REGISTRY\s*=\s*\{([^}]+)\}/s);
-                if (!match) { console.log('[]'); process.exit(0); }
-                const block = match[1];
-                // Extract keys (both quoted and unquoted)
                 const keys = [];
-                const regex = /['\""]?([a-z0-9-]+)['\""]?\s*:/g;
+                // Match lines like: 'theme-id': createRegistryEntry or themeid: createRegistryEntry
+                const regex = /^\s*['\"]?([a-z][a-z0-9-]*)['\"]?\s*:\s*createRegistryEntry/gm;
                 let m;
-                while ((m = regex.exec(block)) !== null) {
+                while ((m = regex.exec(content)) !== null) {
                   keys.push(m[1]);
                 }
                 console.log(JSON.stringify([...new Set(keys)].sort()));
@@ -78,17 +98,20 @@ jobs:
             fi
           }
           
-          # Get theme IDs from current commit
+          # Checkout target commit
+          git checkout "$TARGET_SHA" --quiet
+          
+          # Get theme IDs from target commit
           CURRENT_THEMES=$(extract_theme_ids)
-          echo "Current themes: $CURRENT_THEMES"
+          echo "Current themes (at $TARGET_SHA): $CURRENT_THEMES"
           
-          # Checkout previous commit and get theme IDs
-          git checkout HEAD~1 --quiet
+          # Checkout parent commit and get theme IDs
+          git checkout "$TARGET_SHA~1" --quiet
           PREVIOUS_THEMES=$(extract_theme_ids)
-          echo "Previous themes: $PREVIOUS_THEMES"
+          echo "Previous themes (at $TARGET_SHA~1): $PREVIOUS_THEMES"
           
-          # Return to current commit
-          git checkout - --quiet
+          # Return to target commit
+          git checkout "$TARGET_SHA" --quiet
           
           # Find new themes using Node.js
           NEW_THEMES=$(node -e "
@@ -157,9 +180,11 @@ jobs:
         id: pr-info
         if: steps.detect.outputs.has_new_themes == 'true'
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        env:
+          TARGET_SHA: ${{ steps.target.outputs.sha }}
         with:
           script: |
-            const sha = context.sha;
+            const sha = process.env.TARGET_SHA;
             
             // Find PRs associated with this commit
             const { data: prs } = await github.rest.repos.listPullRequestsAssociatedWithCommit({
@@ -245,6 +270,7 @@ jobs:
           PR_URL: ${{ steps.pr-info.outputs.pr_url }}
           AUTHOR: ${{ steps.pr-info.outputs.author }}
           CONTRIBUTORS: ${{ steps.pr-info.outputs.contributors }}
+          TARGET_SHA: ${{ steps.target.outputs.sha }}
         with:
           script: |
             const themes = JSON.parse(process.env.THEME_DATA);
@@ -253,6 +279,7 @@ jobs:
             const prUrl = process.env.PR_URL;
             const author = process.env.AUTHOR;
             const contributors = JSON.parse(process.env.CONTRIBUTORS);
+            const targetSha = process.env.TARGET_SHA;
             
             for (const theme of themes) {
               const tagName = `theme-${theme.id}`;
@@ -309,7 +336,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 tag_name: tagName,
-                target_commitish: context.sha,
+                target_commitish: targetSha,
                 name: `🎨 New Theme: ${theme.name}`,
                 body: body,
                 draft: false,
