@@ -13,8 +13,10 @@ export {
   checkTemplatesSync,
   extractThemeNames,
   extractThemeLabelData,
+  extractAllThemeIds,
+  extractAllThemeMetadata,
 } from './templates.js';
-export type { ThemeLabelData } from './templates.js';
+export type { ThemeLabelData, ThemeMetadataFull } from './templates.js';
 export {
   syncReadmes,
   checkReadmesSync,

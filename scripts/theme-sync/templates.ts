@@ -18,6 +18,17 @@ export interface ThemeLabelData {
 }
 
 /**
+ * Full theme metadata for release announcements.
+ */
+export interface ThemeMetadataFull {
+  id: string;
+  name: string;
+  description: string;
+  author: string | null;
+  publishedDate: string;
+}
+
+/**
  * Extract theme data (id and name) from THEME_REGISTRY.
  * Filters out themes where `availableInIssueTemplate` is explicitly set to false.
  *
@@ -38,6 +49,34 @@ export function extractThemeLabelData(): ThemeLabelData[] {
  */
 export function extractThemeNames(): string[] {
   return extractThemeLabelData().map((theme) => theme.name);
+}
+
+/**
+ * Extract ALL theme IDs from THEME_REGISTRY (no filtering).
+ * Used by release workflow to detect new themes.
+ *
+ * @returns Sorted array of all theme IDs
+ */
+export function extractAllThemeIds(): string[] {
+  return Object.keys(THEME_REGISTRY).sort();
+}
+
+/**
+ * Extract full metadata for ALL themes from THEME_REGISTRY (no filtering).
+ * Used by release workflow to generate release notes.
+ *
+ * @returns Array of full theme metadata
+ */
+export function extractAllThemeMetadata(): ThemeMetadataFull[] {
+  return Object.values(THEME_REGISTRY)
+    .map((theme) => ({
+      id: theme.id,
+      name: theme.name,
+      description: theme.description,
+      author: theme.author,
+      publishedDate: theme.publishedDate,
+    }))
+    .sort((a, b) => a.id.localeCompare(b.id));
 }
 
 /**
