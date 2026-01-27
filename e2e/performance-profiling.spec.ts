@@ -72,7 +72,7 @@ test.describe('Landing Page Performance @perf @perf-quick', () => {
     await expect(page.getByTestId('landing-start-button')).toBeVisible({ timeout: 10000 });
 
     // First theme card should use <img> with fetchpriority="high" for LCP optimization
-    const lcpImage = page.locator('.theme-selector-card-preview-img').first();
+    const lcpImage = page.locator('.theme-selector-card-poster-img').first();
     await expect(lcpImage).toBeVisible();
     await expect(lcpImage).toHaveAttribute('fetchpriority', 'high');
   });
