@@ -26,10 +26,6 @@ on:
         required: true
         type: string
 
-# Permissions set at job level for explicit control
-# (repo settings use restrictive defaults)
-permissions: {}
-
 # Prevent duplicate releases if multiple commits arrive quickly
 concurrency:
   group: new-theme-release
