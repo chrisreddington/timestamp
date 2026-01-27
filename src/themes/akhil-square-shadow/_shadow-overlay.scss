@@ -20,7 +20,7 @@
     color-mix(in srgb, var(--shadow-theme-celebration) 30%, rgba(0, 0, 0, 0.8)) 0%,
     color-mix(in srgb, var(--shadow-theme-celebration) 15%, rgba(0, 0, 0, 0.9)) 100%
   );
-  color: var(--shadow-theme-text);
+  color: #ffffff;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
@@ -200,7 +200,7 @@
   border-radius: 8px;
   border: 1px solid var(--shadow-theme-celebration);
   background: color-mix(in srgb, var(--shadow-theme-celebration) 20%, transparent);
-  color: var(--shadow-theme-text);
+  color: var(--shadow-theme-button-text, var(--shadow-theme-text));
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
@@ -210,6 +210,7 @@
 
 .shadow-overlay-button:hover {
   background: color-mix(in srgb, var(--shadow-theme-celebration) 35%, transparent);
+  color: var(--shadow-theme-button-text-hover, var(--shadow-theme-button-text, var(--shadow-theme-text)));
 }
 
 .shadow-overlay-button:focus {

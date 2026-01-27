@@ -13,9 +13,9 @@
  * - _reduced-motion.scss: Accessibility animations
  */
 
-@import 'variables';
-@import 'celestial';
-@import 'countdown';
-@import 'shadow-overlay';
-@import 'landing-page';
-@import 'reduced-motion';
+@use 'variables';
+@use 'celestial';
+@use 'countdown';
+@use 'shadow-overlay';
+@use 'landing-page';
+@use 'reduced-motion';
