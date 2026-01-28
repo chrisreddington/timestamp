@@ -152,6 +152,8 @@ export function createPageController<TRenderer extends AnimationStateAwareRender
             prefersReducedMotion,
           };
         },
+        // NOTE: colorMode is intentionally not included here for time page controller
+        // The landing page background-manager adds it separately after resolving the color mode
       };
     },
 
