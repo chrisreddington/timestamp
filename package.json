@@ -45,7 +45,7 @@
   "license": "MIT",
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
-    "@fullhuman/postcss-purgecss": "^7.0.2",
+    "@fullhuman/postcss-purgecss": "^8.0.0",
     "@playwright/test": "^1.49.0",
     "@stryker-mutator/core": "^9.4.0",
     "@stryker-mutator/typescript-checker": "^9.4.0",
