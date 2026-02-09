@@ -48,7 +48,7 @@
     "@fullhuman/postcss-purgecss": "^7.0.2",
     "@playwright/test": "^1.49.0",
     "@stryker-mutator/core": "^9.4.0",
-    "@stryker-mutator/typescript-checker": "^9.4.0",
+    "@stryker-mutator/typescript-checker": "^9.5.1",
     "@stryker-mutator/vitest-runner": "^9.4.0",
     "@types/node": "^25.0.9",
     "@types/suncalc": "^1.9.2",
