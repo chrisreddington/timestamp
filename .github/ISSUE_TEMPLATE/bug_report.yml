@@ -63,9 +63,11 @@ body:
       label: Theme
       description: Which theme were you using?
       options:
+        - Chris Reddington
         - Contribution Graph
         - Fireworks Celebration
         - Ring
+        - Sun/Moon Shadow Rotator
         - Not applicable / Not sure
     validations:
       required: true

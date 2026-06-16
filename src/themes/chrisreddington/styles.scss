@@ -1,0 +1,263 @@
+:root {
+  --chrisreddington-stage-bg-for-dark: radial-gradient(120% 86% at 50% 47%, #122a63 0%, #0c1733 52%, #010411 100%);
+  --chrisreddington-stage-bg-for-light: radial-gradient(120% 86% at 50% 47%, #122a63 0%, #0c1733 52%, #010411 100%);
+  --chrisreddington-stage-base-for-dark: #020617;
+  --chrisreddington-stage-base-for-light: #020617;
+  --chrisreddington-ink-for-dark: #e6edf3;
+  --chrisreddington-ink-for-light: #e6edf3;
+  --chrisreddington-blue-for-dark: #3b82f6;
+  --chrisreddington-blue-for-light: #3b82f6;
+  --chrisreddington-green-for-dark: #22c55e;
+  --chrisreddington-green-for-light: #22c55e;
+  --chrisreddington-muted-for-dark: #94a3b8;
+  --chrisreddington-muted-for-light: #94a3b8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chrisreddington-stage-bg: var(--chrisreddington-stage-bg-for-dark);
+    --chrisreddington-stage-base: var(--chrisreddington-stage-base-for-dark);
+    --chrisreddington-ink: var(--chrisreddington-ink-for-dark);
+    --chrisreddington-blue: var(--chrisreddington-blue-for-dark);
+    --chrisreddington-green: var(--chrisreddington-green-for-dark);
+    --chrisreddington-muted: var(--chrisreddington-muted-for-dark);
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --chrisreddington-stage-bg: var(--chrisreddington-stage-bg-for-light);
+    --chrisreddington-stage-base: var(--chrisreddington-stage-base-for-light);
+    --chrisreddington-ink: var(--chrisreddington-ink-for-light);
+    --chrisreddington-blue: var(--chrisreddington-blue-for-light);
+    --chrisreddington-green: var(--chrisreddington-green-for-light);
+    --chrisreddington-muted: var(--chrisreddington-muted-for-light);
+  }
+}
+
+[data-color-mode='dark'] {
+  --chrisreddington-stage-bg: var(--chrisreddington-stage-bg-for-dark);
+  --chrisreddington-stage-base: var(--chrisreddington-stage-base-for-dark);
+  --chrisreddington-ink: var(--chrisreddington-ink-for-dark);
+  --chrisreddington-blue: var(--chrisreddington-blue-for-dark);
+  --chrisreddington-green: var(--chrisreddington-green-for-dark);
+  --chrisreddington-muted: var(--chrisreddington-muted-for-dark);
+}
+
+[data-color-mode='light'] {
+  --chrisreddington-stage-bg: var(--chrisreddington-stage-bg-for-light);
+  --chrisreddington-stage-base: var(--chrisreddington-stage-base-for-light);
+  --chrisreddington-ink: var(--chrisreddington-ink-for-light);
+  --chrisreddington-blue: var(--chrisreddington-blue-for-light);
+  --chrisreddington-green: var(--chrisreddington-green-for-light);
+  --chrisreddington-muted: var(--chrisreddington-muted-for-light);
+}
+
+.chrisreddington-theme {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--chrisreddington-stage-base);
+  background-image: var(--chrisreddington-stage-bg);
+  color: var(--chrisreddington-ink);
+  font-family: 'Monaspace Neon', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.chrisreddington-theme::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.06;
+  mix-blend-mode: screen;
+  background-image: radial-gradient(rgba(230, 237, 243, 0.04) 0.48px, transparent 0.48px);
+  background-size: 3px 3px;
+}
+
+.chrisreddington-theme::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 0 140px rgba(2, 6, 23, 0.58);
+}
+
+.chrisreddington-countdown-display {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.38em;
+  line-height: 1;
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  font-size: clamp(28px, calc(7.2vw * var(--font-scale, 1)), 92px);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.chrisreddington-countdown-display[data-layout='resting'] {
+  left: calc(50% - var(--chrisreddington-resting-offset-px, 0px));
+  transform: translateY(-50%);
+}
+
+.chrisreddington-countdown-display.is-resting-size {
+  font-size: clamp(28px, calc(7.2vw * var(--font-scale, 1)), 92px);
+}
+
+.chrisreddington-countdown-display.is-centering {
+  transition: left 220ms cubic-bezier(0.4, 0, 0.2, 1), transform 220ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.chrisreddington-chevron {
+  display: inline-flex;
+  align-items: center;
+  color: var(--chrisreddington-blue);
+  line-height: 1;
+}
+
+.chrisreddington-chevron-icon {
+  display: block;
+  width: 0.5em;
+  height: 0.78em;
+}
+
+.value--numeric {
+  color: var(--chrisreddington-ink);
+  transform: translateY(var(--chrisreddington-numeric-nudge, 0));
+}
+
+.value--word {
+  transform: translateY(var(--chrisreddington-word-nudge, 0));
+}
+
+.chrisreddington-transition-text {
+  color: var(--chrisreddington-ink);
+}
+
+.chrisreddington-cursor {
+  width: 0.42em;
+  height: 0.78em;
+  border-radius: 0.04em;
+  background: var(--chrisreddington-green);
+}
+
+.chrisreddington-cursor.is-blinking {
+  animation: chrisreddington-cursor-blink 1s step-end infinite;
+}
+
+.chrisreddington-separator {
+  color: var(--chrisreddington-ink);
+}
+
+.chrisreddington-celebration-message {
+  display: none;
+}
+
+.chrisreddington-theme.is-animations-paused .chrisreddington-cursor.is-blinking {
+  animation-play-state: paused;
+}
+
+@keyframes chrisreddington-cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.landing-theme-background--chrisreddington {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background-color: var(--chrisreddington-stage-base);
+  background-image: var(--chrisreddington-stage-bg);
+}
+
+.landing-theme-background--chrisreddington::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.06;
+  mix-blend-mode: screen;
+  background-image: radial-gradient(rgba(230, 237, 243, 0.04) 0.48px, transparent 0.48px);
+  background-size: 3px 3px;
+}
+
+.landing-theme-background--chrisreddington::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  box-shadow: inset 0 0 140px rgba(2, 6, 23, 0.58);
+}
+
+.chrisreddington-landing-ambient {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.chrisreddington-landing-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: 0.38em;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  font-size: clamp(18px, calc(5vw * var(--font-scale, 1)), 44px);
+  color: var(--chrisreddington-ink);
+  opacity: 0.18;
+}
+
+.chrisreddington-landing-line .chrisreddington-chevron {
+  color: var(--chrisreddington-blue);
+}
+
+.chrisreddington-landing-line .chrisreddington-cursor {
+  animation: none;
+}
+
+.chrisreddington-landing-line.is-breathing {
+  animation: chrisreddington-landing-breathe 2400ms ease-in-out infinite;
+}
+
+.chrisreddington-landing-ambient.is-paused .chrisreddington-landing-line {
+  animation-play-state: paused;
+}
+
+@keyframes chrisreddington-landing-breathe {
+  0%,
+  100% {
+    opacity: 0.13;
+  }
+
+  50% {
+    opacity: 0.24;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chrisreddington-cursor.is-blinking,
+  .chrisreddington-landing-line.is-breathing {
+    animation: none !important;
+  }
+
+  .chrisreddington-cursor {
+    opacity: 1;
+  }
+}
