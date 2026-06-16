@@ -2,6 +2,7 @@ import { CHRISREDDINGTON_SEQUENCE } from '../../config';
 import {
   clearRestingPromptAlignment,
   setCelebrationMessage,
+  setCenteringTransition,
   setDisplayLayout,
   setRestingFontVariant,
   setTransitionText,
@@ -28,6 +29,7 @@ export async function clearCountdownValue(
 
   setDisplayLayout(state.elements, 'transition');
   setRestingFontVariant(state.elements, false);
+  setCenteringTransition(state.elements, false);
   clearRestingPromptAlignment(state.elements);
 
   return deleteCharByChar(
@@ -98,6 +100,7 @@ export async function centerToRestingPrompt(
   }
 
   setCelebrationPhase(state, 'centering');
+  setCenteringTransition(state.elements, true);
   setDisplayLayout(state.elements, 'resting');
   setRestingFontVariant(state.elements, true);
   updateRestingPromptAlignment(state.elements);
@@ -105,6 +108,7 @@ export async function centerToRestingPrompt(
   setCelebrationMessage(state.elements, '');
 
   const didCenter = await waitForPhaseDelay(state, CHRISREDDINGTON_SEQUENCE.centeringMs, signal);
+  setCenteringTransition(state.elements, false);
   if (didCenter) {
     setCelebrationPhase(state, 'resting');
   }
@@ -119,6 +123,7 @@ export function snapToRestingPrompt(state: ChrisReddingtonTimePageState): void {
 
   setDisplayLayout(state.elements, 'resting');
   setRestingFontVariant(state.elements, true);
+  setCenteringTransition(state.elements, false);
   updateRestingPromptAlignment(state.elements);
   setTransitionText(state.elements, '');
   setCelebrationMessage(state.elements, '');

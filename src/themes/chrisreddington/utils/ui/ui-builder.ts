@@ -188,6 +188,10 @@ export function setRestingFontVariant(elements: ChrisReddingtonTimePageElements,
   elements.display.classList.toggle('is-resting-size', resting);
 }
 
+export function setCenteringTransition(elements: ChrisReddingtonTimePageElements, centering: boolean): void {
+  elements.display.classList.toggle('is-centering', centering);
+}
+
 export function updateRestingPromptAlignment(elements: ChrisReddingtonTimePageElements): void {
   const fontSizePx = Number.parseFloat(getComputedStyle(elements.display).fontSize) || 0;
   const promptWidthPx = elements.chevron.getBoundingClientRect().width;

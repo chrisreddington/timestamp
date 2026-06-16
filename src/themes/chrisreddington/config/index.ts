@@ -28,7 +28,7 @@ export const CHRISREDDINGTON_CURSOR = {
 export const CHRISREDDINGTON_SEQUENCE = {
   deleteCharMs: 50,
   typeCharMs: 100,
-  holdFinalMs: 1500,
+  holdFinalMs: 1000,
   holdReadyMs: 1500,
   centeringMs: 220,
   readyWord: 'ready',

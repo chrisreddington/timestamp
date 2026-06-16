@@ -48,6 +48,10 @@ export async function deleteCharByChar(
     value = value.slice(0, -1);
     updateText(value);
 
+    if (value.length === 0) {
+      break;
+    }
+
     if (!(await waitForPhaseDelay(state, delayMs, signal))) {
       return false;
     }

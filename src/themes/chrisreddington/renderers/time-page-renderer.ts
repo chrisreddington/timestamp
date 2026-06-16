@@ -21,6 +21,7 @@ import {
   clearRestingPromptAlignment,
   setAnimationPlayback,
   setCelebrationMessage,
+  setCenteringTransition,
   setCursorBlinking,
   setDisplayLayout,
   setRestingFontVariant,
@@ -53,6 +54,7 @@ function resetToCounting(state: ChrisReddingtonTimePageState): void {
   setCelebrationPhase(state, 'idle');
   setDisplayLayout(state.elements, 'counting');
   setRestingFontVariant(state.elements, false);
+  setCenteringTransition(state.elements, false);
   clearRestingPromptAlignment(state.elements);
   setTransitionText(state.elements, '');
   setCelebrationMessage(state.elements, '');
@@ -68,6 +70,7 @@ function snapCelebrationState(state: ChrisReddingtonTimePageState): void {
   cancelCelebrationSequence(state);
   setDisplayLayout(state.elements, 'resting');
   setRestingFontVariant(state.elements, true);
+  setCenteringTransition(state.elements, false);
   updateRestingPromptAlignment(state.elements);
   setTransitionText(state.elements, '');
   setCelebrationMessage(state.elements, '');

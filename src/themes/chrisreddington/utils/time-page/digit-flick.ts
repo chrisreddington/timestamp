@@ -15,28 +15,14 @@ function pad2(value: number): string {
   return String(value).padStart(2, '0');
 }
 
-function applyFlickClass(element: HTMLElement): void {
-  element.classList.add('flick');
-  element.addEventListener(
-    'animationend',
-    () => {
-      element.classList.remove('flick');
-    },
-    { once: true }
-  );
-}
-
-function updateDigit(element: HTMLElement, value: string, shouldFlick: boolean): void {
-  const changed = setTextIfChanged(element, value);
-  if (changed && shouldFlick) {
-    applyFlickClass(element);
-  }
+function updateDigit(element: HTMLElement, value: string): void {
+  setTextIfChanged(element, value);
 }
 
 export function updateCountdownDigits(
   elements: Pick<ChrisReddingtonTimePageElements, 'days' | 'hours' | 'minutes' | 'seconds'>,
   time: TimeRemaining,
-  shouldFlick: boolean
+  _shouldFlick: boolean
 ): CountdownTextSnapshot {
   const snapshot = {
     days: pad2(time.days),
@@ -45,10 +31,10 @@ export function updateCountdownDigits(
     seconds: pad2(time.seconds),
   };
 
-  updateDigit(elements.days, snapshot.days, shouldFlick);
-  updateDigit(elements.hours, snapshot.hours, shouldFlick);
-  updateDigit(elements.minutes, snapshot.minutes, shouldFlick);
-  updateDigit(elements.seconds, snapshot.seconds, shouldFlick);
+  updateDigit(elements.days, snapshot.days);
+  updateDigit(elements.hours, snapshot.hours);
+  updateDigit(elements.minutes, snapshot.minutes);
+  updateDigit(elements.seconds, snapshot.seconds);
 
   return { ...snapshot, full: `${snapshot.days}:${snapshot.hours}:${snapshot.minutes}:${snapshot.seconds}` };
 }
