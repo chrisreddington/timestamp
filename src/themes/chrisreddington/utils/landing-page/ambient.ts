@@ -1,16 +1,34 @@
 import type { AnimationStateGetter } from '@core/types';
 import { shouldEnableAnimations } from '@themes/shared';
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+function createChevronElement(): HTMLSpanElement {
+  const chevron = document.createElement('span');
+  const icon = document.createElementNS(SVG_NS, 'svg');
+  const path = document.createElementNS(SVG_NS, 'path');
+
+  chevron.className = 'chrisreddington-chevron';
+  icon.setAttribute('class', 'chrisreddington-chevron-icon');
+  icon.setAttribute('viewBox', '0 0 12 14');
+  icon.setAttribute('fill', 'none');
+  icon.setAttribute('stroke', 'currentColor');
+  icon.setAttribute('stroke-width', '2');
+  icon.setAttribute('stroke-linecap', 'round');
+  icon.setAttribute('stroke-linejoin', 'round');
+  path.setAttribute('d', 'M2 2 L10 7 L2 12');
+  icon.append(path);
+  chevron.append(icon);
+
+  return chevron;
+}
 
 function createAmbientLine(): HTMLElement {
   const line = document.createElement('div');
-  const chevron = document.createElement('span');
+  const chevron = createChevronElement();
   const cursor = document.createElement('span');
 
   line.className = 'chrisreddington-landing-line';
-  chevron.className = 'chrisreddington-chevron';
   cursor.className = 'chrisreddington-cursor is-blinking';
-
-  chevron.textContent = '❯';
   line.append(chevron, cursor);
 
   return line;

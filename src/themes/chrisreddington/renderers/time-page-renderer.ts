@@ -25,6 +25,7 @@ import {
   setDisplayLayout,
   setRestingFontVariant,
   setTransitionText,
+  setupInkCentering,
   updateRestingPromptAlignment,
 } from '../utils/ui/ui-builder';
 
@@ -37,6 +38,7 @@ function mountRendererState(
   state.container.setAttribute('data-testid', 'theme-container');
   state.getAnimationState = context?.getAnimationState ?? state.getAnimationState;
   state.elements = buildChrisReddingtonTimePageUI(container);
+  setupInkCentering(state.elements, state.resourceTracker);
   setDisplayLayout(state.elements, 'counting');
   setCursorBlinking(state.elements, true);
   setAnimationPlayback(state.elements, shouldEnableAnimations(state.getAnimationState));

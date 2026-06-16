@@ -15,8 +15,6 @@ export const CHRISREDDINGTON_FONT = {
   family: '"Monaspace Neon", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace',
   countdownSize: 'clamp(28px, 7.2vw, 92px)',
   restingSize: 'clamp(40px, 9vw, 120px)',
-  numericNudgeEm: 0.082,
-  wordNudgeEm: 0,
 } as const;
 
 export const CHRISREDDINGTON_CURSOR = {
@@ -30,17 +28,22 @@ export const CHRISREDDINGTON_CURSOR = {
 export const CHRISREDDINGTON_SEQUENCE = {
   deleteCharMs: 50,
   typeCharMs: 100,
-  holdReadyMs: 750,
+  holdFinalMs: 1500,
+  holdReadyMs: 1500,
   centeringMs: 220,
   readyWord: 'ready',
 } as const;
 
-export const CHRISREDDINGTON_ALIGNMENT_SAMPLE_FONT_SIZES_PX = [28, 60, 92] as const;
-export const NUMERIC_INK_CENTER_ABOVE_BASELINE_EM = 0.36;
-export const WORD_INK_CENTER_ABOVE_BASELINE_EM = 0.285;
-export const ROW_AXIS_ABOVE_BASELINE_EM = WORD_INK_CENTER_ABOVE_BASELINE_EM;
+/** Representative samples used to measure each content type's ink centre. */
+export const CHRISREDDINGTON_INK_SAMPLES = {
+  numeric: '0:8',
+  // Lowercase x-height proxy (no ascenders/descenders). The end-word is centred on
+  // its x-height band, where the eye reads its visual mass, rather than on the full
+  // glyph box (which the `d` ascender and `y` descender would skew).
+  wordXHeight: 'ace',
+} as const;
 
-export type CenterlineContentKind = 'numeric' | 'word';
+export const CHRISREDDINGTON_ALIGNMENT_SAMPLE_FONT_SIZES_PX = [28, 60, 92] as const;
 
 export interface ChrisReddingtonCursorMetrics {
   widthPx: number;
@@ -62,44 +65,47 @@ export function calculateOpeningPromptX(centerX: number, promptWidthPx: number, 
 }
 
 /**
- * Measures the chevron-point-to-cursor-center vertical delta in CSS space.
+ * Ink-box metrics for one text sample, as reported by Canvas `measureText`.
  *
  * @remarks
- * The theme enforces `line-height: 1` with row-level `align-items: center`, so both
- * chevron and cursor align to the same em-box center line. This function validates
- * that relationship across the clamp() font range.
+ * `fontBoundingBox*` describe the font's line box (the box flex centres on);
+ * `actualBoundingBox*` describe the painted ink of the sample.
  */
-export function calculateChevronPointToCursorCenterDeltaPx(fontSizePx: number): number {
-  const chevronPointY = fontSizePx * 0.5;
-  const cursorCenterY = fontSizePx * 0.5;
-  return Math.abs(chevronPointY - cursorCenterY);
-}
-
-function getMeasuredInkCenterAboveBaselineEm(content: CenterlineContentKind): number {
-  return content === 'numeric' ? NUMERIC_INK_CENTER_ABOVE_BASELINE_EM : WORD_INK_CENTER_ABOVE_BASELINE_EM;
-}
-
-function getContentNudgeEm(content: CenterlineContentKind): number {
-  return content === 'numeric'
-    ? CHRISREDDINGTON_FONT.numericNudgeEm
-    : CHRISREDDINGTON_FONT.wordNudgeEm;
+export interface ChrisReddingtonInkBoxMetrics {
+  fontSizePx: number;
+  fontBoundingBoxAscent: number;
+  fontBoundingBoxDescent: number;
+  actualBoundingBoxAscent: number;
+  actualBoundingBoxDescent: number;
 }
 
 /**
- * Measures the displayed ink-center delta against the shared cursor-row axis.
+ * Computes the `translateY` (in em) that moves a text element's visible ink
+ * centre onto its flex line-box centre, so digits and words share the cursor's
+ * centre axis.
  *
  * @remarks
- * Chevron point + cursor are em-box centered (`line-height: 1`, `align-items: center`).
- * Numeric and word text then apply content-aware nudges so their *ink centers*
- * visually land on that same axis.
+ * With `align-items: center` and `line-height: 1`, flex centres each child's
+ * line box — not its painted ink. Glyph ink sits asymmetrically inside that box
+ * (digits high, words around the x-height), so without this correction text
+ * reads as high or low against the geometric cursor block. The line box's centre
+ * sits `(fontAscent - fontDescent) / 2` above the baseline; the ink centre sits
+ * `(inkAscent - inkDescent) / 2` above it. The difference is the nudge. Positive
+ * values move the element downward.
+ *
+ * @param metrics - Canvas-measured font and ink box metrics for the sample.
+ * @returns The vertical correction in em (0 when the sample cannot be measured).
  */
-export function calculateInkCenterToRowAxisDeltaPx(
-  content: CenterlineContentKind,
-  fontSizePx: number
-): number {
-  const measuredAboveBaseline = getMeasuredInkCenterAboveBaselineEm(content);
-  const adjustedAboveBaseline = measuredAboveBaseline - getContentNudgeEm(content);
-  return Math.abs(adjustedAboveBaseline - ROW_AXIS_ABOVE_BASELINE_EM) * fontSizePx;
+export function inkCenterNudgeEm(metrics: ChrisReddingtonInkBoxMetrics): number {
+  if (!(metrics.fontSizePx > 0)) {
+    return 0;
+  }
+
+  const inkCenterFromBaseline = (metrics.actualBoundingBoxAscent - metrics.actualBoundingBoxDescent) / 2;
+  const boxCenterFromBaseline = (metrics.fontBoundingBoxAscent - metrics.fontBoundingBoxDescent) / 2;
+  const nudgeEm = (inkCenterFromBaseline - boxCenterFromBaseline) / metrics.fontSizePx;
+
+  return Number.isFinite(nudgeEm) ? nudgeEm : 0;
 }
 
 export const CHRISREDDINGTON_CONFIG: ThemeConfig = {

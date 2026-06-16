@@ -27,7 +27,8 @@ describe('landing ambient helpers', () => {
     const elements = createLandingAmbient(container);
 
     expect(container.children).toHaveLength(1);
-    expect(elements.line.textContent).toContain('❯');
+    expect(elements.line.querySelector('.chrisreddington-chevron-icon')).toBeTruthy();
+    expect(elements.line.querySelector('.chrisreddington-cursor')).toBeTruthy();
   });
 
   it('toggles breathing based on animation state', () => {

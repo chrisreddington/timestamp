@@ -19,6 +19,13 @@ export async function clearCountdownValue(
   }
 
   setCelebrationPhase(state, 'clearing-value');
+
+  // Hold the final zero value in the counting layout (numeric alignment) so it
+  // is readable before the clear-and-type sequence begins.
+  if (!(await waitForPhaseDelay(state, CHRISREDDINGTON_SEQUENCE.holdFinalMs, signal))) {
+    return false;
+  }
+
   setDisplayLayout(state.elements, 'transition');
   setRestingFontVariant(state.elements, false);
   clearRestingPromptAlignment(state.elements);

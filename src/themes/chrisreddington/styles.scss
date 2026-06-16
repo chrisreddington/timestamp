@@ -110,16 +110,25 @@
 }
 
 .chrisreddington-chevron {
+  display: inline-flex;
+  align-items: center;
   color: var(--chrisreddington-blue);
+  line-height: 1;
+}
+
+.chrisreddington-chevron-icon {
+  display: block;
+  width: 0.5em;
+  height: 0.78em;
 }
 
 .value--numeric {
   color: var(--chrisreddington-ink);
-  transform: translateY(0.082em);
+  transform: translateY(var(--chrisreddington-numeric-nudge, 0));
 }
 
 .value--word {
-  transform: none;
+  transform: translateY(var(--chrisreddington-word-nudge, 0));
 }
 
 .chrisreddington-transition-text {
