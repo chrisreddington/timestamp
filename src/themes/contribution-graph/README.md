@@ -26,7 +26,7 @@ Try this theme with different countdown modes:
 
 ### 🏠 Local Time — *Wall clock* (Per timezone)
 - [New Year 2027](https://chrisreddington.com/timestamp?mode=wall-clock&target=2027-01-01T00:00:00&theme=contribution-graph)
-- [Valentine's Day 2026](https://chrisreddington.com/timestamp?mode=wall-clock&target=2026-02-14T00:00:00&theme=contribution-graph)
+- [Valentine's Day 2027](https://chrisreddington.com/timestamp?mode=wall-clock&target=2027-02-14T00:00:00&theme=contribution-graph)
 
 ### 🌐 Same Moment — *Absolute time* (One instant globally)
 - [Product Launch (July 16, 2026 at 00:00 UTC)](https://chrisreddington.com/timestamp?mode=absolute&target=2026-07-16T00:00:00Z&theme=contribution-graph&message=Launch%20Day!)

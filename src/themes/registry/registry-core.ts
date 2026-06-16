@@ -11,6 +11,7 @@
 import type { LandingPageRendererFactory, ThemeColors, ThemeConfig, ThemeDependency, TimePageRenderer } from '@core/types';
 
 import { AKHIL_SQUARE_SHADOW_CONFIG } from '../akhil-square-shadow/config';
+import { CHRISREDDINGTON_CONFIG } from '../chrisreddington/config';
 import { CONTRIBUTION_GRAPH_CONFIG } from '../contribution-graph/config';
 // Import theme configs for colors (lightweight imports - no heavy dependencies)
 import { FIREWORKS_CONFIG } from '../fireworks/config';
@@ -99,10 +100,21 @@ const loadRingTheme = async (): Promise<LoadedThemeModule> => {
   };
 };
 
+
+const loadChrisreddingtonTheme = async (): Promise<LoadedThemeModule> => {
+  const module = await import('../chrisreddington');
+  return {
+    timePageRenderer: module.chrisreddingtonTimePageRenderer,
+    landingPageRenderer: module.chrisreddingtonLandingPageRenderer,
+    config: module.CHRISREDDINGTON_CONFIG,
+  };
+};
+
 // Stryker restore all
 
 export const THEME_REGISTRY = {
   'akhil-square-shadow': createRegistryEntry(AKHIL_SQUARE_SHADOW_CONFIG, loadAkhilSquareShadowTheme),
+  'chrisreddington': createRegistryEntry(CHRISREDDINGTON_CONFIG, loadChrisreddingtonTheme),
   'contribution-graph': createRegistryEntry(CONTRIBUTION_GRAPH_CONFIG, loadContributionGraphTheme),
   fireworks: createRegistryEntry(FIREWORKS_CONFIG, loadFireworksTheme),
   'ring': createRegistryEntry(RING_CONFIG, loadRingTheme),

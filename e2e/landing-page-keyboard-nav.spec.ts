@@ -7,10 +7,10 @@
  * to the mode selector (Focus Order compliance).
  */
 
-import { test, expect, type Page } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 const getFocusableThemeCard = (page: Page) =>
-  page.getByTestId('theme-card-contribution-graph').locator('[role="gridcell"]').first();
+  page.locator('[data-testid^="theme-card-"] [role="gridcell"][tabindex="0"]').first();
 
 test.describe('Landing Page Keyboard Navigation', () => {
   test.beforeEach(async ({ page }) => {
