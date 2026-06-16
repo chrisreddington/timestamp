@@ -41,7 +41,7 @@ jobs:
       # 2. Any dependency uses a license incompatible with MIT
       # Learn more: https://github.com/actions/dependency-review-action
       - name: Review dependencies for vulnerabilities and license compatibility
-        uses: actions/dependency-review-action@3c4e3dcb1aa7874d2c16be7d79418e9b7efd6261 # v4.8.2
+        uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4.9.0
         with:
           # Fail on any vulnerability severity (critical, high, medium, low)
           # Adjust this to 'critical' or 'high' if you want to allow lower severity issues
