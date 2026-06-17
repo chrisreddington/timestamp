@@ -77,6 +77,28 @@ updates:
         update-types:
           - "minor"
           - "patch"
+      # Stryker mutation testing toolchain
+      # core, vitest-runner and typescript-checker share a locked peer
+      # dependency on the same version, so they must update together —
+      # major updates are included so the whole toolchain moves atomically.
+      stryker:
+        patterns:
+          - "@stryker-mutator/*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
+      # Stylelint toolchain
+      # stylelint and its shared configs (config-standard, config-standard-scss)
+      # are peer-locked to a matching stylelint major, so they must update
+      # together — major updates are included so the cluster moves atomically.
+      stylelint:
+        patterns:
+          - "stylelint*"
+        update-types:
+          - "major"
+          - "minor"
+          - "patch"
     # Major updates kept separate for careful review
     # Semantic versioning major updates may contain breaking changes
     # Customize commit messages for better changelog integration
