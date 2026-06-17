@@ -8,40 +8,42 @@ const DISMISSED_KEY = 'pwa-update-dismissed';
 const DISMISS_DURATION_MS = 2 * 60 * 60 * 1000;
 const VISIBLE_CLASS = 'update-prompt-container--visible';
 const NO_ANIMATION_CLASS = 'update-prompt-container--no-animation';
-const DEV_CONTROLLER_CHANGE_FALLBACK_DELAY_MS = 100;
+/**
+ * Fallback delay before forcing a reload if `controllerchange` never fires.
+ * Some scenarios (multiple tabs/clients, a worker that already activated) won't
+ * emit `controllerchange` for this client, which would otherwise leave the
+ * banner stuck on screen forever. The reload happens regardless after this.
+ */
+const CONTROLLER_CHANGE_FALLBACK_DELAY_MS = 3000;
 
 /**
- * Activates a waiting SW and reloads when it takes control.
+ * Activates a waiting SW and reloads when it takes control, with a fallback
+ * timeout so the reload always happens even if `controllerchange` never fires.
  * @param registration - Service worker registration
- * @param options - Optional config with dev reload delay
+ * @param options - Optional override for the reload fallback delay
  */
 function activateWaitingServiceWorker(
   registration: ServiceWorkerRegistration,
-  options: { devReloadDelayMs?: number } = {}
+  options: { reloadFallbackDelayMs?: number } = {}
 ): void {
   const waitingWorker = registration.waiting;
   if (!waitingWorker) return;
 
   let hasReloaded = false;
 
-  const handleControllerChange = (): void => {
+  const reload = (): void => {
     if (hasReloaded) return;
     hasReloaded = true;
-    navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+    clearTimeout(fallbackTimer);
+    navigator.serviceWorker.removeEventListener('controllerchange', reload);
     window.location.reload();
   };
 
   waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-  navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
+  navigator.serviceWorker.addEventListener('controllerchange', reload);
 
-  if (import.meta.env.DEV && options.devReloadDelayMs !== undefined) {
-    setTimeout(() => {
-      if (hasReloaded) return;
-      hasReloaded = true;
-      navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
-      window.location.reload();
-    }, options.devReloadDelayMs);
-  }
+  const fallbackDelay = options.reloadFallbackDelayMs ?? CONTROLLER_CHANGE_FALLBACK_DELAY_MS;
+  const fallbackTimer = setTimeout(reload, fallbackDelay);
 }
 
 /** Controller for the update prompt component. */
@@ -133,10 +135,14 @@ export function createUpdatePrompt(): UpdatePromptController {
 
   function handleRefresh(): void {
     clearDismissed();
+    // Hide immediately so the banner can't get visually stuck if the reload is delayed.
+    hide();
     if (registration?.waiting) {
-      activateWaitingServiceWorker(registration, {
-        devReloadDelayMs: DEV_CONTROLLER_CHANGE_FALLBACK_DELAY_MS,
-      });
+      activateWaitingServiceWorker(registration);
+    } else {
+      // No waiting worker means the new version likely already activated (e.g. via
+      // another tab/client). Reload to pick it up so the prompt resolves either way.
+      window.location.reload();
     }
   }
 

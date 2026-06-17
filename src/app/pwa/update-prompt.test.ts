@@ -158,6 +158,67 @@ describe('UpdatePrompt', () => {
     }
   });
 
+  it('should reload immediately on refresh when no worker is waiting', async () => {
+    const reloadMock = vi.fn();
+    Object.defineProperty(window, 'location', {
+      value: { reload: reloadMock },
+      writable: true,
+    });
+
+    // Banner is shown (e.g. via the pwa:update-available event) but the waiting
+    // worker has since activated, so registration.waiting is null at click time.
+    mockRegistration.waiting = mockServiceWorker;
+    await initAndAttach();
+    await waitForVisibility(true);
+    mockRegistration.waiting = null;
+
+    const refreshButton = updatePrompt.getElement().querySelector('.update-prompt-refresh-btn') as HTMLButtonElement;
+    refreshButton.click();
+
+    expect(mockServiceWorker.postMessage).not.toHaveBeenCalled();
+    expect(reloadMock).toHaveBeenCalled();
+  });
+
+  it('should hide the banner immediately when refresh is clicked', async () => {
+    Object.defineProperty(window, 'location', {
+      value: { reload: vi.fn() },
+      writable: true,
+    });
+
+    mockRegistration.waiting = mockServiceWorker;
+    const element = await initAndAttach();
+    await waitForVisibility(true);
+
+    const refreshButton = element.querySelector('.update-prompt-refresh-btn') as HTMLButtonElement;
+    refreshButton.click();
+
+    await waitForVisibility(false);
+  });
+
+  it('should reload via fallback timer if controllerchange never fires', async () => {
+    const reloadMock = vi.fn();
+    Object.defineProperty(window, 'location', {
+      value: { reload: reloadMock },
+      writable: true,
+    });
+
+    mockRegistration.waiting = mockServiceWorker;
+    await initAndAttach();
+    await waitForVisibility(true);
+
+    vi.useFakeTimers();
+    const refreshButton = updatePrompt.getElement().querySelector('.update-prompt-refresh-btn') as HTMLButtonElement;
+    refreshButton.click();
+
+    expect(mockServiceWorker.postMessage).toHaveBeenCalledWith({ type: 'SKIP_WAITING' });
+    // controllerchange is never dispatched; the fallback timer must still reload.
+    expect(reloadMock).not.toHaveBeenCalled();
+    vi.advanceTimersByTime(3000);
+    expect(reloadMock).toHaveBeenCalledTimes(1);
+
+    vi.useRealTimers();
+  });
+
   it('should hide prompt on dismiss button click', async () => {
     mockRegistration.waiting = mockServiceWorker;
     const element = await initAndAttach();
