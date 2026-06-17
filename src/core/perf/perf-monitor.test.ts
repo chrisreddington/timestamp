@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach, afterEach } from 'vitest';
-import { isProfilingEnabled } from './perf-monitor';
+import { isProfilingEnabled, perfMonitor, measureAsync } from './perf-monitor';
 
 // Global flag injected by build tooling; declared here for typing in tests.
 declare const __PROFILING__: boolean | undefined;
@@ -131,12 +131,6 @@ describe('perf-monitor profiling gate', () => {
     expect(perfMonitor.isActive()).toBe(false);
   });
 });
-/**
- * Performance Monitor Unit Tests
- */
-
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { perfMonitor, measureAsync } from './perf-monitor';
 
 const recordValues = (metric: 'fps' | 'tick' | 'inp', values: number[]) => {
   values.forEach(value => perfMonitor.record(metric, value));
