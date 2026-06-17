@@ -51,9 +51,11 @@ jobs:
           # MPL-2.0 is a weak (file-level) copyleft license used by axe-core /
           # @axe-core/playwright, which are dev-only accessibility testing tools
           # and are not redistributed as part of the app bundle.
+          # MIT-0 (MIT No Attribution) is strictly more permissive than MIT and is
+          # used by transitive @csstools/* packages pulled in via stylelint.
           # Uses allow-list instead of deprecated deny-list for better maintainability
           # See: https://github.com/actions/dependency-review-action/issues/997
-          allow-licenses: MIT, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause, 0BSD, CC0-1.0, Unlicense, Python-2.0, MPL-2.0
+          allow-licenses: MIT, MIT-0, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause, 0BSD, CC0-1.0, Unlicense, Python-2.0, MPL-2.0
 
           # Comment on PR with review results (summary of vulnerabilities and license issues)
           comment-summary-in-pr: always
