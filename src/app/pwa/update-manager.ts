@@ -5,42 +5,38 @@ import type { UpdateCheckConfig } from './types';
 
 const DEFAULT_CHECK_INTERVAL = 60 * 1000;
 const MIN_CHECK_INTERVAL = 30 * 1000;
-/** Fallback delay for dev environments when controllerchange may not fire */
-const DEV_CONTROLLER_CHANGE_FALLBACK_DELAY_MS = 100;
+/** Fallback delay before forcing a reload if `controllerchange` never fires */
+const CONTROLLER_CHANGE_FALLBACK_DELAY_MS = 3000;
 
 /**
- * Activates a waiting service worker and reloads when it takes control.
+ * Activates a waiting service worker and reloads when it takes control, with a
+ * fallback timeout so the reload happens even if `controllerchange` never fires.
  * @param registration - Service worker registration containing waiting worker
- * @param options - Optional config with dev reload delay
+ * @param options - Optional override for the reload fallback delay
  * @internal
  */
 function activateWaitingServiceWorker(
   registration: ServiceWorkerRegistration,
-  options: { devReloadDelayMs?: number } = {}
+  options: { reloadFallbackDelayMs?: number } = {}
 ): void {
   const waitingWorker = registration.waiting;
   if (!waitingWorker) return;
 
   let hasReloaded = false;
 
-  const handleControllerChange = (): void => {
+  const reload = (): void => {
     if (hasReloaded) return;
     hasReloaded = true;
-    navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+    clearTimeout(fallbackTimer);
+    navigator.serviceWorker.removeEventListener('controllerchange', reload);
     window.location.reload();
   };
 
   waitingWorker.postMessage({ type: 'SKIP_WAITING' });
-  navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
+  navigator.serviceWorker.addEventListener('controllerchange', reload);
 
-  if (import.meta.env.DEV && options.devReloadDelayMs !== undefined) {
-    setTimeout(() => {
-      if (hasReloaded) return;
-      hasReloaded = true;
-      navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
-      window.location.reload();
-    }, options.devReloadDelayMs);
-  }
+  const fallbackDelay = options.reloadFallbackDelayMs ?? CONTROLLER_CHANGE_FALLBACK_DELAY_MS;
+  const fallbackTimer = setTimeout(reload, fallbackDelay);
 }
 
 /** Controller for managing service worker updates. */
@@ -111,9 +107,7 @@ export function createUpdateManager(config: UpdateCheckConfig = {}): UpdateManag
   function applyUpdate(): void {
     if (!registration?.waiting || isApplyingUpdate) return;
     isApplyingUpdate = true;
-    activateWaitingServiceWorker(registration, {
-      devReloadDelayMs: DEV_CONTROLLER_CHANGE_FALLBACK_DELAY_MS,
-    });
+    activateWaitingServiceWorker(registration);
   }
 
   async function checkForUpdate(): Promise<boolean> {
