@@ -36,7 +36,7 @@ jobs:
       # The sync-theme-metadata workflow creates theme/* labels from THEME_REGISTRY,
       # with descriptions containing the theme's display name for matching.
       - name: Parse bug report and apply labels
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             const issueBody = context.payload.issue.body || '';
@@ -242,7 +242,7 @@ jobs:
     timeout-minutes: 2
     steps:
       - name: Parse feature request and apply labels
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             // SECURITY: User input is only used for regex matching and dictionary lookups.
@@ -342,7 +342,7 @@ jobs:
     timeout-minutes: 2
     steps:
       - name: Parse implementation interest and apply label
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
             // SECURITY: User input is only used for regex matching and dictionary lookups.
