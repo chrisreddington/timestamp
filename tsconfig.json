@@ -21,18 +21,17 @@
 
     "types": ["node"],
 
-    /* Paths */
-    "baseUrl": ".",
+    /* Paths (resolved relative to this tsconfig's directory; baseUrl removed for TS 7 compatibility) */
     "paths": {
-      "@/*": ["src/*"],
-      "@app/*": ["src/app/*"],
-      "@components/*": ["src/components/*"],
-      "@data/*": ["src/app/data/*"],
-      "@core/*": ["src/core/*"],
-      "@styles/*": ["src/styles/*"],
-      "@test-utils/*": ["src/test-utils/*"],
-      "@themes/*": ["src/themes/*"],
-      "@utils/*": ["src/core/utils/*"]
+      "@/*": ["./src/*"],
+      "@app/*": ["./src/app/*"],
+      "@components/*": ["./src/components/*"],
+      "@data/*": ["./src/app/data/*"],
+      "@core/*": ["./src/core/*"],
+      "@styles/*": ["./src/styles/*"],
+      "@test-utils/*": ["./src/test-utils/*"],
+      "@themes/*": ["./src/themes/*"],
+      "@utils/*": ["./src/core/utils/*"]
     }
   },
   "include": ["src"],
