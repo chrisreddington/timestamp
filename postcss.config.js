@@ -1,4 +1,4 @@
-import { purgeCSSPlugin } from '@fullhuman/postcss-purgecss';
+import purgeCSSPlugin from '@fullhuman/postcss-purgecss';
 import autoprefixer from 'autoprefixer';
 
 const isProduction = process.env.NODE_ENV === 'production';
