@@ -21,13 +21,12 @@
 
     "types": ["node", "vite/client"],
 
-    /* Paths - scripts can import from src */
-    "baseUrl": ".",
+    /* Paths - scripts can import from src (resolved relative to this tsconfig's directory; baseUrl removed for TS 7 compatibility) */
     "paths": {
-      "@/*": ["src/*"],
-      "@app/*": ["src/app/*"],
-      "@core/*": ["src/core/*"],
-      "@themes/*": ["src/themes/*"]
+      "@/*": ["./src/*"],
+      "@app/*": ["./src/app/*"],
+      "@core/*": ["./src/core/*"],
+      "@themes/*": ["./src/themes/*"]
     }
   },
   "include": [
