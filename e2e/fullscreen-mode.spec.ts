@@ -227,7 +227,17 @@ test.describe('Fullscreen Mode - Edge Cases', () => {
     await enterFullscreen(page);
     await waitForFullscreenState(page, true);
 
-    await page.setViewportSize({ width: 1024, height: 1440 });
+    // Chromium refuses Browser.setWindowBounds (used by setViewportSize) while
+    // the window is in real fullscreen, so emulate the viewport change via CDP
+    // instead. This updates innerWidth/innerHeight (and fires resize) without
+    // touching the OS window, exercising the app's resize handling in fullscreen.
+    const client = await page.context().newCDPSession(page);
+    await client.send('Emulation.setDeviceMetricsOverride', {
+      width: 1024,
+      height: 1440,
+      deviceScaleFactor: 1,
+      mobile: false,
+    });
     await page.waitForFunction(
       () => window.innerWidth === 1024 && window.innerHeight === 1440,
       { timeout: 2000 }
