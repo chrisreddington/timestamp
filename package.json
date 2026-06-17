@@ -63,7 +63,7 @@
     "knip": "^5.82.1",
     "markdownlint-cli": "^0.47.0",
     "postcss": "^8.5.15",
-    "sass-embedded": "^1.97.3",
+    "sass-embedded": "^1.100.0",
     "sharp": "^0.35.1",
     "stylelint": "^16.26.1",
     "stylelint-config-standard": "^39.0.1",
