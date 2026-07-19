@@ -79,8 +79,9 @@ jobs:
           VITE_SITE_URL: ${{ steps.pages.outputs.base_url }}
 
       # Upload build artifact for other jobs to consume
-      # This artifact is used by deploy job
+      # This artifact is used only by the main-branch deploy job.
       - name: Upload build artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         id: upload
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
         with:
