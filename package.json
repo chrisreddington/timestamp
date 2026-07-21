@@ -79,6 +79,6 @@
   "dependencies": {
     "@primer/octicons": "^19.29.2",
     "fireworks-js": "^2.10.8",
-    "suncalc": "^1.9.0"
+    "suncalc": "^2.0.0"
   }
 }
