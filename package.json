@@ -57,7 +57,7 @@
     "autoprefixer": "^10.5.4",
     "eslint": "^9.28.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
-    "eslint-plugin-simple-import-sort": "^13.0.0",
+    "eslint-plugin-simple-import-sort": "^14.0.0",
     "eslint-plugin-tsdoc": "^0.5.2",
     "jsdom": "^27.4.0",
     "knip": "^6.32.2",
