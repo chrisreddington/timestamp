@@ -44,7 +44,7 @@
   "author": "Chris Reddington",
   "license": "MIT",
   "devDependencies": {
-    "@axe-core/playwright": "^4.12.1",
+    "@axe-core/playwright": "^4.13.0",
     "@fullhuman/postcss-purgecss": "^8.0.0",
     "@playwright/test": "^1.62.1",
     "@stryker-mutator/core": "^9.6.1",
