@@ -64,7 +64,7 @@
     "markdownlint-cli": "^0.49.1",
     "postcss": "^8.5.26",
     "sass-embedded": "^1.103.1",
-    "sharp": "^0.35.3",
+    "sharp": "^0.35.4",
     "stylelint": "^17.14.1",
     "stylelint-config-standard": "^40.0.0",
     "stylelint-config-standard-scss": "^17.0.0",
