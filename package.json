@@ -65,7 +65,7 @@
     "postcss": "^8.5.28",
     "sass-embedded": "^1.103.1",
     "sharp": "^0.35.4",
-    "stylelint": "^17.14.1",
+    "stylelint": "^17.15.0",
     "stylelint-config-standard": "^40.0.0",
     "stylelint-config-standard-scss": "^17.0.0",
     "tsx": "^4.23.13",
