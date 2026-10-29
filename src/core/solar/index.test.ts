@@ -3,7 +3,10 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import SunCalc from 'suncalc';
+import * as SunCalc from 'suncalc';
+// Passthrough mock so ESM exports stay spy-able
+vi.mock('suncalc', async (importOriginal) => ({ ...(await importOriginal<typeof import('suncalc')>()) }));
+
 import { isNight, getNightRegionPath, clearSolarCache, _testExports } from './index';
 
 const { getSolarDeclination, getTerminatorPoints, getSubsolarLongitude } = _testExports;
@@ -79,7 +82,7 @@ describe('getTerminatorPoints (internal)', () => {
       .spyOn(SunCalc, 'getPosition')
       .mockImplementation((calledDate: Date, lat: number) => {
         if (calledDate.getTime() === date.getTime() && lat === 0) {
-          return { altitude: Math.PI / 2, azimuth: 0 } as never;
+          return { altitude: 90, azimuth: 0 } as never;
         }
         return { altitude: 0, azimuth: 0 } as never;
       });

@@ -5,7 +5,7 @@
  * using the SunCalc library. Guards against edge cases like sun near horizon.
  */
 
-import SunCalc from 'suncalc';
+import * as SunCalc from 'suncalc';
 
 /**
  * Geographic coordinates.
@@ -44,11 +44,12 @@ export function calculateShadowInfo(params: {
   const { heightMeters, latitude, longitude, date } = params;
   const sunPos = SunCalc.getPosition(date, latitude, longitude);
 
-  const altitudeDeg = sunPos.altitude * (180 / Math.PI);
-  const azimuthDeg = ((sunPos.azimuth * (180 / Math.PI)) + 180) % 360;
+  // SunCalc v2 returns degrees, with azimuth already measured clockwise from north
+  const altitudeDeg = sunPos.altitude;
+  const azimuthDeg = sunPos.azimuth;
   let shadowLengthMeters: number | null = null;
   if (altitudeDeg > MIN_ALTITUDE_DEG) {
-    const altitudeRad = sunPos.altitude;
+    const altitudeRad = (altitudeDeg * Math.PI) / 180;
     shadowLengthMeters = heightMeters / Math.tan(altitudeRad);
     shadowLengthMeters = Math.min(shadowLengthMeters, MAX_SHADOW_LENGTH_METERS);
   }
