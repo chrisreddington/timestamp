@@ -109,6 +109,11 @@ async function measureRowCentroids(page: Page, display: Locator): Promise<RowCen
       getComputedStyle(element).getPropertyValue('--chrisreddington-numeric-nudge').trim() !== ''
     );
   });
+  // Wait for web fonts and a settled frame so ink isn't measured mid-relayout.
+  await page.evaluate(async () => {
+    await document.fonts.ready;
+    await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+  });
 
   const boundingBox = await display.boundingBox();
   const buffer = await display.screenshot();
