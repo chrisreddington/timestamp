@@ -2,7 +2,7 @@
  * Solar calculation utilities for day/night visualization.
  */
 
-import SunCalc from 'suncalc';
+import * as SunCalc from 'suncalc';
 
 const declinationCache = new Map<number, number>();
 const MAX_CACHE_SIZE = 60;
@@ -23,7 +23,7 @@ function getSolarDeclination(date: Date): number {
 
   const times = SunCalc.getTimes(date, 0, 0);
   const sunAtNoon = SunCalc.getPosition(times.solarNoon, 0, 0);
-  const altitudeAtNoon = sunAtNoon.altitude * (180 / Math.PI);
+  const altitudeAtNoon = sunAtNoon.altitude;
   // NOTE: At equator solar noon: altitude = 90° - |declination|
   const declinationMagnitude = 90 - altitudeAtNoon;
 
@@ -59,8 +59,8 @@ function getSubsolarLongitude(date: Date): number {
 export function isNight(lat: number, lng: number, date: Date): boolean {
   const sunPos = SunCalc.getPosition(date, lat, lng);
   // NOTE: Atmospheric refraction adds ~0.833° to visible horizon
-  const horizonAngle = (-0.833 * Math.PI) / 180;
-  return sunPos.altitude < horizonAngle;
+  // SunCalc v2 returns degrees
+  return sunPos.altitude < -0.833;
 }
 
 /** Generate points along the solar terminator line. @internal */
