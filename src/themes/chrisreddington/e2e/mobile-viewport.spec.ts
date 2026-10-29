@@ -168,6 +168,8 @@ test.describe('Chris Reddington Theme: Mobile viewport', () => {
 
   test('aligns prompt, digit ink, and cursor on one centerline while counting', async ({ page }) => {
     test.slow();
+    // Pin the clock so every run measures the same digit glyphs (ink centroids vary by digit)
+    await page.clock.setFixedTime(new Date('2026-01-01T12:00:00.000Z'));
 
     for (const configuration of countingConfigurations) {
       for (const width of ALIGNMENT_VIEWPORTS) {
