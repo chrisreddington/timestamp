@@ -272,9 +272,14 @@ test.describe('Theme Preview Videos - Modal Close', () => {
     // Wait for modal to close
     await expect(page.getByRole('dialog')).not.toBeVisible();
 
+    // Move the pointer off the card area so the reopened card isn't hovered (and played)
+    await page.mouse.move(0, 0);
+
     // Reopen modal using the theme-switcher button
     const themeButton = page.getByTestId('theme-switcher');
-    await themeButton.click();
+    // Keyboard activation keeps the parked pointer from landing on a card
+    await themeButton.focus();
+    await page.keyboard.press('Enter');
     await expect(page.getByRole('dialog')).toBeVisible();
 
     // Videos should be reset (paused)
