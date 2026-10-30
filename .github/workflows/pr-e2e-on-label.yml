@@ -22,13 +22,18 @@ permissions:
 
 jobs:
   e2e-on-label:
-    if: ${{ github.event_name == 'workflow_dispatch' || contains(github.event.pull_request.labels.*.name, 'e2e') }}
+    # Adding an unrelated label must not re-run E2E; pushes re-run it while 'e2e' stays on.
+    if: ${{ github.event_name == 'workflow_dispatch' || (contains(github.event.pull_request.labels.*.name, 'e2e') && (github.event.action != 'labeled' || github.event.label.name == 'e2e')) }}
+    # Job-level so skipped runs from other label events never cancel a live one.
+    concurrency:
+      group: pr-e2e-${{ github.event.pull_request.number || github.ref }}
+      cancel-in-progress: true
     uses: ./.github/workflows/e2e.yml
     secrets: inherit
 
   # Detect if PR adds a new theme by checking for new directories in src/themes/
   detect-new-theme:
-    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'e2e') }}
+    if: ${{ github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'e2e') && (github.event.action != 'labeled' || github.event.label.name == 'e2e') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
