@@ -55,7 +55,7 @@
     "@typescript-eslint/parser": "^8.72.0",
     "@vitest/coverage-v8": "^5.0.4",
     "autoprefixer": "^10.6.1",
-    "eslint": "^9.28.0",
+    "eslint": "^10.12.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-simple-import-sort": "^14.0.0",
     "eslint-plugin-tsdoc": "^0.5.4",
