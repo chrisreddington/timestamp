@@ -2,6 +2,8 @@
 
 This document lists all third-party assets, libraries, and data sources used in this project, along with their licenses and attribution.
 
+The build generates `third-party-licenses.txt` with the full license text of every bundled dependency and serves it alongside the site. The build fails if a bundled dependency's license isn't on the allow-list in `vite.config.ts`.
+
 ## Runtime Dependencies
 
 Libraries used in the production application.
@@ -49,6 +51,7 @@ When adding new dependencies, please:
 
 1. Verify the license is compatible with MIT
 2. Add an entry to the appropriate table in this file
-3. For theme-specific dependencies, also add them to the theme's `config.ts` in the `dependencies` array
+3. If a bundled package's `package.json` has no `license` field, add it to `LICENSE_OVERRIDES` in `vite.config.ts`, using the license from its LICENSE file
+4. For theme-specific dependencies, also add them to the theme's `config.ts` in the `dependencies` array
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for more details on third-party asset requirements.
