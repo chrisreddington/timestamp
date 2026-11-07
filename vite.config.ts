@@ -21,11 +21,44 @@
  * @see {@link https://vite-pwa-org.netlify.app/} for PWA plugin options
  */
 import { resolve } from 'path';
+import license, { type Dependency } from 'rollup-plugin-license';
 import { defineConfig } from 'vite';
 import { VitePWA } from 'vite-plugin-pwa';
 
 // NOTE: CI sets VITE_SITE_URL from GitHub context (owner.github.io/repo)
 const DEFAULT_SITE_URL = 'https://chrisreddington.com/timestamp';
+
+/** Licenses whose notices we can satisfy by shipping third-party-licenses.txt. */
+const ALLOWED_BUNDLED_LICENSES = new Set(['MIT', 'ISC', 'BSD-2-Clause', 'BSD-3-Clause', 'Apache-2.0', '0BSD']);
+
+/**
+ * Licenses for bundled packages whose package.json omits the license field,
+ * taken from the LICENSE file each package ships.
+ */
+const LICENSE_OVERRIDES: Readonly<Record<string, string>> = {
+  suncalc: 'BSD-2-Clause',
+};
+
+function licenseOf(dependency: Dependency): string | null {
+  return dependency.license ?? (dependency.name ? LICENSE_OVERRIDES[dependency.name] : undefined) ?? null;
+}
+
+// The plugin's own allow check skips packages with no license field, so check here.
+function assertBundledLicensesAllowed(dependencies: Dependency[]): void {
+  const disallowed = dependencies.filter((dependency) => !ALLOWED_BUNDLED_LICENSES.has(licenseOf(dependency) ?? ''));
+  if (disallowed.length > 0) {
+    const names = disallowed.map((dependency) => `${dependency.name} (${licenseOf(dependency) ?? 'no license'})`);
+    throw new Error(`Bundled dependencies with disallowed licenses: ${names.join(', ')}`);
+  }
+}
+
+function formatLicenseNotice(dependency: Dependency): string {
+  return [
+    `${dependency.name}@${dependency.version} (${licenseOf(dependency)})`,
+    dependency.licenseText ?? '',
+    dependency.noticeText ?? '',
+  ].filter(Boolean).join('\n\n');
+}
 
 export default defineConfig({
   base: '/timestamp/',
@@ -94,6 +127,18 @@ export default defineConfig({
     open: '/timestamp/',
   },
   plugins: [
+    // MIT and BSD require their notices to travel with the minified bundle.
+    license({
+      thirdParty: {
+        output: {
+          file: resolve(__dirname, 'dist/third-party-licenses.txt'),
+          template: (dependencies) => {
+            assertBundledLicensesAllowed(dependencies);
+            return dependencies.map(formatLicenseNotice).join(`\n\n${'-'.repeat(72)}\n\n`);
+          },
+        },
+      },
+    }),
     VitePWA({
       // Use injectManifest for custom service worker with notification handlers
       strategies: 'injectManifest',

@@ -63,6 +63,7 @@ Absolutely! Use `npm run theme create <name>` to scaffold a new theme. See the T
 - [Code of Conduct](https://github.com/chrisreddington/timestamp/blob/main/CODE_OF_CONDUCT.md): Community guidelines and expectations
 - [Security Policy](https://github.com/chrisreddington/timestamp/blob/main/SECURITY.md): Vulnerability reporting and security practices
 - [License](https://github.com/chrisreddington/timestamp/blob/main/LICENSE): MIT License
+- [Third-party licenses](https://chrisreddington.com/timestamp/third-party-licenses.txt): Full license notices for bundled dependencies
 - [Mutation Testing Analysis](https://github.com/chrisreddington/timestamp/blob/main/docs/MUTATION-TESTING-ANALYSIS.md): Code quality analysis with Stryker
 
 ## Internal Development Docs (for AI coding assistants)
