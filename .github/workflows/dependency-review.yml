@@ -57,6 +57,11 @@ jobs:
           # See: https://github.com/actions/dependency-review-action/issues/997
           allow-licenses: MIT, MIT-0, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause, 0BSD, CC0-1.0, Unlicense, Python-2.0, MPL-2.0
 
+          # Exempt specific packages rather than allowing CC-BY-3.0 for all.
+          # These carry the SPDX license list data (CC-BY-3.0) and are pulled in
+          # by rollup-plugin-license, a dev-only build tool not shipped in the bundle.
+          allow-dependencies-licenses: pkg:npm/spdx-exceptions, pkg:npm/spdx-expression-validate, pkg:npm/spdx-ranges
+
           # Comment on PR with review results (summary of vulnerabilities and license issues)
           comment-summary-in-pr: always
 
