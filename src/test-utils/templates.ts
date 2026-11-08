@@ -393,6 +393,9 @@ export const LANDING_FOOTER_TEMPLATE = `
         <a href="https://github.com/chrisreddington/timestamp/blob/main/docs/THEME_DEVELOPMENT.md" target="_blank" rel="noopener noreferrer" class="landing-footer-repo-link landing-footer-theme-link">
           <span>Contribute a Theme</span>
         </a>
+        <a href="third-party-licenses.txt" target="_blank" rel="noopener" class="landing-footer-repo-link" data-testid="landing-footer-licenses-link">
+          <span>Third-party licenses</span>
+        </a>
       </div>
     </div>
   </footer>

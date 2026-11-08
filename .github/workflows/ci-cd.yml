@@ -38,7 +38,7 @@ jobs:
       # Checkout code from the repository
       # Pinned to full commit SHA for security: https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication#permissions-for-the-github_token
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       
       # Configure Pages to get the site URL
       # This reads the custom domain (if configured) or generates github.io URL
@@ -83,7 +83,7 @@ jobs:
       - name: Upload build artifact
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         id: upload
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: dist
           path: ./dist
@@ -98,7 +98,7 @@ jobs:
       # Learn more: https://docs.github.com/en/actions/security-guides/using-artifact-attestations-to-establish-provenance-for-builds
       - name: Generate artifact attestation
         if: github.ref == 'refs/heads/main' && !github.event.repository.private
-        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32 # v4.1.0
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
         with:
           subject-name: dist
           subject-digest: sha256:${{ steps.upload.outputs.artifact-digest }}
@@ -127,7 +127,7 @@ jobs:
       baseline-seo: ${{ steps.lighthouse.outputs.seo }}
     steps:
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Run Lighthouse against current production site (before new deployment)
       - name: Run Lighthouse on current production
@@ -159,11 +159,11 @@ jobs:
     steps:
       # Checkout needed for composite action access
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Download the build artifact from the build job
       - name: Download build artifact
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: dist
           path: ./dist
@@ -177,7 +177,7 @@ jobs:
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@cd2ce8fcbc39b97be8ca5fce6e763baed58fa128 # v5.0.0
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
 
       # Wait briefly for GitHub Pages CDN to propagate the new deployment
       - name: Wait for deployment propagation

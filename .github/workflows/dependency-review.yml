@@ -33,7 +33,7 @@ jobs:
       # Checkout code to analyze dependencies
       # Pinned to full commit SHA for security: https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions
       - name: Checkout
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # Run dependency review to check for vulnerabilities and license issues
       # This action analyzes dependency changes in the PR and fails if:
@@ -58,6 +58,11 @@ jobs:
           # Uses allow-list instead of deprecated deny-list for better maintainability
           # See: https://github.com/actions/dependency-review-action/issues/997
           allow-licenses: MIT, MIT-0, ISC, Apache-2.0, BSD-2-Clause, BSD-3-Clause, 0BSD, CC0-1.0, Unlicense, Python-2.0, MPL-2.0, BlueOak-1.0.0
+
+          # Exempt specific packages rather than allowing CC-BY-3.0 for all.
+          # These carry the SPDX license list data (CC-BY-3.0) and are pulled in
+          # by rollup-plugin-license, a dev-only build tool not shipped in the bundle.
+          allow-dependencies-licenses: pkg:npm/spdx-exceptions, pkg:npm/spdx-expression-validate, pkg:npm/spdx-ranges
 
           # Comment on PR with review results (summary of vulnerabilities and license issues)
           comment-summary-in-pr: always

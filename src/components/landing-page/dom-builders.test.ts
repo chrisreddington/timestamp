@@ -173,6 +173,14 @@ describe('Landing Page DOM Builders', () => {
       expect(techList?.textContent).toContain('Natural Earth');
     });
 
+    it('should link to the bundled third-party license notices', () => {
+      const footer = buildFooter();
+
+      const licensesLink = footer.querySelector<HTMLAnchorElement>('[data-testid="landing-footer-licenses-link"]');
+      expect(licensesLink?.getAttribute('href')).toBe('third-party-licenses.txt');
+      expect(licensesLink?.textContent).toContain('Third-party licenses');
+    });
+
     it('should NOT include theme-specific dependencies (Fireworks.js)', () => {
       const footer = buildFooter();
 
