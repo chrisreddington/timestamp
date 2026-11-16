@@ -63,7 +63,7 @@
     "knip": "^6.44.1",
     "markdownlint-cli": "^0.50.0",
     "postcss": "^8.5.32",
-    "rollup-plugin-license": "^3.7.1",
+    "rollup-plugin-license": "^3.7.2",
     "sass-embedded": "^1.108.0",
     "sharp": "^0.35.5",
     "stylelint": "^17.16.0",
